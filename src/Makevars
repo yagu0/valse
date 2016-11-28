@@ -1,0 +1,7 @@
+PKG_CFLAGS=-g -I.
+
+PKG_LIBS=-lm
+
+SOURCES = $(wildcard adapters/*.c sources/*.c sources/utils/*.c)
+
+OBJECTS = $(SOURCES:.c=.o)

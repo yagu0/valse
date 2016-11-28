@@ -1,3 +1,5 @@
+## TODO: turn this code into R
+
 classdef selmix < handle
     
     properties (SetAccess = private)

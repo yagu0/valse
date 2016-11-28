@@ -1,0 +1,13 @@
+Package: valse
+Title: Variable selection with mixture of models
+Date: 2016-12-01
+Version: 0.1-0
+Description: TODO
+Authors@R: c( person("Benjamin Auder", "Developer", role=c("ctb","cre"), email="Benjamin.Auder@math.u-psud.fr"),
+	person("Benjamin Goehry", "User", role="aut", email = "Benjamin.Goehry@math.u-psud.fr"),
+	person("Emilie Devijver", "User", role="ctb", email = "Emilie.Devijver@kuleuven.be"))
+Depends:
+    R (>= 2.15)
+LazyData: yes
+URL: http://git.auder.net/?p=valse.git
+License: MIT
