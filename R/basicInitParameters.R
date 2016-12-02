@@ -21,9 +21,3 @@ basic_Init_Parameters = function(n,p,m,k){
   
   return(list(phiInit, rhoInit, piInit, gamInit))
 }
-
-n= 10
-p = 10
-m = 5
-k = 5
-list_param = basic_Init_Parameters(n,p,m,k)
