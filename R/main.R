@@ -163,19 +163,19 @@ SelMix = setRefClass(
 						p = ncol(X)
 						m = ncol(Y)
 						if size(Phi2) == 0 #TODO: continue translation MATLAB --> R
-						sx.Phi(:,:,1:k,:) = r1$phi;
-						sx.Rho(:,:,1:k,:) = r1$rho;
-						sx.Pi(1:k,:) = r1$pi;
+						Phi(:,:,1:k,:) = r1$phi;
+						Rho(:,:,1:k,:) = r1$rho;
+						Pi(1:k,:) = r1$pi;
 						else
-						sx.Phi = zeros(p,m,sx.kmax,size(Phi2,4)+size(r1$phi,4));
-						sx.Phi(:,:,1:size(Phi2,3),1:size(Phi2,4)) = Phi2;
-						sx.Phi(:,:,1:k,size(Phi2,4)+1:end) = r1$phi;
-						sx.Rho = zeros(m,m,sx.kmax,size(Rho2,4)+size(r1$rho,4));
-						sx.Rho(:,:,1:size(Rho2,3),1:size(Rho2,4)) = Rho2;
-						sx.Rho(:,:,1:k,size(Rho2,4)+1:end) = r1$rho;
-						sx.Pi = zeros(sx.kmax,size(Pi2,2)+size(r1$pi,2));
-						sx.Pi(1:size(Pi2,1),1:size(Pi2,2)) = Pi2;
-						sx.Pi(1:k,size(Pi2,2)+1:end) = r1$pi;
+						Phi = zeros(p,m,sx.kmax,size(Phi2,4)+size(r1$phi,4));
+						Phi(:,:,1:size(Phi2,3),1:size(Phi2,4)) = Phi2;
+						Phi(:,:,1:k,size(Phi2,4)+1:end) = r1$phi;
+						Rho = zeros(m,m,sx.kmax,size(Rho2,4)+size(r1$rho,4));
+						Rho(:,:,1:size(Rho2,3),1:size(Rho2,4)) = Rho2;
+						Rho(:,:,1:k,size(Rho2,4)+1:end) = r1$rho;
+						Pi = zeros(sx.kmax,size(Pi2,2)+size(r1$pi,2));
+						Pi(1:size(Pi2,1),1:size(Pi2,2)) = Pi2;
+						Pi(1:k,size(Pi2,2)+1:end) = r1$pi;
 						end
 				else
 						[phi] = runProcedure2(sx);
