@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------
 #' Initialize the parameters in a basic way (zero for the conditional mean,
-#'  uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)
+#'	uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)
 #' @param n sample size
 #' @param p number of covariates
 #' @param m size of the response
@@ -10,19 +10,19 @@
 #-----------------------------------------------------------------------
 basic_Init_Parameters = function(n,p,m,k)
 {
-  phiInit = array(0, dim=c(p,m,k))
-  
-  piInit = (1./k)*rep.int(1,k)
-  
-  rhoInit = array(0, dim=c(m,m,k))
-  for(i in 1:k)
-    rhoInit[,,i] = diag(m)
-  
-  gamInit = 0.1*array(1, dim=c(n,k))
-  R = sample(1:k,n, replace=TRUE)
-  for(i in 1:n)
-    gamInit[i,R[i]] = 0.9
-  gamInit = gamInit/sum(gamInit[1,])
-  
-  return (data = list(phiInit = phiInit, rhoInit = rhoInit, piInit = piInit, gamInit = gamInit))
+	phiInit = array(0, dim=c(p,m,k))
+
+	piInit = (1./k)*rep.int(1,k)
+
+	rhoInit = array(0, dim=c(m,m,k))
+	for(i in 1:k)
+		rhoInit[,,i] = diag(m)
+
+	gamInit = 0.1*array(1, dim=c(n,k))
+	R = sample(1:k,n, replace=TRUE)
+	for(i in 1:n)
+		gamInit[i,R[i]] = 0.9
+	gamInit = gamInit/sum(gamInit[1,])
+
+	return (data = list(phiInit = phiInit, rhoInit = rhoInit, piInit = piInit, gamInit = gamInit))
 }
