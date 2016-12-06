@@ -1,4 +1,4 @@
-#' Construct the set of relevant indices
+#' Construct the set of relevant indices -> ED: je crois que cette fonction n'est pas utile
 #'
 #' @param phi regression matrix, of size p*m
 #' @param thresh threshold to say a cofficient is equal to zero

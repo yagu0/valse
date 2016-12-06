@@ -22,12 +22,11 @@ initSmallEM = function(k,X,Y,tau)
   LLFinit1 = list()
   
   require(MASS) #Moore-Penrose generalized inverse of matrix
+  require(mclust) # K-means with selection of K
   for(repet in 1:20)
   {
-    clusters = hclust(dist(y)) #default distance : euclidean
-    #cutree retourne les indices (? quel cluster indiv_i appartient) d'un clustering hierarchique
-    clusterCut = cutree(clusters,k)
-    Zinit1[,repet] = clusterCut
+    clusters = Mclust(matrix(c(X,Y),nrow=n),k) #default distance : euclidean
+    Zinit1[,repet] = clusters$classification
     
     for(r in 1:k)
     {

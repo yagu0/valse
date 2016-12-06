@@ -9,7 +9,6 @@
 #'         and D1, a vector of corresponding dimensions
 #' @export
 #'
-#' @examples
 modelSelection = function(LLF)
 {
   D = LLF[,2]

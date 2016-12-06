@@ -11,3 +11,4 @@ Depends:
 LazyData: yes
 URL: http://git.auder.net/?p=valse.git
 License: MIT
+RoxygenNote: 5.0.1

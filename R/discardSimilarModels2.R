@@ -4,10 +4,9 @@
 #' @param rho covariance matrix
 #' @param pi weight parameters
 #'
-#' @return
+#' @return a list with B1, in, rho, pi
 #' @export
 #'
-#' @examples
 discardSimilarModels2 = function(B1,rho,pi)
 {	ind = c()
 	dim_B1 = dim(B1)
@@ -16,6 +15,6 @@ discardSimilarModels2 = function(B1,rho,pi)
 	glambda = rep(0,sizeLambda)
 
 	suppressmodel = discardSimilarModels(B1,B2,glambda,rho,pi)
-	return (list(B1 = suppressmodel$B1, ind = suppressmodel$B2,
+	return (list(B1 = suppressmodel$B1, ind = suppressmodel$ind,
 		rho = suppressmodel$rho, pi = suppressmodel$pi))
 }

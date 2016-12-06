@@ -39,7 +39,7 @@ SelMix = setRefClass(
 		# initialisation for the allocations probabilities in each component
 		tauInit,
 		# values for the regularization parameter grid
-		gridLambda = [];
+		gridLambda = c(),
 		# je ne crois pas vraiment qu'il faille les mettre en sortie, d'autant plus qu'on construit
 		# une matrice A1 et A2 pour chaque k, et elles sont grandes, donc ca coute un peu cher ...
 		A1,
@@ -52,7 +52,7 @@ SelMix = setRefClass(
 		Pi,
 
 		#immutable
-		seuil = 1e-15;
+		seuil = 1e-15
 	),
 
 	methods = list(
