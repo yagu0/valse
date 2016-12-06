@@ -100,7 +100,7 @@ SelMix = setRefClass(
 			"computation of the regularization grid"
 			#(according to explicit formula given by EM algorithm)
 
-			gridLambda <<- grillelambda(sx.phiInit,sx.rhoInit,sx.piInit,sx.tauInit,sx.X,sx.Y,
+			gridLambda <<- gridLambda(sx.phiInit,sx.rhoInit,sx.piInit,sx.tauInit,sx.X,sx.Y,
 				sx.gamma,sx.mini,sx.maxi,sx.eps);
 		},
 
