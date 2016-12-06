@@ -8,11 +8,10 @@
 #-----------------------------------------------------------------------
 generateIOdefault = function(n, p, m, k)
 {
-  covX = array(0, dim=c(p,p,k))
+  covX = diag(p)
   covY = array(0, dim=c(m,m,k))
   for(r in 1:k)
   {
-    covX[,,r] = diag(p)
     covY[,,r] = diag(m)
   }
   
