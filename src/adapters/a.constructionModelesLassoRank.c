@@ -1,109 +1,79 @@
-#include "ioutils.h"
-#include "constructionModelesLassoRank.h"
-#include <mex.h>
+#include <R.h>
+#include <Rdefines.h>
+#include "sources/EMGLLF.h"
 
-#include <stdio.h>
-
-// nlhs, nrhs: resp. numbers of out and in parameters.
-// plhs: array of out parameters, each being a mxArray
-// plhs: array of in parameters (immutable), each being a mxArray
-//
-// MATLAB translates a call [A,B] = fun(C,D) into mexFunction(2,{A,B},2,{C,D}). 
-// Then mxArrayS are adapted to be passed to a regular C function, 
-// and the results are translated back to mxArrayS into plhs.
-void mexFunction(int nlhs, mxArray* plhs[], 
-                 int nrhs, const mxArray* prhs[])
-{
-	// Basic sanity checks
-	if (nrhs!=10) 
-		mexErrMsgIdAndTxt("select:constructionModelesLassoRank:nrhs","10 inputs required.");
-	if (nlhs!=2) 
-		mexErrMsgIdAndTxt("select:constructionModelesLassoRank:nlhs","3 outputs required.");
-
-	// Get matrices dimensions, to be given to main routine above
-	const mwSize n = mxGetDimensions(prhs[4])[0];
-	const mwSize p = mxGetDimensions(prhs[4])[1];
-	const mwSize m = mxGetDimensions(prhs[1])[0];
-	const mwSize k = mxGetDimensions(prhs[1])[2];
-	const mwSize L = mxGetDimensions(prhs[7])[1];
+SEXP EMGLLF(
+	SEXP Pi_,
+	SEXP Rho_,
+	SEXP mini_,
+	SEXP maxi_,
+	SEXP X_,
+	SEXP Y_,
+	SEXP tau_,
+	SEXP A1_,
+	SEXP rangmin_,
+	SEXP rangmax
+) {
+	// Get matrices dimensions
+	SEXP dimX = getAttrib(X_, R_DimSymbol);
+	int n = INTEGER(dimX)[0];
+	int p = INTEGER(dimX)[1];
+	SEXP dimRho = getAttrib(Rho_, R_DimSymbol)
+	int m = INTEGER(dimRho)[0];
+	int k = INTEGER(dimRho)[2];
+	int L = INTEGER(getAttrib(A1_, R_DimSymbol))[1];
 
 	////////////
 	// INPUTS //
 	////////////
 
-	// pi
-	const mwSize* dimPi = mxGetDimensions(prhs[0]);
-	Real* brPi = matlabToBrArray_real(mxGetPr(prhs[0]), dimPi, 2);
+	// get scalar parameters
+	int mini = INTEGER_VALUE(mini_);
+	int maxi = INTEGER_VALUE(maxi_);
+	double tau = NUMERIC_VALUE(tau_);
+	double rangmin = NUMERIC_VALUE(rangmin_);
+	double rangmax = NUMERIC_VALUE(rangmax_);
 
-	// rho
-	const mwSize* dimRho = mxGetDimensions(prhs[1]);
-	Real* brRho = matlabToBrArray_real(mxGetPr(prhs[1]), dimRho, 4);
+	// Get pointers from SEXP arrays ; WARNING: by columns !
+	double* Pi = REAL(Pi_);
+	double* Rho = REAL(Rho_);
+	double* X = REAL(X_);
+	double* Y = REAL(Y_);
+	double* A1 = REAL(A1_);
 
-	// min number of iterations
-	Int mini = ((Int*)mxGetData(prhs[2]))[0];
-
-	// max number of iterations
-	Int maxi = ((Int*)mxGetData(prhs[3]))[0];
-
-	// X
-	const mwSize* dimX = mxGetDimensions(prhs[4]);
-	Real* brX = matlabToBrArray_real(mxGetPr(prhs[4]), dimX, 2);
-
-	// Y
-	const mwSize* dimY = mxGetDimensions(prhs[5]);
-	Real* brY = matlabToBrArray_real(mxGetPr(prhs[5]), dimY, 2);
-	
-	// tau
-	Real tau = mxGetScalar(prhs[6]);
-	
-	// A1
-	const mwSize* dimA = mxGetDimensions(prhs[7]);
-	Int* brA1 = matlabToBrArray_int(mxGetData(prhs[7]), dimA, 2);
-	
-    //rangmin
-    Int rangmin = ((Int*)mxGetData(prhs[8]))[0];
-    
-    //rangmax
-    Int rangmax = ((Int*)mxGetData(prhs[9]))[0];
-	
 	/////////////
 	// OUTPUTS //
 	/////////////
-	
-	// phi
-	mwSize Size = pow(rangmax-rangmin+1,k);
-	const mwSize dimPhi[] = {p, m, k, L*Size};
-	plhs[0] = mxCreateNumericArray(4,dimPhi,mxDOUBLE_CLASS,mxREAL);
-	Real* phi = mxGetPr(plhs[0]);
 
-	// lvraisemblance
-	const mwSize dimLvraisemblance[] = {L*Size, 2};
-	plhs[1] = mxCreateNumericMatrix(dimLvraisemblance[0],dimLvraisemblance[1],mxDOUBLE_CLASS,mxREAL);
-	Real* lvraisemblance = mxGetPr(plhs[1]);
+	int Size = pow(rangmax-rangmin+1,k);
+	SEXP phi, lvraisemblance, dimPhi;
+	PROTECT(dimPhi = allocVector(INTSXP, 4));
+	int* pDimPhi = INTEGER(dimPhi);
+	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k; pDimPhi[3] = L*Size;
+	PROTECT(phi = allocArray(REALSXP, dimPhi));
+	PROTECT(lvraisemblance = allocMatrix(REALSXP, L*Size, 2));
+	double* pPhi=REAL(phi), pLvraisemblance=REAL(lvraisemblance);
 
-	
 	//////////////////////////////////////////
 	// Call to constructionModelesLassoRank //
 	//////////////////////////////////////////
 
 	constructionModelesLassoRank(
-        brPi,brRho,mini,maxi,brX,brY,tau,brA1,rangmin,rangmax,
-        phi,lvraisemblance,
-        n,p,m,k,L);
-	
-	free(brPi);
-	free(brRho);
-	free(brX);
-	free(brY);
-	free(brA1);
+		Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax,
+		pPhi,pLvraisemblance,
+		n,p,m,k,L);
 
-	//post-processing: convert by-rows outputs to MATLAB matrices
-	Real* mlPhi = brToMatlabArray_real(phi, dimPhi, 4);
-	copyArray(mlPhi, phi, dimPhi[0]*dimPhi[1]*dimPhi[2]*dimPhi[3]);
-	free(mlPhi);
-	
-	Real* mlLvraisemblance = brToMatlabArray_real(lvraisemblance, dimLvraisemblance, 2);
-	copyArray(mlLvraisemblance, lvraisemblance, dimLvraisemblance[0]*dimLvraisemblance[1]);
-	free(mlLvraisemblance);
+	// Build list from OUT params and return it
+	SEXP listParams, listNames;
+	PROTECT(listParams = allocVector(VECSXP, 2));
+	char* lnames[2] = {"phi", "lvraisemblance"}; //lists labels
+	PROTECT(listNames = allocVector(STRSXP,2));
+	for (int i=0; i<2; i++)
+		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
+	setAttrib(listParams, R_NamesSymbol, listNames);
+	SET_ARRAY_ELT(listParams, 0, phi);
+	SET_VECTOR_ELT(listParams, 1, lvraisemblance);
 
+	UNPROTECT(5);
+	return listParams;
 }

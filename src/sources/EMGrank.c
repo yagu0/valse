@@ -2,30 +2,29 @@
 #include <gsl/gsl_linalg.h>
 
 // Compute pseudo-inverse of a square matrix
-static Real* pinv(const Real* matrix, mwSize dim)
+static double* pinv(const double* matrix, int dim)
 {
 	gsl_matrix* U = gsl_matrix_alloc(dim,dim);
 	gsl_matrix* V = gsl_matrix_alloc(dim,dim);
 	gsl_vector* S = gsl_vector_alloc(dim);
 	gsl_vector* work = gsl_vector_alloc(dim);
-	Real EPS = 1e-10; //threshold for singular value "== 0"
+	double EPS = 1e-10; //threshold for singular value "== 0"
 	
 	//copy matrix into U
-	for (mwSize i=0; i<dim*dim; i++)
-		U->data[i] = matrix[i];
-	
+	copyArray(matrix, U->data, dim*dim);
+
 	//U,S,V = SVD of matrix
 	gsl_linalg_SV_decomp(U, V, S, work);
 	gsl_vector_free(work);
-	
+
 	// Obtain pseudo-inverse by V*S^{-1}*t(U)
-	Real* inverse = (Real*)malloc(dim*dim*sizeof(Real));
-	for (mwSize i=0; i<dim; i++)
+	double* inverse = (double*)malloc(dim*dim*sizeof(double));
+	for (int i=0; i<dim; i++)
 	{
-		for (mwSize ii=0; ii<dim; ii++)
+		for (int ii=0; ii<dim; ii++)
 		{
-			Real dotProduct = 0.0;
-			for (mwSize j=0; j<dim; j++)
+			double dotProduct = 0.0;
+			for (int j=0; j<dim; j++)
 				dotProduct += V->data[i*dim+j] * (S->data[j] > EPS ? 1.0/S->data[j] : 0.0) * U->data[ii*dim+j];
 			inverse[i*dim+ii] = dotProduct;
 		}
@@ -40,39 +39,39 @@ static Real* pinv(const Real* matrix, mwSize dim)
 // TODO: comment EMGrank purpose
 void EMGrank(
 	// IN parameters
-	const Real* Pi,          // parametre de proportion
-	const Real* Rho,         // parametre initial de variance renormalisé
-	Int mini,            // nombre minimal d'itérations dans l'algorithme EM        
-	Int maxi,            // nombre maximal d'itérations dans l'algorithme EM
-	const Real* X,           // régresseurs
-	const Real* Y,           // réponse
-	Real tau,          // seuil pour accepter la convergence
-	const Int* rank,           // vecteur des rangs possibles
+	const double* Pi, // parametre de proportion
+	const double* Rho, // parametre initial de variance renormalisé
+	int mini, // nombre minimal d'itérations dans l'algorithme EM
+	int maxi, // nombre maximal d'itérations dans l'algorithme EM
+	const double* X, // régresseurs
+	const double* Y, // réponse
+	double tau, // seuil pour accepter la convergence
+	const int* rank, // vecteur des rangs possibles
 	// OUT parameters
-	Real* phi,         // parametre de moyenne renormalisé, calculé par l'EM
-	Real* LLF,         // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
+	double* phi, // parametre de moyenne renormalisé, calculé par l'EM
+	double* LLF, // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
 	// additional size parameters
-	mwSize n,               // taille de l'echantillon                
-	mwSize p,               // nombre de covariables
-	mwSize m,               // taille de Y (multivarié)
-	mwSize k)              // nombre de composantes
+	int n, // taille de l'echantillon
+	int p, // nombre de covariables
+	int m, // taille de Y (multivarié)
+	int k) // nombre de composantes
 {
 	// Allocations, initializations
-	Real* Phi = (Real*)calloc(p*m*k,sizeof(Real));
-	Real* hatBetaR = (Real*)malloc(p*m*sizeof(Real));
+	double* Phi = (double*)calloc(p*m*k,sizeof(double));
+	double* hatBetaR = (double*)malloc(p*m*sizeof(double));
 	int signum;
-	Real invN = 1.0/n;
+	double invN = 1.0/n;
 	int deltaPhiBufferSize = 20;
-	Real* deltaPhi = (Real*)malloc(deltaPhiBufferSize*sizeof(Real));
-	mwSize ite = 0;
-	Real sumDeltaPhi = 0.0;
-	Real* YiRhoR = (Real*)malloc(m*sizeof(Real));
-	Real* XiPhiR = (Real*)malloc(m*sizeof(Real));
-	Real* Xr = (Real*)malloc(n*p*sizeof(Real));
-	Real* Yr = (Real*)malloc(n*m*sizeof(Real));
-	Real* tXrXr = (Real*)malloc(p*p*sizeof(Real));
-	Real* tXrYr = (Real*)malloc(p*m*sizeof(Real));
-	gsl_matrix* matrixM = gsl_matrix_alloc(p, m);        
+	double* deltaPhi = (double*)malloc(deltaPhiBufferSize*sizeof(double));
+	int ite = 0;
+	double sumDeltaPhi = 0.0;
+	double* YiRhoR = (double*)malloc(m*sizeof(double));
+	double* XiPhiR = (double*)malloc(m*sizeof(double));
+	double* Xr = (double*)malloc(n*p*sizeof(double));
+	double* Yr = (double*)malloc(n*m*sizeof(double));
+	double* tXrXr = (double*)malloc(p*p*sizeof(double));
+	double* tXrYr = (double*)malloc(p*m*sizeof(double));
+	gsl_matrix* matrixM = gsl_matrix_alloc(p, m);
 	gsl_matrix* matrixE = gsl_matrix_alloc(m, m);
 	gsl_permutation* permutation = gsl_permutation_alloc(m);
 	gsl_matrix* V = gsl_matrix_alloc(m,m);
@@ -80,158 +79,158 @@ void EMGrank(
 	gsl_vector* work = gsl_vector_alloc(m);
 
 	//Initialize class memberships (all elements in class 0; TODO: randomize ?)
-	Int* Z = (Int*)calloc(n, sizeof(Int));
+	int* Z = (int*)calloc(n, sizeof(int));
 
 	//Initialize phi to zero, because some M loops might exit before phi affectation
-	for (mwSize i=0; i<p*m*k; i++)
+	for (int i=0; i<p*m*k; i++)
 		phi[i] = 0.0;
 
 	while (ite<mini || (ite<maxi && sumDeltaPhi>tau))
-	{		
+	{
 		/////////////
 		// Etape M //
 		/////////////
 		
 		//M step: Mise à jour de Beta (et donc phi)
-		for (mwSize r=0; r<k; r++)
+		for (int r=0; r<k; r++)
 		{
 			//Compute Xr = X(Z==r,:) and Yr = Y(Z==r,:)
-			mwSize cardClustR=0;
-			for (mwSize i=0; i<n; i++)
+			int cardClustR=0;
+			for (int i=0; i<n; i++)
 			{
 				if (Z[i] == r)
 				{
-					for (mwSize j=0; j<p; j++)
-						Xr[cardClustR*p+j] = X[i*p+j];
-					for (mwSize j=0; j<m; j++)
-						Yr[cardClustR*m+j] = Y[i*m+j];
+					for (int j=0; j<p; j++)
+						Xr[mi(cardClustR,j,n,p)] = X[mi(i,j,n,p)];
+					for (int j=0; j<m; j++)
+						Yr[mi(cardClustR,j,n,m)] = Y[mi(i,j,n,m)];
 					cardClustR++;
 				}
 			}
-			if (cardClustR == 0) 
+			if (cardClustR == 0)
 				continue;
 
 			//Compute tXrXr = t(Xr) * Xr
-			for (mwSize j=0; j<p; j++)
+			for (int j=0; j<p; j++)
 			{
-				for (mwSize jj=0; jj<p; jj++)
+				for (int jj=0; jj<p; jj++)
 				{
-					Real dotProduct = 0.0;
-					for (mwSize u=0; u<cardClustR; u++)
-						dotProduct += Xr[u*p+j] * Xr[u*p+jj];
-					tXrXr[j*p+jj] = dotProduct;
+					double dotProduct = 0.0;
+					for (int u=0; u<cardClustR; u++)
+						dotProduct += Xr[mi(u,j,n,p)] * Xr[mi(u,jj,n,p)];
+					tXrXr[mi(j,jj,p,p)] = dotProduct;
 				}
 			}
 
 			//Get pseudo inverse = (t(Xr)*Xr)^{-1}
-			Real* invTXrXr = pinv(tXrXr, p);
+			double* invTXrXr = pinv(tXrXr, p);
 			
 			// Compute tXrYr = t(Xr) * Yr
-			for (mwSize j=0; j<p; j++)
+			for (int j=0; j<p; j++)
 			{
-				for (mwSize jj=0; jj<m; jj++)
+				for (int jj=0; jj<m; jj++)
 				{
-					Real dotProduct = 0.0;
-					for (mwSize u=0; u<cardClustR; u++)
-						dotProduct += Xr[u*p+j] * Yr[u*m+jj];
-					tXrYr[j*m+jj] = dotProduct;
+					double dotProduct = 0.0;
+					for (int u=0; u<cardClustR; u++)
+						dotProduct += Xr[mi(u,j,n,p)] * Yr[mi(u,j,n,m)];
+					tXrYr[mi(j,jj,p,m)] = dotProduct;
 				}
 			}
 
 			//Fill matrixM with inverse * tXrYr = (t(Xr)*Xr)^{-1} * t(Xr) * Yr
-			for (mwSize j=0; j<p; j++)
+			for (int j=0; j<p; j++)
 			{
-				for (mwSize jj=0; jj<m; jj++)
+				for (int jj=0; jj<m; jj++)
 				{
-					Real dotProduct = 0.0;
-					for (mwSize u=0; u<p; u++)
-						dotProduct += invTXrXr[j*p+u] * tXrYr[u*m+jj];
-					matrixM->data[j*m+jj] = dotProduct;	
+					double dotProduct = 0.0;
+					for (int u=0; u<p; u++)
+						dotProduct += invTXrXr[mi(j,u,p,p)] * tXrYr[mi(u,jj,p,m)];
+					matrixM->data[j*m+jj] = dotProduct;
 				}
 			}
 			free(invTXrXr);
-			
+
 			//U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
 			gsl_linalg_SV_decomp(matrixM, V, S, work);
-			
-			//Set m-rank(r) singular values to zero, and recompose 
+
+			//Set m-rank(r) singular values to zero, and recompose
 			//best rank(r) approximation of the initial product
-			for (mwSize j=rank[r]; j<m; j++)
+			for (int j=rank[r]; j<m; j++)
 				S->data[j] = 0.0;
 			
 			//[intermediate step] Compute hatBetaR = U * S * t(V)
-			Real* U = matrixM->data;
-			for (mwSize j=0; j<p; j++)
+			double* U = matrixM->data;
+			for (int j=0; j<p; j++)
 			{
-				for (mwSize jj=0; jj<m; jj++)
+				for (int jj=0; jj<m; jj++)
 				{
-					Real dotProduct = 0.0;
-					for (mwSize u=0; u<m; u++) 
+					double dotProduct = 0.0;
+					for (int u=0; u<m; u++)
 						dotProduct += U[j*m+u] * S->data[u] * V->data[jj*m+u];
-					hatBetaR[j*m+jj] = dotProduct;
+					hatBetaR[mi(j,jj,p,m)] = dotProduct;
 				}
 			}
- 
+
 			//Compute phi(:,:,r) = hatBetaR * Rho(:,:,r)
-			for (mwSize j=0; j<p; j++)
+			for (int j=0; j<p; j++)
 			{
-				for (mwSize jj=0; jj<m; jj++)
+				for (int jj=0; jj<m; jj++)
 				{
-					Real dotProduct=0.0;
-					for (mwSize u=0; u<m; u++)
-						dotProduct += hatBetaR[j*m+u] * Rho[u*m*k+jj*k+r];
-					phi[j*m*k+jj*k+r] = dotProduct;
+					double dotProduct=0.0;
+					for (int u=0; u<m; u++)
+						dotProduct += hatBetaR[mi(j,u,p,m)] * Rho[ai(u,jj,r,m,m,k)];
+					phi[ai(j,jj,r,p,m,k)] = dotProduct;
 				}
-		    }
+		}
 		}
 
 		/////////////
 		// Etape E //
 		/////////////
 		
-		Real sumLogLLF2 = 0.0;
-		for (mwSize i=0; i<n; i++)
+		double sumLogLLF2 = 0.0;
+		for (int i=0; i<n; i++)
 		{
-			Real sumLLF1 = 0.0;
-			Real maxLogGamIR = -INFINITY;
-			for (mwSize r=0; r<k; r++)
+			double sumLLF1 = 0.0;
+			double maxLogGamIR = -INFINITY;
+			for (int r=0; r<k; r++)
 			{
 				//Compute
 				//Gam(i,r) = Pi(r) * det(Rho(:,:,r)) * exp( -1/2 * (Y(i,:)*Rho(:,:,r) - X(i,:)...
-				//    *phi(:,:,r)) * transpose( Y(i,:)*Rho(:,:,r) - X(i,:)*phi(:,:,r) ) );
+				//*phi(:,:,r)) * transpose( Y(i,:)*Rho(:,:,r) - X(i,:)*phi(:,:,r) ) );
 				//split in several sub-steps
 				
 				//compute det(Rho(:,:,r)) [TODO: avoid re-computations]
-				for (mwSize j=0; j<m; j++)
+				for (int j=0; j<m; j++)
 				{
-					for (mwSize jj=0; jj<m; jj++)
-						matrixE->data[j*m+jj] = Rho[j*m*k+jj*k+r];
+					for (int jj=0; jj<m; jj++)
+						matrixE->data[j*m+jj] = Rho[ai(j,jj,r,m,m,k)];
 				}
 				gsl_linalg_LU_decomp(matrixE, permutation, &signum);
-				Real detRhoR = gsl_linalg_LU_det(matrixE, signum);
-				
+				double detRhoR = gsl_linalg_LU_det(matrixE, signum);
+
 				//compute Y(i,:)*Rho(:,:,r)
-				for (mwSize j=0; j<m; j++)
+				for (int j=0; j<m; j++)
 				{
 					YiRhoR[j] = 0.0;
-					for (mwSize u=0; u<m; u++)
-						YiRhoR[j] += Y[i*m+u] * Rho[u*m*k+j*k+r];
+					for (int u=0; u<m; u++)
+						YiRhoR[j] += Y[mi(i,u,n,m)] * Rho[ai(u,j,r,m,m,k)];
 				}
-				
+
 				//compute X(i,:)*phi(:,:,r)
-				for (mwSize j=0; j<m; j++)
+				for (int j=0; j<m; j++)
 				{
 					XiPhiR[j] = 0.0;
-					for (mwSize u=0; u<p; u++)
-						XiPhiR[j] += X[i*p+u] * phi[u*m*k+j*k+r];
+					for (int u=0; u<p; u++)
+						XiPhiR[j] += X[mi(i,u,n,p)] * phi[ai(u,j,r,p,m,k)];
 				}
-				
+
 				//compute dotProduct < Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) . Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) >
-				Real dotProduct = 0.0;
-				for (mwSize u=0; u<m; u++)
+				double dotProduct = 0.0;
+				for (int u=0; u<m; u++)
 					dotProduct += (YiRhoR[u]-XiPhiR[u]) * (YiRhoR[u]-XiPhiR[u]);
-				Real logGamIR = log(Pi[r]) + log(detRhoR) - 0.5*dotProduct;
-				
+				double logGamIR = log(Pi[r]) + log(detRhoR) - 0.5*dotProduct;
+
 				//Z(i) = index of max (gam(i,:))
 				if (logGamIR > maxLogGamIR)
 				{
@@ -240,23 +239,23 @@ void EMGrank(
 				}
 				sumLLF1 += exp(logGamIR) / pow(2*M_PI,m/2.0);
 			}
-			
+
 			sumLogLLF2 += log(sumLLF1);
 		}
-		
+
 		// Assign output variable LLF
 		*LLF = -invN * sumLogLLF2;
 
 		//newDeltaPhi = max(max((abs(phi-Phi))./(1+abs(phi))));
-		Real newDeltaPhi = 0.0;
-		for (mwSize j=0; j<p; j++)
+		double newDeltaPhi = 0.0;
+		for (int j=0; j<p; j++)
 		{
-			for (mwSize jj=0; jj<m; jj++)
+			for (int jj=0; jj<m; jj++)
 			{
-				for (mwSize r=0; r<k; r++)
+				for (int r=0; r<k; r++)
 				{
-					Real tmpDist = fabs(phi[j*m*k+jj*k+r]-Phi[j*m*k+jj*k+r]) 
-						/ (1.0+fabs(phi[j*m*k+jj*k+r]));
+					double tmpDist = fabs(phi[ai(j,jj,r,p,m,k)]-Phi[ai(j,jj,r,p,m,k)])
+						/ (1.0+fabs(phi[ai(j,jj,r,p,m,k)]));
 					if (tmpDist > newDeltaPhi)
 						newDeltaPhi = tmpDist;
 				}
@@ -277,17 +276,17 @@ void EMGrank(
 		sumDeltaPhi += newDeltaPhi;
 
 		// update other local variables
-		for (mwSize j=0; j<m; j++)
+		for (int j=0; j<m; j++)
 		{
-			for (mwSize jj=0; jj<p; jj++)
+			for (int jj=0; jj<p; jj++)
 			{
-				for (mwSize r=0; r<k; r++)
-					Phi[j*m*k+jj*k+r] = phi[j*m*k+jj*k+r];
+				for (int r=0; r<k; r++)
+					Phi[ai(j,jj,r,p,m,k)] = phi[ai(j,jj,r,p,m,k)];
 			}
 		}
-        ite++;
+		ite++;
 	}
-	
+
 	//free memory
 	free(hatBetaR);
 	free(deltaPhi);
@@ -304,5 +303,5 @@ void EMGrank(
 	free(Yr);
 	free(tXrXr);
 	free(tXrYr);
-    free(Z);
+	free(Z);
 }

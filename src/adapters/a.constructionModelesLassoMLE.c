@@ -1,142 +1,92 @@
-#include "ioutils.h"
-#include "constructionModelesLassoMLE.h"
-#include <mex.h>
+#include <R.h>
+#include <Rdefines.h>
+#include "sources/EMGLLF.h"
 
-#include <stdio.h>
-
-// nlhs, nrhs: resp. numbers of out and in parameters.
-// plhs: array of out parameters, each being a mxArray
-// plhs: array of in parameters (immutable), each being a mxArray
-//
-// MATLAB translates a call [A,B] = fun(C,D) into mexFunction(2,{A,B},2,{C,D}). 
-// Then mxArrayS are adapted to be passed to a regular C function, 
-// and the results are translated back to mxArrayS into plhs.
-void mexFunction(
-	int nlhs, 
-	mxArray* plhs[],
-	int nrhs, 
-	const mxArray* prhs[])
-{
-	// Basic sanity checks
-	if (nrhs!=14) 
-		mexErrMsgIdAndTxt("select:constructionModelesLassoMLE:nrhs","14 inputs required.");
-	if (nlhs!=4) 
-		mexErrMsgIdAndTxt("select:constructionModelesLassoMLE:nlhs","4 outputs required.");
-
+SEXP EMGLLF(
+	SEXP phiInit_,
+	SEXP rhoInit_,
+	SEXP piInit_,
+	SEXP gamInit_,
+	SEXP mini_,
+	SEXP maxi_,
+	SEXP gamma_,
+	SEXP glambda_,
+	SEXP X_,
+	SEXP Y_,
+	SEXP seuil_,
+	SEXP tau_,
+	SEXP A1_,
+	SEXP A2_
+) {
 	// Get matrices dimensions
-	const mwSize n = mxGetDimensions(prhs[8])[0];
-	const mwSize p = mxGetDimensions(prhs[0])[0];
-	const mwSize m = mxGetDimensions(prhs[0])[1];
-	const mwSize k = mxGetDimensions(prhs[0])[2];
-	const mwSize L = mxGetNumberOfElements(prhs[7]);
-	
+	int n = INTEGER(getAttrib(X_, R_DimSymbol))[0];
+	SEXP dim = getAttrib(phiInit_, R_DimSymbol)
+	int p = INTEGER(dim)[0];
+	int m = INTEGER(dim)[1];
+	int k = INTEGER(dim)[2];
+	int L = INTEGER(getAttrib(glambda_, R_LengthSymbol))[0];
+
 	////////////
 	// INPUTS //
 	////////////
 
-	// phiInit
-	const mwSize* dimPhiInit = mxGetDimensions(prhs[0]);
-	Real* brPhiInit = matlabToBrArray_real(mxGetPr(prhs[0]), dimPhiInit, 3);
-	
-	// rhoInit
-	const mwSize* dimRhoInit = mxGetDimensions(prhs[1]);
-	Real* brRhoInit = matlabToBrArray_real(mxGetPr(prhs[1]), dimRhoInit, 3);
+	// get scalar parameters
+	int mini = INTEGER_VALUE(mini_);
+	int maxi = INTEGER_VALUE(maxi_);
+	double gamma = NUMERIC_VALUE(gamma_);
+	double seuil = NUMERIC_VALUE(seuil_);
+	double tau = NUMERIC_VALUE(tau_);
 
-	// piInit
-	Real* piInit = mxGetPr(prhs[2]);
+	// Get pointers from SEXP arrays ; WARNING: by columns !
+	double* phiInit = REAL(phiInit_);
+	double* rhoInit = REAL(rhoInit_);
+	double* piInit = REAL(piInit_);
+	double* gamInit = REAL(gamInit_);
+	double* glambda = REAL(glambda_);
+	double* X = REAL(X_);
+	double* Y = REAL(Y_);
+	double* A1 = REAL(A1_);
+	double* A2 = REAL(A2_);
 
-	// gamInit
-	const mwSize* dimGamInit = mxGetDimensions(prhs[3]);
-	Real* brGamInit = matlabToBrArray_real(mxGetPr(prhs[3]), dimGamInit, 2);
-
-	// min number of iterations
-	Int mini = ((Int*)mxGetData(prhs[4]))[0];
-
-	// max number of iterations
-	Int maxi = ((Int*)mxGetData(prhs[5]))[0];
-
-	// gamma
-	Real gamma = mxGetScalar(prhs[6]);
-
-	// glambda
-	Real* glambda = mxGetPr(prhs[7]);
-
-	// X
-	const mwSize* dimX = mxGetDimensions(prhs[8]);
-	Real* brX = matlabToBrArray_real(mxGetPr(prhs[8]), dimX, 2);
-
-	// Y
-	const mwSize* dimY = mxGetDimensions(prhs[9]);
-	Real* brY = matlabToBrArray_real(mxGetPr(prhs[9]), dimY, 2);
-	
-	//seuil
-	Real seuil = mxGetScalar(prhs[10]);
-
-	// tau
-	Real tau = mxGetScalar(prhs[11]);
-	
-	// A1
-	const mwSize* dimA = mxGetDimensions(prhs[12]);
-	Int* brA1 = matlabToBrArray_int(mxGetData(prhs[12]), dimA, 3);
-	
-	// A2
-	Int* brA2 = matlabToBrArray_int(mxGetData(prhs[13]), dimA, 3);
-	
 	/////////////
 	// OUTPUTS //
 	/////////////
-	
-	// phi
-	const mwSize dimPhi[] = {dimPhiInit[0], dimPhiInit[1], dimPhiInit[2], L};
-	plhs[0] = mxCreateNumericArray(4,dimPhi,mxDOUBLE_CLASS,mxREAL);
-	Real* phi = mxGetPr(plhs[0]);
-	
-	// rho
-	const mwSize dimRho[] = {dimRhoInit[0], dimRhoInit[1], dimRhoInit[2], L};
-	plhs[1] = mxCreateNumericArray(4,dimRho,mxDOUBLE_CLASS,mxREAL);
-	Real* rho = mxGetPr(plhs[1]);
 
-	// pi
-	const mwSize dimPi[] = {k, L};
-	plhs[2] = mxCreateNumericMatrix(dimPi[0],dimPi[1],mxDOUBLE_CLASS,mxREAL);
-	Real* pi = mxGetPr(plhs[2]);
-
-	// lvraisemblance
-	const mwSize dimLvraisemblance[] = {L, 2};
-	plhs[3] = mxCreateNumericMatrix(L, 2, mxDOUBLE_CLASS,mxREAL);
-	Real* lvraisemblance = mxGetPr(plhs[3]);
+	SEXP phi, rho, pi, lvraisemblance, dimPhi, dimRho;
+	PROTECT(dimPhi = allocVector(INTSXP, 4));
+	int* pDimPhi = INTEGER(dimPhi);
+	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k; pDimPhi[3] = L;
+	PROTECT(dimRho = allocVector(INTSXP, 4));
+	int* pDimRho = INTEGER(dimRho);
+	pDimRho[0] = m; pDimRho[1] = m; pDimRho[2] = k; pDimRho[3] = L;
+	PROTECT(phi = allocArray(REALSXP, dimPhi));
+	PROTECT(rho = allocArray(REALSXP, dimRho));
+	PROTECT(pi = allocMatrix(REALSXP, k, L));
+	PROTECT(lvraisemblance = allocMatrix(REALSXP, L, 2));
+	double* pPhi=REAL(phi), pRho=REAL(rho), pPi=REAL(pi), pLvraisemblance=REAL(lvraisemblance);
 
 	/////////////////////////////////////////
 	// Call to constructionModelesLassoMLE //
 	/////////////////////////////////////////
 
 	constructionModelesLassoMLE(
-		brPhiInit,brRhoInit,piInit,brGamInit,mini,maxi,gamma,glambda,brX,brY,seuil,tau,brA1,brA2,
-		phi,rho,pi,lvraisemblance,
+		phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2,
+		pPhi,pRho,pPi,pLvraisemblance,
 		n,p,m,k,L);
-	
-	free(brPhiInit);
-	free(brRhoInit);
-	free(brGamInit);
-	free(brX);
-	free(brY);
-	free(brA1);
-	free(brA2);
-	
-	//post-processing: convert by-rows outputs to MATLAB matrices
-	Real* mlPhi = brToMatlabArray_real(phi, dimPhi, 4);
-	copyArray(mlPhi, phi, dimPhi[0]*dimPhi[1]*dimPhi[2]*dimPhi[3]);
-	free(mlPhi);
-	
-	Real* mlRho = brToMatlabArray_real(rho, dimRho, 4);
-	copyArray(mlRho, rho, dimRho[0]*dimRho[1]*dimRho[2]*dimRho[3]);
-	free(mlRho);
 
-	Real* mlPi = brToMatlabArray_real(pi, dimPi, 2);
-	copyArray(mlPi, pi, dimPi[0]*dimPi[1]);
-	free(mlPi);
+	// Build list from OUT params and return it
+	SEXP listParams, listNames;
+	PROTECT(listParams = allocVector(VECSXP, 4));
+	char* lnames[4] = {"phi", "rho", "pi", "lvraisemblance}; //lists labels
+	PROTECT(listNames = allocVector(STRSXP,4));
+	for (int i=0; i<4; i++)
+		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
+	setAttrib(listParams, R_NamesSymbol, listNames);
+	SET_ARRAY_ELT(listParams, 0, phi);
+	SET_ARRAY_ELT(listParams, 1, rho);
+	SET_MATRIX_ELT(listParams, 2, pi);
+	SET_VECTOR_ELT(listParams, 3, lvraisemblance);
 
-	Real* mlLvraisemblance = brToMatlabArray_real(lvraisemblance, dimLvraisemblance, 2);
-	copyArray(mlLvraisemblance, lvraisemblance, dimLvraisemblance[0]*dimLvraisemblance[1]);
-	free(mlLvraisemblance);
+	UNPROTECT(8);
+	return listParams;
 }
