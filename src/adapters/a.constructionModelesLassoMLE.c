@@ -77,7 +77,7 @@ SEXP EMGLLF(
 	// Build list from OUT params and return it
 	SEXP listParams, listNames;
 	PROTECT(listParams = allocVector(VECSXP, 4));
-	char* lnames[4] = {"phi", "rho", "pi", "lvraisemblance}; //lists labels
+	char* lnames[4] = {"phi", "rho", "pi", "lvraisemblance"}; //lists labels
 	PROTECT(listNames = allocVector(STRSXP,4));
 	for (int i=0; i<4; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
