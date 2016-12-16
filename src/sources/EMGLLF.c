@@ -1,31 +1,32 @@
-#include "EMGLLF.h"
+#include "utils.h"
+#include <stdlib.h>
 #include <gsl/gsl_linalg.h>
 
 // TODO: don't recompute indexes every time......
 void EMGLLF(
 	// IN parameters
-	const double* phiInit,  // parametre initial de moyenne renormalisé
-	const double* rhoInit,  // parametre initial de variance renormalisé
-	const double* piInit,   // parametre initial des proportions
-	const double* gamInit,  // paramètre initial des probabilités a posteriori de chaque échantillon
-	int mini,      // nombre minimal d'itérations dans l'algorithme EM
-	int maxi,      // nombre maximal d'itérations dans l'algorithme EM
-	double gamma,  // valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
+	const double* phiInit, // parametre initial de moyenne renormalisé
+	const double* rhoInit, // parametre initial de variance renormalisé
+	const double* piInit,	 // parametre initial des proportions
+	const double* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
+	int mini, // nombre minimal d'itérations dans l'algorithme EM
+	int maxi, // nombre maximal d'itérations dans l'algorithme EM
+	double gamma, // puissance des proportions dans la pénalisation pour un Lasso adaptatif
 	double lambda, // valeur du paramètre de régularisation du Lasso
-	const double* X,     // régresseurs
-	const double* Y,     // réponse
-	double tau,    // seuil pour accepter la convergence
+	const double* X, // régresseurs
+	const double* Y, // réponse
+	double tau, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
-	double* phi,  // parametre de moyenne renormalisé, calculé par l'EM
-	double* rho,  // parametre de variance renormalisé, calculé par l'EM
-	double* pi,   // parametre des proportions renormalisé, calculé par l'EM
-	double* LLF,   // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
-    double* S,
+	double* phi, // parametre de moyenne renormalisé, calculé par l'EM
+	double* rho, // parametre de variance renormalisé, calculé par l'EM
+	double* pi, // parametre des proportions renormalisé, calculé par l'EM
+	double* LLF, // log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
+	double* S,
 	// additional size parameters
-	int n,         // nombre d'echantillons
-	int p,         // nombre de covariables
-	int m,         // taille de Y (multivarié)
-	int k)         // nombre de composantes dans le mélange
+	int n, // nombre d'echantillons
+	int p, // nombre de covariables
+	int m, // taille de Y (multivarié)
+	int k) // nombre de composantes dans le mélange
 {
 	//Initialize outputs
 	copyArray(phiInit, phi, p*m*k);
@@ -174,7 +175,8 @@ void EMGLLF(
 		double prodGam2logPi2 = 0.;
 		for (int v=0; v<k; v++)
 			prodGam2logPi2 += gam2[v] * log(pi2[v]);
-		while (-invN*a + lambda*piPowGammaDotB < -invN*prodGam2logPi2 + lambda*pi2PowGammaDotB && kk<1000)
+		while (-invN*a + lambda*piPowGammaDotB < -invN*prodGam2logPi2 + lambda*pi2PowGammaDotB
+			&& kk<1000)
 		{
 			//pi2=pi+0.1^kk*(1/n*gam2-pi);
 			for (int v=0; v<k; v++)
@@ -223,7 +225,7 @@ void EMGLLF(
 					sumNy21 += nY21[ai(u,mm,r,n,m,k)];
 				nY2[mi(mm,r,m,k)] = sumNy21;
 				//rho(mm,mm,r)=((ps(mm,r)+sqrt(ps(mm,r)^2+4*nY2(mm,r)*(gam2(r))))/(2*nY2(mm,r)));
-				rho[ai(mm,mm,k,m,m,k)] = ( ps[mi(mm,r,m,k)] + sqrt( ps[mi(mm,r,m,k)]*ps[mi(mm,r,m,k)] 
+				rho[ai(mm,mm,k,m,m,k)] = ( ps[mi(mm,r,m,k)] + sqrt( ps[mi(mm,r,m,k)]*ps[mi(mm,r,m,k)]
 					+ 4*nY2[mi(mm,r,m,k)] * (gam2[r]) ) ) / (2*nY2[mi(mm,r,m,k)]);
 			}
 		}
@@ -233,22 +235,23 @@ void EMGLLF(
 			{
 				for (int mm=0; mm<m; mm++)
 				{
-					//sum(phi(1:j-1,mm,r).*transpose(Gram2(j,1:j-1,r)))+sum(phi(j+1:p,mm,r).*transpose(Gram2(j,j+1:p,r)))
+					//sum(phi(1:j-1,mm,r).*transpose(Gram2(j,1:j-1,r)))+sum(phi(j+1:p,mm,r)
+					// .*transpose(Gram2(j,j+1:p,r)))
 					double dotPhiGram2 = 0.0;
 					for (int u=0; u<j; u++)
 						dotPhiGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
 					for (int u=j+1; u<p; u++)
 						dotPhiGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
 					//S(j,r,mm)=-rho(mm,mm,r)*ps2(j,mm,r)+sum(phi(1:j-1,mm,r).*transpose(Gram2(j,1:j-1,r)))
-					//    +sum(phi(j+1:p,mm,r).*transpose(Gram2(j,j+1:p,r)));
+					//		+sum(phi(j+1:p,mm,r).*transpose(Gram2(j,j+1:p,r)));
 					S[ai(j,mm,r,p,m,k)] = -rho[ai(mm,mm,r,m,m,k)] * ps2[ai(j,mm,r,p,m,k)] + dotPhiGram2;
 					if (fabs(S[ai(j,mm,r,p,m,k)]) <= n*lambda*pow(pi[r],gamma))
 						phi[ai(j,mm,r,p,m,k)] = 0;
 					else if (S[ai(j,mm,r,p,m,k)] > n*lambda*pow(pi[r],gamma))
-						phi[ai(j,mm,r,p,m,k)] = (n*lambda*pow(pi[r],gamma) - S[ai(j,mm,r,p,m,k)]) 
+						phi[ai(j,mm,r,p,m,k)] = (n*lambda*pow(pi[r],gamma) - S[ai(j,mm,r,p,m,k)])
 							/ Gram2[ai(j,j,r,p,p,k)];
 					else
-						phi[ai(j,mm,r,p,m,k)] = -(n*lambda*pow(pi[r],gamma) + S[ai(j,mm,r,p,m,k)]) 
+						phi[ai(j,mm,r,p,m,k)] = -(n*lambda*pow(pi[r],gamma) + S[ai(j,mm,r,p,m,k)])
 							/ Gram2[ai(j,j,r,p,p,k)];
 				}
 			}
@@ -270,7 +273,7 @@ void EMGLLF(
 			{
 				//Compute
 				//Gam(i,r) = Pi(r) * det(Rho(:,:,r)) * exp( -1/2 * (Y(i,:)*Rho(:,:,r) - X(i,:)...
-				//    *phi(:,:,r)) * transpose( Y(i,:)*Rho(:,:,r) - X(i,:)*phi(:,:,r) ) );
+				//		*phi(:,:,r)) * transpose( Y(i,:)*Rho(:,:,r) - X(i,:)*phi(:,:,r) ) );
 				//split in several sub-steps
 				
 				//compute Y(i,:)*rho(:,:,r)
@@ -289,7 +292,8 @@ void EMGLLF(
 						XiPhiR[u] += X[mi(i,v,n,p)] * phi[ai(v,u,r,p,m,k)];
 				}
 
-				// compute dotProduct < Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) . Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) >
+				//compute dotProduct
+				// < Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) . Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) >
 				dotProducts[r] = 0.0;
 				for (int u=0; u<m; u++)
 					dotProducts[r] += (YiRhoR[u]-XiPhiR[u]) * (YiRhoR[u]-XiPhiR[u]);

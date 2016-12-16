@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rdefines.h>
-#include "sources/EMGLLF.h"
+#include "EMGLLF.h"
 
 SEXP EMGLLF(
 	SEXP phiInit_,
@@ -17,7 +17,7 @@ SEXP EMGLLF(
 ) {
 	// Get matrices dimensions
 	int n = INTEGER(getAttrib(X_, R_DimSymbol))[0];
-	SEXP dim = getAttrib(phiInit_, R_DimSymbol)
+	SEXP dim = getAttrib(phiInit_, R_DimSymbol);
 	int p = INTEGER(dim)[0];
 	int m = INTEGER(dim)[1];
 	int k = INTEGER(dim)[2];
@@ -57,7 +57,7 @@ SEXP EMGLLF(
 	PROTECT(pi = allocVector(REALSXP, k));
 	PROTECT(LLF = allocVector(REALSXP, maxi-mini+1));
 	PROTECT(S = allocArray(REALSXP, dimPhiS));
-	double* pPhi=REAL(phi), pRho=REAL(rho), pPi=REAL(pi), pLLF=REAL(LLF), pS=REAL(S);
+	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLLF=REAL(LLF), *pS=REAL(S);
 
 	////////////////////
 	// Call to EMGLLF //

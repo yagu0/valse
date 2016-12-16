@@ -1,29 +1,27 @@
-#ifndef select_constructionModelesLassoRank_H
-#define select_constructionModelesLassoRank_H
-
-#include "ioutils.h"
+#ifndef valse_constructionModelesLassoRank_H
+#define valse_constructionModelesLassoRank_H
 
 // Main job on raw inputs (after transformation from mxArray)
 void constructionModelesLassoRank(
-	// IN parameters 
-	const Real* Pi,
-	const Real* Rho,
-	Int mini,
-	Int maxi,
-	const Real* X,
-	const Real* Y,
-	Real tau,
-	const Int* A1,
-	Int rangmin,
-	Int rangmax,
+	// IN parameters
+	const double* Pi,
+	const double* Rho,
+	int mini,
+	int maxi,
+	const double* X,
+	const double* Y,
+	double tau,
+	const int* A1,
+	int rangmin,
+	int rangmax,
 	// OUT parameters
-	Real* phi,
-    Real* lvraisemblance,
-    // additional size parameters
-	mwSize n,         
-	mwSize p,
-	mwSize m,
-	mwSize k,
-	mwSize L);
+	double* phi,
+	double* lvraisemblance,
+	// additional size parameters
+	int n,
+	int p,
+	int m,
+	int k,
+	int L);
 
 #endif

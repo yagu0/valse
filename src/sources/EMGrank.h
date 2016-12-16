@@ -1,25 +1,23 @@
-#ifndef select_EMGrank_H
-#define select_EMGrank_H
-
-#include "ioutils.h"
+#ifndef valse_EMGrank_H
+#define valse_EMGrank_H
 
 void EMGrank(
 	// IN parameters
-	const Real* Pi,
-	const Real* Rho,
-	Int mini,    
-	Int maxi,
-	const Real* X,
-	const Real* Y,
-	Real tau,
-	const Int* rank,
+	const double* Pi,
+	const double* Rho,
+	int mini,
+	int maxi,
+	const double* X,
+	const double* Y,
+	double tau,
+	const int* rank,
 	// OUT parameters
-	Real* phi,
-	Real* LLF,
+	double* phi,
+	double* LLF,
 	// additional size parameters
-	mwSize n,       
-	mwSize p,
-	mwSize m,
-	mwSize k);
+	int n,
+	int p,
+	int m,
+	int k);
 
 #endif

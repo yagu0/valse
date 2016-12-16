@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rdefines.h>
-#include "sources/EMGLLF.h"
+#include "selectiontotale.h"
 
 SEXP EMGLLF(
 	SEXP phiInit_,
@@ -20,7 +20,7 @@ SEXP EMGLLF(
 	SEXP dimX = getAttrib(X_, R_DimSymbol);
 	int n = INTEGER(dimX)[0];
 	int p = INTEGER(dimX)[1];
-	SEXP dimRho = getAttrib(rhoInit_, R_DimSymbol)
+	SEXP dimRho = getAttrib(rhoInit_, R_DimSymbol);
 	int m = INTEGER(dimRho)[0];
 	int k = INTEGER(dimRho)[2];
 	int L = INTEGER(getAttrib(glambda_, R_LengthSymbol))[0];
@@ -58,7 +58,7 @@ SEXP EMGLLF(
 	PROTECT(A2 = allocArray(REALSXP, dimA));
 	PROTECT(rho = allocArray(REALSXP, dimRho);
 	PROTECT(pi = allocMatrix(REALSXP, k, L));
-	double* pA1=REAL(A1), pA2=REAL(A2), pRho=REAL(rho), pPi=REAL(pi);
+	double *pA1=REAL(A1), *pA2=REAL(A2), *pRho=REAL(rho), *pPi=REAL(pi);
 
 	/////////////////////////////
 	// Call to selectiontotale //

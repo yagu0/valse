@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rdefines.h>
-#include "sources/EMGLLF.h"
+#include "EMGrank.h"
 
 SEXP EMGLLF(
 	SEXP Pi_,
@@ -16,7 +16,7 @@ SEXP EMGLLF(
 	SEXP dimX = getAttrib(X_, R_DimSymbol);
 	int n = INTEGER(dimX)[0];
 	int p = INTEGER(dimX)[1];
-	SEXP dimRho = getAttrib(Rho_, R_DimSymbol)
+	SEXP dimRho = getAttrib(Rho_, R_DimSymbol);
 	int m = INTEGER(dimRho)[0];
 	int k = INTEGER(dimRho)[2];
 
@@ -46,7 +46,7 @@ SEXP EMGLLF(
 	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k;
 	PROTECT(phi = allocArray(REALSXP, dimPhi));
 	PROTECT(LLF = allocVector(REALSXP, 1));
-	double* pPhi=REAL(phi), pLLF=REAL(LLF);
+	double *pPhi=REAL(phi), *pLLF=REAL(LLF);
 
 	/////////////////////
 	// Call to EMGrank //

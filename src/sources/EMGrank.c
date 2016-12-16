@@ -1,5 +1,6 @@
-#include "EMGrank.h"
+#include <stdlib.h>
 #include <gsl/gsl_linalg.h>
+#include "utils.h"
 
 // Compute pseudo-inverse of a square matrix
 static double* pinv(const double* matrix, int dim)
@@ -82,8 +83,7 @@ void EMGrank(
 	int* Z = (int*)calloc(n, sizeof(int));
 
 	//Initialize phi to zero, because some M loops might exit before phi affectation
-	for (int i=0; i<p*m*k; i++)
-		phi[i] = 0.0;
+	zeroArray(phi, p*m*k);
 
 	while (ite<mini || (ite<maxi && sumDeltaPhi>tau))
 	{

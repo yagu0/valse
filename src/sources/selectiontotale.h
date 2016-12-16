@@ -1,33 +1,31 @@
-#ifndef select_selectiontotale_H
-#define select_selectiontotale_H
-
-#include "ioutils.h"
+#ifndef valse_selectiontotale_H
+#define valse_selectiontotale_H
 
 // Main job on raw inputs (after transformation from mxArray)
 void selectiontotale(
-	// IN parameters 
-	const Real* phiInit,
-	const Real* rhoInit,
-	const Real* piInit,
-	const Real* gamInit,
-	Int mini,
-	Int maxi,
-	Real gamma,
-	const Real* glambda,
-	const Real* X,
-	const Real* Y,
-	Real seuil,
-	Real tau,
+	// IN parameters
+	const double* phiInit,
+	const double* rhoInit,
+	const double* piInit,
+	const double* gamInit,
+	int mini,
+	int maxi,
+	double gamma,
+	const double* glambda,
+	const double* X,
+	const double* Y,
+	double seuil,
+	double tau,
 	// OUT parameters
-	Int* A1,
-	Int* A2,
-	Real* Rho,
-	Real* Pi,
+	int* A1,
+	int* A2,
+	double* Rho,
+	double* Pi,
 	// additional size parameters
-	mwSize n,    
-	mwSize p,
-	mwSize m,
-	mwSize k,
-	mwSize L);
-		
+	int n,
+	int p,
+	int m,
+	int k,
+	int L);
+
 #endif

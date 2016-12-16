@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rdefines.h>
-#include "sources/EMGLLF.h"
+#include "constructionModelesLassoMLE.h"
 
 SEXP EMGLLF(
 	SEXP phiInit_,
@@ -20,7 +20,7 @@ SEXP EMGLLF(
 ) {
 	// Get matrices dimensions
 	int n = INTEGER(getAttrib(X_, R_DimSymbol))[0];
-	SEXP dim = getAttrib(phiInit_, R_DimSymbol)
+	SEXP dim = getAttrib(phiInit_, R_DimSymbol);
 	int p = INTEGER(dim)[0];
 	int m = INTEGER(dim)[1];
 	int k = INTEGER(dim)[2];
@@ -63,7 +63,7 @@ SEXP EMGLLF(
 	PROTECT(rho = allocArray(REALSXP, dimRho));
 	PROTECT(pi = allocMatrix(REALSXP, k, L));
 	PROTECT(lvraisemblance = allocMatrix(REALSXP, L, 2));
-	double* pPhi=REAL(phi), pRho=REAL(rho), pPi=REAL(pi), pLvraisemblance=REAL(lvraisemblance);
+	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLvraisemblance=REAL(lvraisemblance);
 
 	/////////////////////////////////////////
 	// Call to constructionModelesLassoMLE //

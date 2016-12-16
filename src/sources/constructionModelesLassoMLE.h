@@ -1,34 +1,32 @@
-#ifndef select_constructionModelesLassoMLE_H
-#define select_constructionModelesLassoMLE_H
-
-#include "ioutils.h"
+#ifndef valse_constructionModelesLassoMLE_H
+#define valse_constructionModelesLassoMLE_H
 
 void constructionModelesLassoMLE(
-	// IN parameters 
-	const Real* phiInit,
-	const Real* rhoInit,
-	const Real* piInit,
-	const Real* gamInit,
-	Int mini,
-	Int maxi,
-	Real gamma,
-	const Real* glambda,
-	const Real* X,
-	const Real* Y,
-	Real seuil,
-	Real tau,
-	const Int* A1,
-	const Int* A2,
+	// IN parameters
+	const double* phiInit,
+	const double* rhoInit,
+	const double* piInit,
+	const double* gamInit,
+	int mini,
+	int maxi,
+	double gamma,
+	const double* glambda,
+	const double* X,
+	const double* Y,
+	double seuil,
+	double tau,
+	const int* A1,
+	const int* A2,
 	// OUT parameters
-	Real* phi,
-    Real* rho,
-	Real* pi,
-    Real* lvraisemblance,
+	double* phi,
+	double* rho,
+	double* pi,
+	double* lvraisemblance,
 	// additional size parameters
-	mwSize n,
-	mwSize p,
-	mwSize m,
-	mwSize k,
-	mwSize L);
+	int n,
+	int p,
+	int m,
+	int k,
+	int L);
 
 #endif

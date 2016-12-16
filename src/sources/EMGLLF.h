@@ -1,31 +1,29 @@
-#ifndef select_EMGLLF_H
-#define select_EMGLLF_H
-
-#include "ioutils.h"
+#ifndef valse_EMGLLF_H
+#define valse_EMGLLF_H
 
 void EMGLLF(
 	// IN parameters
-	const Real* phiInit,
-	const Real* rhoInit,
-	const Real* piInit,
-	const Real* gamInit,
-	Int mini,
-	Int maxi,
-	Real gamma,
-	Real lambda,
-	const Real* X,
-	const Real* Y,
-	Real tau,
+	const double* phiInit,
+	const double* rhoInit,
+	const double* piInit,
+	const double* gamInit,
+	int mini,
+	int maxi,
+	double gamma,
+	double lambda,
+	const double* X,
+	const double* Y,
+	double tau,
 	// OUT parameters
-	Real* phi,
-	Real* rho,
-	Real* pi,
-	Real* LLF,
-	Real* S,
+	double* phi,
+	double* rho,
+	double* pi,
+	double* LLF,
+	double* S,
 	// additional size parameters
-	mwSize n, 
-	mwSize p, 
-	mwSize m, 
-	mwSize k);
+	int n,
+	int p,
+	int m,
+	int k);
 
 #endif

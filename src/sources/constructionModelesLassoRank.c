@@ -1,8 +1,8 @@
-#include "EMGrank.h"
-#include "constructionModelesLassoRank.h"
-#include <gsl/gsl_linalg.h>
+#include <stdlib.h>
 #include <omp.h>
-#include "omp_num_threads.h"
+#include <gsl/gsl_linalg.h>
+#include "EMGrank.h"
+#include "utils.h"
 
 // TODO: comment on constructionModelesLassoRank purpose
 void constructionModelesLassoRank(

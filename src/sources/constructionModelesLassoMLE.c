@@ -1,8 +1,8 @@
 #include "EMGLLF.h"
-#include "constructionModelesLassoMLE.h"
+#include "utils.h"
+#include <stdlib.h>
 #include <gsl/gsl_linalg.h>
 #include <omp.h>
-#include "omp_num_threads.h"
 
 // TODO: comment on constructionModelesLassoMLE purpose
 void constructionModelesLassoMLE(
