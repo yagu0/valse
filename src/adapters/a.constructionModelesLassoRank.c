@@ -2,7 +2,7 @@
 #include <Rdefines.h>
 #include "constructionModelesLassoRank.h"
 
-SEXP EMGLLF(
+SEXP constructionModelesLassoRank(
 	SEXP Pi_,
 	SEXP Rho_,
 	SEXP mini_,
@@ -58,7 +58,7 @@ SEXP EMGLLF(
 	// Call to constructionModelesLassoRank //
 	//////////////////////////////////////////
 
-	constructionModelesLassoRank(
+	constructionModelesLassoRank_core(
 		Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax,
 		pPhi,pLvraisemblance,
 		n,p,m,k,L);
@@ -71,7 +71,7 @@ SEXP EMGLLF(
 	for (int i=0; i<2; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
 	setAttrib(listParams, R_NamesSymbol, listNames);
-	SET_ARRAY_ELT(listParams, 0, phi);
+	SET_VECTOR_ELT(listParams, 0, phi);
 	SET_VECTOR_ELT(listParams, 1, lvraisemblance);
 
 	UNPROTECT(5);

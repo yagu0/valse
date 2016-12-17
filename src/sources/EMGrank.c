@@ -38,7 +38,7 @@ static double* pinv(const double* matrix, int dim)
 }
 
 // TODO: comment EMGrank purpose
-void EMGrank(
+void EMGrank_core(
 	// IN parameters
 	const double* Pi, // parametre de proportion
 	const double* Rho, // parametre initial de variance renormalisé

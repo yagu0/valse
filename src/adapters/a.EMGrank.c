@@ -2,7 +2,7 @@
 #include <Rdefines.h>
 #include "EMGrank.h"
 
-SEXP EMGLLF(
+SEXP EMGrank(
 	SEXP Pi_,
 	SEXP Rho_,
 	SEXP mini_,
@@ -34,13 +34,13 @@ SEXP EMGLLF(
 	double* Rho = REAL(Rho_);
 	double* X = REAL(X_);
 	double* Y = REAL(Y_);
-	double* rank = REAL(rank_);
+	int* rank = INTEGER(rank_);
 
 	/////////////
 	// OUTPUTS //
 	/////////////
 
-	SEXP phi, LLF;
+	SEXP phi, LLF, dimPhi;
 	PROTECT(dimPhi = allocVector(INTSXP, 3));
 	int* pDimPhi = INTEGER(dimPhi);
 	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k;
@@ -52,7 +52,7 @@ SEXP EMGLLF(
 	// Call to EMGrank //
 	/////////////////////
 
-	EMGrank(Pi, Rho, mini, maxi, X, Y, tau, rank,
+	EMGrank_core(Pi, Rho, mini, maxi, X, Y, tau, rank,
 		pPhi,pLLF,
 		n,p,m,k);
 
@@ -64,7 +64,7 @@ SEXP EMGLLF(
 	for (int i=0; i<2; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
 	setAttrib(listParams, R_NamesSymbol, listNames);
-	SET_ARRAY_ELT(listParams, 0, phi);
+	SET_VECTOR_ELT(listParams, 0, phi);
 	SET_VECTOR_ELT(listParams, 1, LLF);
 
 	UNPROTECT(5);

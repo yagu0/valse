@@ -2,7 +2,7 @@
 #include <Rdefines.h>
 #include "constructionModelesLassoMLE.h"
 
-SEXP EMGLLF(
+SEXP constructionModelesLassoMLE(
 	SEXP phiInit_,
 	SEXP rhoInit_,
 	SEXP piInit_,
@@ -24,7 +24,7 @@ SEXP EMGLLF(
 	int p = INTEGER(dim)[0];
 	int m = INTEGER(dim)[1];
 	int k = INTEGER(dim)[2];
-	int L = INTEGER(getAttrib(glambda_, R_LengthSymbol))[0];
+	int L = length(glambda_);
 
 	////////////
 	// INPUTS //
@@ -45,8 +45,8 @@ SEXP EMGLLF(
 	double* glambda = REAL(glambda_);
 	double* X = REAL(X_);
 	double* Y = REAL(Y_);
-	double* A1 = REAL(A1_);
-	double* A2 = REAL(A2_);
+	int* A1 = INTEGER(A1_);
+	int* A2 = INTEGER(A2_);
 
 	/////////////
 	// OUTPUTS //
@@ -69,7 +69,7 @@ SEXP EMGLLF(
 	// Call to constructionModelesLassoMLE //
 	/////////////////////////////////////////
 
-	constructionModelesLassoMLE(
+	constructionModelesLassoMLE_core(
 		phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2,
 		pPhi,pRho,pPi,pLvraisemblance,
 		n,p,m,k,L);
@@ -82,9 +82,9 @@ SEXP EMGLLF(
 	for (int i=0; i<4; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
 	setAttrib(listParams, R_NamesSymbol, listNames);
-	SET_ARRAY_ELT(listParams, 0, phi);
-	SET_ARRAY_ELT(listParams, 1, rho);
-	SET_MATRIX_ELT(listParams, 2, pi);
+	SET_VECTOR_ELT(listParams, 0, phi);
+	SET_VECTOR_ELT(listParams, 1, rho);
+	SET_VECTOR_ELT(listParams, 2, pi);
 	SET_VECTOR_ELT(listParams, 3, lvraisemblance);
 
 	UNPROTECT(8);

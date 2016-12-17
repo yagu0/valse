@@ -1,7 +1,7 @@
 #ifndef valse_EMGrank_H
 #define valse_EMGrank_H
 
-void EMGrank(
+void EMGrank_core(
 	// IN parameters
 	const double* Pi,
 	const double* Rho,

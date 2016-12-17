@@ -2,7 +2,7 @@
 #define valse_selectiontotale_H
 
 // Main job on raw inputs (after transformation from mxArray)
-void selectiontotale(
+void selectiontotale_core(
 	// IN parameters
 	const double* phiInit,
 	const double* rhoInit,

@@ -1,7 +1,7 @@
 #ifndef valse_EMGLLF_H
 #define valse_EMGLLF_H
 
-void EMGLLF(
+void EMGLLF_core(
 	// IN parameters
 	const double* phiInit,
 	const double* rhoInit,

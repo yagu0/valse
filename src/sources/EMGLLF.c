@@ -3,7 +3,7 @@
 #include <gsl/gsl_linalg.h>
 
 // TODO: don't recompute indexes every time......
-void EMGLLF(
+void EMGLLF_core(
 	// IN parameters
 	const double* phiInit, // parametre initial de moyenne renormalisé
 	const double* rhoInit, // parametre initial de variance renormalisé

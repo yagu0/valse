@@ -5,7 +5,7 @@
 #include "utils.h"
 
 // TODO: comment on constructionModelesLassoRank purpose
-void constructionModelesLassoRank(
+void constructionModelesLassoRank_core(
 	// IN parameters
 	const double* Pi,// parametre initial des proportions
 	const double* Rho, // parametre initial de variance renormalisé
@@ -96,10 +96,10 @@ for (int r=0; r<k; r++)
 				for (int v=0; v<m; v++)
 				{
 					for (int r=0; r<k; r++)
-						RhoLambda[ai(uu,v,r,m,m,k)] = Rho[ai4(u,v,r,lambdaIndex,m,m,k,L)];
+						RhoLambda[ai(u,v,r,m,m,k)] = Rho[ai4(u,v,r,lambdaIndex,m,m,k,L)];
 				}
 			}
-			EMGrank(PiLambda,RhoLambda,mini,maxi,Xactive,Y,tau,rank,
+			EMGrank_core(PiLambda,RhoLambda,mini,maxi,Xactive,Y,tau,rank,
 				phiLambda,&LLF,
 				n,longueurActive,m,k);
 			free(rank);

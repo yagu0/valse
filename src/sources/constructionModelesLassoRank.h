@@ -2,7 +2,7 @@
 #define valse_constructionModelesLassoRank_H
 
 // Main job on raw inputs (after transformation from mxArray)
-void constructionModelesLassoRank(
+void constructionModelesLassoRank_core(
 	// IN parameters
 	const double* Pi,
 	const double* Rho,

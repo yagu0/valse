@@ -5,7 +5,7 @@
 #include <omp.h>
 
 // TODO: comment on constructionModelesLassoMLE purpose
-void constructionModelesLassoMLE(
+void constructionModelesLassoMLE_core(
 	// IN parameters
 	const double* phiInit, // parametre initial de moyenne renormalisé
 	const double* rhoInit, // parametre initial de variance renormalisé
@@ -83,7 +83,7 @@ void constructionModelesLassoMLE(
 		double* piLambda = (double*)malloc(k*sizeof(double));
 		double* LLF = (double*)malloc((maxi+1)*sizeof(double));
 		double* S = (double*)malloc(lengthA*m*k*sizeof(double));
-		EMGLLF(phia,rhoInit,piInit,gamInit,mini,maxi,gamma,0.0,Xa,Y,tau,
+		EMGLLF_core(phia,rhoInit,piInit,gamInit,mini,maxi,gamma,0.0,Xa,Y,tau,
 			phiLambda,rhoLambda,piLambda,LLF,S,
 			n,lengthA,m,k);
 		free(Xa);
@@ -138,7 +138,7 @@ void constructionModelesLassoMLE(
 				for (int mm=0; mm<lengthB; mm++)
 				{
 					for (int r=0; r<k; r++)
-						phi[ai( A2[ai4(j,0,lambdaIndex,p,m+1,L)]-1, b[mm], r, lambdaIndex, p, m, k, L)] = 0.0;
+						phi[ai4( A2[ai(j,0,lambdaIndex,p,m+1,L)]-1, b[mm], r, lambdaIndex, p, m, k, L)] = 0.;
 				}
 			}
 

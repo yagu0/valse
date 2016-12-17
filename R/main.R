@@ -14,13 +14,13 @@ Valse = setRefClass(
 		# Optionally user defined (some default values)
 
 		# power in the penalty
-		gamma = "double",
+		gamma = "numeric",
 		# minimum number of iterations for EM algorithm
 		mini = "integer",
 		# maximum number of iterations for EM algorithm
 		maxi = "integer",
 		# threshold for stopping EM algorithm
-		eps = "double",
+		eps = "numeric",
 		# minimum number of components in the mixture
 		kmin = "integer",
 		# maximum number of components in the mixture
@@ -31,28 +31,28 @@ Valse = setRefClass(
 		# Computed through the workflow
 
 		# initialisation for the reparametrized conditional mean parameter
-		phiInit,
+		phiInit = "numeric",
 		# initialisation for the reparametrized variance parameter
-		rhoInit,
+		rhoInit = "numeric",
 		# initialisation for the proportions
-		piInit,
+		piInit = "numeric",
 		# initialisation for the allocations probabilities in each component
-		tauInit,
+		tauInit = "numeric",
 		# values for the regularization parameter grid
-		gridLambda = c(),
+		gridLambda = "numeric",
 		# je ne crois pas vraiment qu'il faille les mettre en sortie, d'autant plus qu'on construit
 		# une matrice A1 et A2 pour chaque k, et elles sont grandes, donc ca coute un peu cher ...
-		A1,
-		A2,
+		A1 = "integer",
+		A2 = "integer",
 		# collection of estimations for the reparametrized conditional mean parameters
-		Phi,
+		Phi = "numeric",
 		# collection of estimations for the reparametrized variance parameters
-		Rho,
+		Rho = "numeric",
 		# collection of estimations for the proportions parameters
-		Pi,
+		Pi = "numeric",
 
-		#immutable
-		seuil = 1e-15
+		#immutable (TODO:?)
+		seuil = "numeric"
 	),
 
 	methods = list(
@@ -75,6 +75,7 @@ Valse = setRefClass(
 			kmax <<- ifelse (hasArg("kmax"), kmax, as.integer(3))
 			rangmin <<- ifelse (hasArg("rangmin"), rangmin, as.integer(2))
 			rangmax <<- ifelse (hasArg("rangmax"), rangmax, as.integer(3))
+			seuil <<- 1e-15 #immutable (TODO:?)
 		},
 
 		##################################
@@ -160,22 +161,22 @@ Valse = setRefClass(
 					Pi2 = Pi
 					p = ncol(X)
 					m = ncol(Y)
-					if size(Phi2) == 0
+					if (is.null(dim(Phi2))) #test was: size(Phi2) == 0
 					{
-						Phi[,,1:k] = r1$phi
-						Rho[,,1:k] = r1$rho
-						Pi[1:k,] = r1$pi
+						Phi[,,1:k] <<- r1$phi
+						Rho[,,1:k] <<- r1$rho
+						Pi[1:k,] <<- r1$pi
 					} else
 					{
-						Phi = array(0., dim=c(p,m,kmax,dim(Phi2)[4]+dim(r1$phi)[4]))
-						Phi[,,1:(dim(Phi2)[3]),1:(dim(Phi2)[4])] = Phi2
-						Phi[,,1:k,dim(Phi2)[4]+1] = r1$phi
-						Rho = array(0., dim=c(m,m,kmax,dim(Rho2)[4]+dim(r1$rho)[4]))
-						Rho[,,1:(dim(Rho2)[3]),1:(dim(Rho2)[4])] = Rho2
-						Rho[,,1:k,dim(Rho2)[4]+1] = r1$rho
-						Pi = array(0., dim=c(kmax,dim(Pi2)[2]+dim(r1$pi)[2]))
-						Pi[1:nrow(Pi2),1:ncol(Pi2)] = Pi2
-						Pi[1:k,ncol(Pi2)+1] = r1$pi
+						Phi <<- array(0., dim=c(p,m,kmax,dim(Phi2)[4]+dim(r1$phi)[4]))
+						Phi[,,1:(dim(Phi2)[3]),1:(dim(Phi2)[4])] <<- Phi2
+						Phi[,,1:k,dim(Phi2)[4]+1] <<- r1$phi
+						Rho <<- array(0., dim=c(m,m,kmax,dim(Rho2)[4]+dim(r1$rho)[4]))
+						Rho[,,1:(dim(Rho2)[3]),1:(dim(Rho2)[4])] <<- Rho2
+						Rho[,,1:k,dim(Rho2)[4]+1] <<- r1$rho
+						Pi <<- array(0., dim=c(kmax,dim(Pi2)[2]+dim(r1$pi)[2]))
+						Pi[1:nrow(Pi2),1:ncol(Pi2)] <<- Pi2
+						Pi[1:k,ncol(Pi2)+1] <<- r1$pi
 					}
 				} else
 				{
@@ -183,14 +184,12 @@ Valse = setRefClass(
 					Phi2 = Phi
 					if (dim(Phi2)[1] == 0)
 					{
-						Phi(:,:,1:k,:) = phi
+						Phi[,,1:k,] <<- phi
 					} else
 					{
-						size(Phi2)
-						Phi = zeros(p,m,kmax,size(Phi2,4)+size(phi,4))
-						size(Phi)
-						Phi(:,:,1:size(Phi2,3),1:size(Phi2,4)) = Phi2
-						Phi(:,:,1:k,size(Phi2,4)+1:end) = phi
+						Phi <<- array(0., dim=c(p,m,kmax,dim(Phi2)[4]+dim(phi)[4]))
+						Phi[,,1:(dim(Phi2)[3]),1:(dim(Phi2)[4])] <<- Phi2
+						Phi[,,1:k,-(1:(dim(Phi2)[4]))] <<- phi
 					}
 				}
 			}

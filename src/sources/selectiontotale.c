@@ -4,7 +4,7 @@
 #include "utils.h"
 
 // Main job on raw inputs (after transformation from mxArray)
-void selectiontotale(
+void selectiontotale_core(
 	// IN parameters
 	const double* phiInit, // parametre initial de moyenne renormalisé
 	const double* rhoInit, // parametre initial de variance renormalisé

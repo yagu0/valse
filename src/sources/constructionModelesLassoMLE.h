@@ -1,7 +1,7 @@
 #ifndef valse_constructionModelesLassoMLE_H
 #define valse_constructionModelesLassoMLE_H
 
-void constructionModelesLassoMLE(
+void constructionModelesLassoMLE_core(
 	// IN parameters
 	const double* phiInit,
 	const double* rhoInit,

@@ -63,7 +63,7 @@ SEXP EMGLLF(
 	// Call to EMGLLF //
 	////////////////////
 
-	EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
+	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
 		pPhi,pRho,pPi,pLLF,pS,
 		n,p,m,k);
 
@@ -75,11 +75,11 @@ SEXP EMGLLF(
 	for (int i=0; i<5; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
 	setAttrib(listParams, R_NamesSymbol, listNames);
-	SET_ARRAY_ELT(listParams, 0, phi);
-	SET_ARRAY_ELT(listParams, 1, rho);
-	SET_MATRIX_ELT(listParams, 2, pi);
+	SET_VECTOR_ELT(listParams, 0, phi);
+	SET_VECTOR_ELT(listParams, 1, rho);
+	SET_VECTOR_ELT(listParams, 2, pi);
 	SET_VECTOR_ELT(listParams, 3, LLF);
-	SET_ARRAY_ELT(listParams, 4, S);
+	SET_VECTOR_ELT(listParams, 4, S);
 
 	UNPROTECT(9);
 	return listParams;
