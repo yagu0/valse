@@ -281,7 +281,7 @@ void EMGLLF_core(
 				{
 					YiRhoR[u] = 0.0;
 					for (int v=0; v<m; v++)
-						YiRhoR[u] += Y[imi(i,v,n,m)] * rho[ai(v,u,r,m,m,k)];
+						YiRhoR[u] += Y[mi(i,v,n,m)] * rho[ai(v,u,r,m,m,k)];
 				}
 
 				//compute X(i,:)*phi(:,:,r)

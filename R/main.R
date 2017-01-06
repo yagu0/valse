@@ -6,10 +6,10 @@ Valse = setRefClass(
 
 		# regression data (size n*p, where n is the number of observations,
 		# and p is the number of regressors)
-		X = "numeric",
+		X = "matrix",
 		# response data (size n*m, where n is the number of observations,
 		# and m is the number of responses)
-		Y = "numeric",
+		Y = "matrix",
 
 		# Optionally user defined (some default values)
 

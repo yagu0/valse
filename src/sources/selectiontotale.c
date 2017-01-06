@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <omp.h>
+#include <math.h>
 #include "EMGLLF.h"
 #include "utils.h"
 
@@ -55,7 +56,7 @@ void selectiontotale_core(
 		double* pi = (double*)malloc(k*sizeof(double));
 		double* LLF = (double*)malloc(maxi*sizeof(double));
 		double* S = (double*)malloc(p*m*k*sizeof(double));
-		EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau,
+		EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau,
 			phi,rho,pi,LLF,S,
 			n,p,m,k);
 		free(LLF);
