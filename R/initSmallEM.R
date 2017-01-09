@@ -58,7 +58,7 @@ initSmallEM = function(k,X,Y,tau)
 		miniInit = 10
 		maxiInit = 11
 		
-		new_EMG = .Call("EMGLLF",phiInit1[,,,repet],rhoInit1[,,,repet],piInit1[repet,],
+		new_EMG = .Call("EMGLLF_core",phiInit1[,,,repet],rhoInit1[,,,repet],piInit1[repet,],
 										gamInit1[,,repet],miniInit,maxiInit,1,0,X,Y,tau)
 		LLFEessai = new_EMG$LLF
 		LLFinit1[repet] = LLFEessai[length(LLFEessai)]
