@@ -14,7 +14,7 @@ the second column corresponds to the dimensions of the corresponding models.}
 }
 \value{
 a list with indices, a vector of indices selected models, 
-        and D1, a vector of corresponding dimensions
+			 and D1, a vector of corresponding dimensions
 }
 \description{
 Among a collection of models, this function constructs a subcollection of models with

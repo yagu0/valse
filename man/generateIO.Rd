@@ -7,9 +7,9 @@
 generateIO(covX, covY, pi, beta, n)
 }
 \arguments{
-\item{covX}{covariance for covariates}
+\item{covX}{covariance for covariates (of size p*p*K)}
 
-\item{covY}{covariance for the response vector}
+\item{covY}{covariance for the response vector (of size m*m*K)}
 
 \item{pi}{proportion for each cluster}
 

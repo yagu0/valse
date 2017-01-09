@@ -3,7 +3,7 @@
 \name{basic_Init_Parameters}
 \alias{basic_Init_Parameters}
 \title{Initialize the parameters in a basic way (zero for the conditional mean,
- uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)}
+uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)}
 \usage{
 basic_Init_Parameters(n, p, m, k)
 }
@@ -21,6 +21,6 @@ list with phiInit, rhoInit,piInit,gamInit
 }
 \description{
 Initialize the parameters in a basic way (zero for the conditional mean,
- uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)
+uniform for weights, identity for covariance matrices, and uniformly distributed forthe clustering)
 }
 

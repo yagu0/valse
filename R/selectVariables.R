@@ -15,10 +15,11 @@
 #' @param thres	 threshold to consider a coefficient to be equal to 0
 #' @param tau		 threshold to say that EM algorithm has converged
 #'
-#' @return
-#' @export
+#' @return TODO
 #'
-#' @examples
+#' @examples TODO
+#'
+#' @export
 selectVariables <- function(phiInit,rhoInit,piInit,gamInit,
 	mini,maxi,gamma,glambda,X,Y,thres,tau)
 {

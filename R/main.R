@@ -1,3 +1,5 @@
+#' @useDynLib valse
+
 Valse = setRefClass(
 	Class = "Valse",
 

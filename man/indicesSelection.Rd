@@ -2,7 +2,7 @@
 % Please edit documentation in R/indicesSelection.R
 \name{indicesSelection}
 \alias{indicesSelection}
-\title{Construct the set of relevant indices}
+\title{Construct the set of relevant indices -> ED: je crois que cette fonction n'est pas utile}
 \usage{
 indicesSelection(phi, thresh = 1e-06)
 }
@@ -13,9 +13,9 @@ indicesSelection(phi, thresh = 1e-06)
 }
 \value{
 a list with A, a matrix with relevant indices (size = p*m) and B, a 
-         matrix with irrelevant indices (size = p*m)
+				matrix with irrelevant indices (size = p*m)
 }
 \description{
-Construct the set of relevant indices
+Construct the set of relevant indices -> ED: je crois que cette fonction n'est pas utile
 }
 

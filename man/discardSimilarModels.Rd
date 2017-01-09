@@ -19,7 +19,7 @@ discardSimilarModels(B1, B2, glambda, rho, pi)
 }
 \value{
 a list with update B1, B2, glambda, rho and pi, and ind the vector of indices
- of selected models.
+of selected models.
 }
 \description{
 Discard models which have the same relevant variables
