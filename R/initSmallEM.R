@@ -37,9 +37,9 @@ initSmallEM = function(k,X,Y,tau)
 			Z_vec = Z_bin$vec #vecteur 0 et 1 aux endroits o? Z==r
 			Z_indice = Z_bin$indice #renvoit les indices o? Z==r
 			
-			betaInit1[,,r,repet] = ginv(t(X[Z_indice,])%*%X[Z_indice,])%*%t(X[Z_indice,])%*%Y[Z_indice,]
+			betaInit1[,,r,repet] = ginv(t(X[Z_indice,])*X[Z_indice,])%*%t(X[Z_indice,])%*%Y[Z_indice,]
 			sigmaInit1[,,r,repet] = diag(m)
-			phiInit1[,,r,repet] = betaInit1[,,r,repet]#/sigmaInit1[,,r,repet]
+			phiInit1[,,r,repet] = betaInit1[,,r,repet]/sigmaInit1[,,r,repet]
 			rhoInit1[,,r,repet] = solve(sigmaInit1[,,r,repet])
 			piInit1[repet,r] = sum(Z_vec)/n
 		}
@@ -48,7 +48,7 @@ initSmallEM = function(k,X,Y,tau)
 		{
 			for(r in 1:k)
 			{
-				dotProduct = 3 #(Y[i,]%*%rhoInit1[,,r,repet]-X[i,]%*%phiInit1[,,r,repet]) %*% (Y[i,]%*%rhoInit1[,,r,repet]-X[i,]%*%phiInit1[,,r,repet])
+				dotProduct = 3 * (Y[i,]%*%rhoInit1[,,r,repet]-X[i,]%*%phiInit1[,,r,repet]) %*% (Y[i,]%*%rhoInit1[,,r,repet]-X[i,]%*%phiInit1[,,r,repet])
 				Gam[i,r] = piInit1[repet,r]*det(rhoInit1[,,r,repet])*exp(-0.5*dotProduct)
 			}
 			sumGamI = sum(Gam[i,])
