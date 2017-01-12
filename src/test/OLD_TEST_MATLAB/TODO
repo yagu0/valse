@@ -1,3 +1,4 @@
-1) transformer les .m en .R
-2) sauvegarder les résultats + entrée/sorties à partir du code R uniquement,
+1) transformer les .m en .R : toute la partie "R-only" du package "valse"
+   est utilisable si besoin
+2) sauvegarder les résultats + entrées/sorties à partir du code R uniquement,
    dans le dossier src/test/data (** sous forme de vecteurs, sep=" " **)
