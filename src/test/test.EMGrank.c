@@ -4,62 +4,62 @@
 int main(int argc, char** argv)
 {
 	// read dimensions
-	const Int nbDims = 4;
-	Int* dimensions = readArray_int("dimensions",&nbDims,1);
-	mwSize n = dimensions[0];
-	mwSize p = dimensions[1];
-	mwSize m = dimensions[2];
-	mwSize k = dimensions[3];
+	const int nbDims = 4;
+	int* dimensions = readArray_int("dimensions",&nbDims,1);
+	int n = dimensions[0];
+	int p = dimensions[1];
+	int m = dimensions[2];
+	int k = dimensions[3];
 	free(dimensions);
-	mwSize lengthOne = 1;
+	int lengthOne = 1;
 
 	////////////
 	// INPUTS //
 	////////////
 
 	// Rho
-	const mwSize dimRho[] = {m, m, k};
-	Real* Rho = readArray_real("Rho",dimRho,3);
+	const int dimRho[] = {m, m, k};
+	float* Rho = readArray_real("Rho",dimRho,3);
 
 	// Pi
-	Real* Pi = readArray_real("Pi",&k,1);
+	float* Pi = readArray_real("Pi",&k,1);
 
 	// min number of iterations
-	Int* pmini = readArray_int("mini",&lengthOne,1);
-	Int mini = *pmini;
+	int* pmini = readArray_int("mini",&lengthOne,1);
+	int mini = *pmini;
 	free(pmini);
 
 	// max number of iterations
-	Int* pmaxi = readArray_int("maxi",&lengthOne,1);
-	Int maxi = *pmaxi;
+	int* pmaxi = readArray_int("maxi",&lengthOne,1);
+	int maxi = *pmaxi;
 	free(pmaxi);
 
 	// X
-	const mwSize dimX[] = {n, p};
-	Real* X = readArray_real("X",dimX, 2);
+	const int dimX[] = {n, p};
+	float* X = readArray_real("X",dimX, 2);
 
 	// Y
-	const mwSize dimY[] = {n, m};
-	Real* Y = readArray_real("Y",dimY, 2);
+	const int dimY[] = {n, m};
+	float* Y = readArray_real("Y",dimY, 2);
 
 	// tau
-	Real* ptau = readArray_real("tau",&lengthOne,1);
-	Real tau = *ptau;
+	float* ptau = readArray_real("tau",&lengthOne,1);
+	float tau = *ptau;
 	free(ptau);
 
 	// tau
-	Int* rank = readArray_int("rank",&k,1);
+	int* rank = readArray_int("rank",&k,1);
 
 	/////////////
 	// OUTPUTS //
 	/////////////
 
 	// phi
-	const mwSize dimPhi[] = {p, m, k};
-	Real* phi = (Real*)malloc(dimPhi[0]*dimPhi[1]*dimPhi[2]*sizeof(Real));
+	const int dimPhi[] = {p, m, k};
+	float* phi = (float*)malloc(dimPhi[0]*dimPhi[1]*dimPhi[2]*sizeof(float));
 
 	// LLF
-	Real* LLF = (Real*)malloc(1*sizeof(Real));
+	float* LLF = (float*)malloc(1*sizeof(float));
 
 	//////////////////////////
 	// Main call to EMGrank //
@@ -77,13 +77,13 @@ int main(int argc, char** argv)
 	free(rank);
 	
 	// Compare to reference outputs
-	Real* ref_phi = readArray_real("phi",dimPhi, 3);
+	float* ref_phi = readArray_real("phi",dimPhi, 3);
 	compareArray_real("phi", phi, ref_phi, dimPhi[0]*dimPhi[1]*dimPhi[2]);
 	free(phi);
 	free(ref_phi);
 	
 	// LLF
-	Real* ref_LLF = readArray_real("LLF",&lengthOne,1);
+	float* ref_LLF = readArray_real("LLF",&lengthOne,1);
 	compareArray_real("LLF", LLF, ref_LLF, 1);
 	free(LLF);
 	free(ref_LLF);

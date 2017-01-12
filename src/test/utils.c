@@ -1,15 +1,15 @@
 // Check if array == refArray
 void compareArray(const char* ID, const void* array, const void* refArray, int size,
-	int isInteger)
+	int isinteger)
 {
-	Real EPS = 1e-5; //precision
+	float EPS = 1e-5; //precision
 	printf("Checking %s\n",ID);
-	Real maxError = 0.0;
-	for (mwSize i=0; i<size; i++)
+	float maxError = 0.0;
+	for (int i=0; i<size; i++)
 	{
-		Real error = isInteger
-			? fabs(((Int*)array)[i] - ((Int*)refArray)[i])
-			: fabs(((Real*)array)[i] - ((Real*)refArray)[i]);
+		float error = isinteger
+			? fabs(((int*)array)[i] - ((int*)refArray)[i])
+			: fabs(((float*)array)[i] - ((float*)refArray)[i]);
 		if (error >= maxError)
 			maxError = error;
 	}
@@ -30,52 +30,77 @@ void compareArray_int(const char* ID, const void* array, const void* refArray, i
 }
 
 // Read array by columns (as in MATLAB) and return by-rows encoding
-void* readArray(const char* fileName, int isInteger)
+void* readArray(const char* fileName, int isinteger)
 {
 	// need to prepend '../data/' (not really nice code...)
-	char* fullFileName = (char*)calloc(5+strlen(fileName)+1,sizeof(char));
+	char* fullFileName = (char*)calloc(5+strlen(fileName)+1, sizeof(char));
 	strcat(fullFileName, "data/");
 	strcat(fullFileName, fileName);
+
+	// first pass to know how many elements to allocate
+	char* command = (char*)calloc(12+strlen(fullFileName)+8+1, sizeof(char));
+	strcat(command, "grep -o ' ' ");
+	strcat(command, fullFileName);
+	strcat(command, " | wc -l");
+	FILE *countSpaces = popen(command, "r");
+	char* buffer = (char*)calloc(32, sizeof(char));
+	fgets(buffer, sizeof(buffer), command);
+	int n = atoi(buffer) + 1;
+	free(buffer);
+	pclose(countSpaces);
+
+	// open file for reading
 	FILE* file = fopen(fullFileName, "r");
 	free(fullFileName);
 
-	// first pass to know how many elements to allocate
-	// /////................... TODO
-
 	int d = 1;
-	for (int i=0; i<nbDims; i++)
-		totalDim *= dimensions[i];
-	size_t elementSize = isInteger
-		? sizeof(Int)
-		: sizeof(Real);
-	
+	size_t elementSize = isinteger
+		? sizeof(int)
+		: sizeof(float);
+
 	// read all values, and convert them to by-rows matrices format
-	void* matlabArray = malloc(totalDim*elementSize);
+	void* array = malloc(n*elementSize);
 	char curChar = ' ';
 	char bufferNum[64];
-	for (mwSize u=0; u<totalDim; u++)
+	for (int u=0; u<n; u++)
 	{
-		// position to next non-separator character
-		while (!feof(file) && (curChar==' ' || curChar=='\n' || curChar=='\t' || curChar==','))
-			curChar = fgetc(file);
 		// read number (as a string)
 		int bufferIndex = 0;
-		while (!feof(file) && curChar!=' ' && curChar!='\n' && curChar!='\t' && curChar!=',')
+		while (!feof(file) && curChar!=' ')
 		{
-			bufferNum[bufferIndex++] = curChar;
 			curChar = fgetc(file);
+			bufferNum[bufferIndex++] = curChar;
 		}
 		bufferNum[bufferIndex] = 0;
-		// transform string into Real, and store it at appropriate location
-		if (isInteger)
-			((Int*)matlabArray)[u] = atoi(bufferNum);
+		// transform string into float, and store it at appropriate location
+		if (isinteger)
+			((int*)array)[u] = atoi(bufferNum);
 		else
-			((Real*)matlabArray)[u] = atof(bufferNum);
+			((float*)array)[u] = atof(bufferNum);
+		// position to next non-separator character
+		curChar = fgetc(file);
 	}
 	fclose(file);
-	
-	void* brArray = matlabToBrArray(matlabArray, dimensions, nbDims, isInteger);
-	free(matlabArray);
-	return brArray;
+
+	return array;
 }
 
+int* readArray_int(const char* fileName)
+{
+	return (int*)readArray(fileName, 1);
+}
+
+float* readArray_real(const char* fileName)
+{
+	return (int*)readArray(fileName, 0);
+}
+
+int read_int(const char* fileName)
+{
+	return readArray_int(fileName)[0];
+}
+
+float read_real(const char* fileName)
+{
+	return readArray_real(fileName)[0];
+}
