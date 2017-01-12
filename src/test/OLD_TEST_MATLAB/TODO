@@ -1,4 +1,3 @@
 1) transformer les .m en .R
-2) sauvegarder les résultats + entrée/sorties à partir du code R uniquement
-3) dans test.Truc.c, prendre en entrée les paramètres de data/ juste sauvegardés,
-   puis comparer les sorties aux sorties enregistrées
+2) sauvegarder les résultats + entrée/sorties à partir du code R uniquement,
+   dans le dossier src/test/data (** sous forme de vecteurs, sep=" " **)

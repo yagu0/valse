@@ -1,3 +1,8 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
 // Check if array == refArray
 void compareArray(const char* ID, const void* array, const void* refArray, int size,
 	int isinteger)
@@ -44,7 +49,7 @@ void* readArray(const char* fileName, int isinteger)
 	strcat(command, " | wc -l");
 	FILE *countSpaces = popen(command, "r");
 	char* buffer = (char*)calloc(32, sizeof(char));
-	fgets(buffer, sizeof(buffer), command);
+	fgets(buffer, sizeof(buffer), countSpaces);
 	int n = atoi(buffer) + 1;
 	free(buffer);
 	pclose(countSpaces);
@@ -92,7 +97,7 @@ int* readArray_int(const char* fileName)
 
 float* readArray_real(const char* fileName)
 {
-	return (int*)readArray(fileName, 0);
+	return (float*)readArray(fileName, 0);
 }
 
 int read_int(const char* fileName)

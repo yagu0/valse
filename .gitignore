@@ -1,4 +1,5 @@
+#global ignores
 .Rhistory
 .RData
-*.o
-*.so
+*.swp
+*~

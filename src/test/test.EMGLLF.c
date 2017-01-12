@@ -68,8 +68,8 @@ int main(int argc, char** argv)
 	free(pi);
 	free(ref_pi);
 
-	float* ref_LLF = readArray_real("LLF", maxi);
-	compareArray_real("LLF", LLF, ref_LLF);
+	float* ref_LLF = readArray_real("LLF");
+	compareArray_real("LLF", LLF, ref_LLF, maxi);
 	free(LLF);
 	free(ref_LLF);
 

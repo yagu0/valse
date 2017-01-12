@@ -7,19 +7,19 @@
 // TODO: comment on constructionModelesLassoRank purpose
 void constructionModelesLassoRank_core(
 	// IN parameters
-	const double* Pi,// parametre initial des proportions
-	const double* Rho, // parametre initial de variance renormalisé
+	const float* Pi,// parametre initial des proportions
+	const float* Rho, // parametre initial de variance renormalisé
 	int mini, // nombre minimal d'itérations dans l'algorithme EM
 	int maxi, // nombre maximal d'itérations dans l'algorithme EM
-	const double* X,// régresseurs
-	const double* Y,// réponse
-	double tau, // seuil pour accepter la convergence
+	const float* X,// régresseurs
+	const float* Y,// réponse
+	float tau, // seuil pour accepter la convergence
 	const int* A1, // matrice des coefficients des parametres selectionnes
 	int rangmin,	//rang minimum autorisé
 	int rangmax,	//rang maximum autorisé
 	// OUT parameters (all pointers, to be modified)
-	double* phi,// estimateur ainsi calculé par le Lasso
-	double* lvraisemblance,// estimateur ainsi calculé par le Lasso
+	float* phi,// estimateur ainsi calculé par le Lasso
+	float* lvraisemblance,// estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n,// taille de l'echantillon
 	int p,// nombre de covariables
@@ -73,24 +73,24 @@ for (int r=0; r<k; r++)
 			continue;
 
 		//from now on, longueurActive > 0
-		double* phiLambda = (double*)malloc(longueurActive*m*k*sizeof(double));
-		double LLF;
+		float* phiLambda = (float*)malloc(longueurActive*m*k*sizeof(float));
+		float LLF;
 		for (int j=0; j<Size; j++)
 		{
 			//[phiLambda,LLF] = EMGrank(Pi(:,lambdaIndex),Rho(:,:,:,lambdaIndex),mini,maxi,X(:,active),Y,tau,Rank(j,:));
 			int* rank = (int*)malloc(k*sizeof(int));
 			for (int r=0; r<k; r++)
 				rank[r] = Rank[mi(j,r,Size,k)];
-			double* Xactive = (double*)malloc(n*longueurActive*sizeof(double));
+			float* Xactive = (float*)malloc(n*longueurActive*sizeof(float));
 			for (int i=0; i<n; i++)
 			{
 				for (int jj=0; jj<longueurActive; jj++)
 					Xactive[mi(i,jj,n,longueurActive)] = X[mi(i,active[jj],n,p)];
 			}
-			double* PiLambda = (double*)malloc(k*sizeof(double));
+			float* PiLambda = (float*)malloc(k*sizeof(float));
 			for (int r=0; r<k; r++)
 				PiLambda[r] = Pi[mi(r,lambdaIndex,k,L)];
-			double* RhoLambda = (double*)malloc(m*m*k*sizeof(double));
+			float* RhoLambda = (float*)malloc(m*m*k*sizeof(float));
 			for (int u=0; u<m; u++)
 			{
 				for (int v=0; v<m; v++)
@@ -109,7 +109,7 @@ for (int r=0; r<k; r++)
 			//lvraisemblance((lambdaIndex-1)*Size+j,:) = [LLF, dot(Rank(j,:), length(active)-Rank(j,:)+m)];
 			lvraisemblance[mi(lambdaIndex*Size+j,0,L*Size,2)] = LLF;
 			//dot(Rank(j,:), length(active)-Rank(j,:)+m)
-			double dotProduct = 0.0;
+			float dotProduct = 0.0;
 			for (int r=0; r<k; r++)
 				dotProduct += Rank[mi(j,r,Size,k)] * (longueurActive-Rank[mi(j,r,Size,k)]+m);
 			lvraisemblance[mi(lambdaIndex*Size+j,1,Size*L,2)] = dotProduct;

@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -g -std=gnu99 -Wno-implicit-function-declaration
 LDFLAGS = -lm -lgsl -lcblas -lgomp
-LDFLAGS_TEST = -Lobj/ -lvalse_core
-LIB = valse_core.so
+TEST_LDFLAGS = -L. libvalse_core.so
+LIB = libvalse_core.so
 LIB_SRC = $(wildcard ../sources/*.c)
 LIB_OBJ = $(LIB_SRC:.c=.o)
 INCLUDES = -I../sources
@@ -12,23 +12,23 @@ all: $(LIB) test.EMGLLF test.EMGrank test.constructionModelesLassoMLE test.EMGra
 $(LIB): $(LIB_OBJ)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
-test.EMGLLF: test.EMGLLF.o
+test.EMGLLF: test.EMGLLF.o utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoMLE: test.constructionModelesLassoMLE.o
+test.constructionModelesLassoMLE: test.constructionModelesLassoMLE.o utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.EMGrank: test.EMGrank.o
+test.EMGrank: test.EMGrank.o utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoRank: test.constructionModelesLassoRank.o
+test.constructionModelesLassoRank: test.constructionModelesLassoRank.o utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.selectionTotale: test.selectionTotale.o
+test.selectionTotale: test.selectionTotale.o utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS) $(INCLUDES)
+	$(CC) -fPIC -o $@ -c $< $(CFLAGS) $(INCLUDES)
 
 clean:
 	rm -f *.o ../sources/*.o

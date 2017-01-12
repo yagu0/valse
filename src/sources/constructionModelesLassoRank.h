@@ -4,19 +4,19 @@
 // Main job on raw inputs (after transformation from mxArray)
 void constructionModelesLassoRank_core(
 	// IN parameters
-	const double* Pi,
-	const double* Rho,
+	const float* Pi,
+	const float* Rho,
 	int mini,
 	int maxi,
-	const double* X,
-	const double* Y,
-	double tau,
+	const float* X,
+	const float* Y,
+	float tau,
 	const int* A1,
 	int rangmin,
 	int rangmax,
 	// OUT parameters
-	double* phi,
-	double* lvraisemblance,
+	float* phi,
+	float* lvraisemblance,
 	// additional size parameters
 	int n,
 	int p,

@@ -1,0 +1,5 @@
+#ignore object files, library and test executables
+*.o
+*.so
+test.*
+!test.*.c

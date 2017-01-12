@@ -5,23 +5,23 @@
 // TODO: don't recompute indexes every time......
 void EMGLLF_core(
 	// IN parameters
-	const double* phiInit, // parametre initial de moyenne renormalisé
-	const double* rhoInit, // parametre initial de variance renormalisé
-	const double* piInit,	 // parametre initial des proportions
-	const double* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
+	const float* phiInit, // parametre initial de moyenne renormalisé
+	const float* rhoInit, // parametre initial de variance renormalisé
+	const float* piInit,	 // parametre initial des proportions
+	const float* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
 	int mini, // nombre minimal d'itérations dans l'algorithme EM
 	int maxi, // nombre maximal d'itérations dans l'algorithme EM
-	double gamma, // puissance des proportions dans la pénalisation pour un Lasso adaptatif
-	double lambda, // valeur du paramètre de régularisation du Lasso
-	const double* X, // régresseurs
-	const double* Y, // réponse
-	double tau, // seuil pour accepter la convergence
+	float gamma, // puissance des proportions dans la pénalisation pour un Lasso adaptatif
+	float lambda, // valeur du paramètre de régularisation du Lasso
+	const float* X, // régresseurs
+	const float* Y, // réponse
+	float tau, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
-	double* phi, // parametre de moyenne renormalisé, calculé par l'EM
-	double* rho, // parametre de variance renormalisé, calculé par l'EM
-	double* pi, // parametre des proportions renormalisé, calculé par l'EM
-	double* LLF, // log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
-	double* S,
+	float* phi, // parametre de moyenne renormalisé, calculé par l'EM
+	float* rho, // parametre de variance renormalisé, calculé par l'EM
+	float* pi, // parametre des proportions renormalisé, calculé par l'EM
+	float* LLF, // log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
+	float* S,
 	// additional size parameters
 	int n, // nombre d'echantillons
 	int p, // nombre de covariables
@@ -37,32 +37,32 @@ void EMGLLF_core(
 
 	//Other local variables
 	//NOTE: variables order is always [maxi],n,p,m,k
-	double* gam = (double*)malloc(n*k*sizeof(double));
+	float* gam = (float*)malloc(n*k*sizeof(float));
 	copyArray(gamInit, gam, n*k);
-	double* b = (double*)malloc(k*sizeof(double));
-	double* Phi = (double*)malloc(p*m*k*sizeof(double));
-	double* Rho = (double*)malloc(m*m*k*sizeof(double));
-	double* Pi = (double*)malloc(k*sizeof(double));
-	double* gam2 = (double*)malloc(k*sizeof(double));
-	double* pi2 = (double*)malloc(k*sizeof(double));
-	double* Gram2 = (double*)malloc(p*p*k*sizeof(double));
-	double* ps = (double*)malloc(m*k*sizeof(double));
-	double* nY2 = (double*)malloc(m*k*sizeof(double));
-	double* ps1 = (double*)malloc(n*m*k*sizeof(double));
-	double* ps2 = (double*)malloc(p*m*k*sizeof(double));
-	double* nY21 = (double*)malloc(n*m*k*sizeof(double));
-	double* Gam = (double*)malloc(n*k*sizeof(double));
-	double* X2 = (double*)malloc(n*p*k*sizeof(double));
-	double* Y2 = (double*)malloc(n*m*k*sizeof(double));
+	float* b = (float*)malloc(k*sizeof(float));
+	float* Phi = (float*)malloc(p*m*k*sizeof(float));
+	float* Rho = (float*)malloc(m*m*k*sizeof(float));
+	float* Pi = (float*)malloc(k*sizeof(float));
+	float* gam2 = (float*)malloc(k*sizeof(float));
+	float* pi2 = (float*)malloc(k*sizeof(float));
+	float* Gram2 = (float*)malloc(p*p*k*sizeof(float));
+	float* ps = (float*)malloc(m*k*sizeof(float));
+	float* nY2 = (float*)malloc(m*k*sizeof(float));
+	float* ps1 = (float*)malloc(n*m*k*sizeof(float));
+	float* ps2 = (float*)malloc(p*m*k*sizeof(float));
+	float* nY21 = (float*)malloc(n*m*k*sizeof(float));
+	float* Gam = (float*)malloc(n*k*sizeof(float));
+	float* X2 = (float*)malloc(n*p*k*sizeof(float));
+	float* Y2 = (float*)malloc(n*m*k*sizeof(float));
 	gsl_matrix* matrix = gsl_matrix_alloc(m, m);
 	gsl_permutation* permutation = gsl_permutation_alloc(m);
-	double* YiRhoR = (double*)malloc(m*sizeof(double));
-	double* XiPhiR = (double*)malloc(m*sizeof(double));
-	double dist = 0.;
-	double dist2 = 0.;
+	float* YiRhoR = (float*)malloc(m*sizeof(float));
+	float* XiPhiR = (float*)malloc(m*sizeof(float));
+	float dist = 0.;
+	float dist2 = 0.;
 	int ite = 0;
-	double EPS = 1e-15;
-	double* dotProducts = (double*)malloc(k*sizeof(double));
+	float EPS = 1e-15;
+	float* dotProducts = (float*)malloc(k*sizeof(float));
 
 	while (ite < mini || (ite < maxi && (dist >= tau || dist2 >= sqrt(tau))))
 	{
@@ -90,7 +90,7 @@ void EMGLLF_core(
 				//ps2(:,mm,r)=transpose(X2(:,:,r))*Y2(:,mm,r);
 				for (int u=0; u<p; u++)
 				{
-					double dotProduct = 0.;
+					float dotProduct = 0.;
 					for (int v=0; v<n; v++)
 						dotProduct += X2[ai(v,u,r,n,m,k)] * Y2[ai(v,mm,r,n,m,k)];
 					ps2[ai(u,mm,r,n,m,k)] = dotProduct;
@@ -101,7 +101,7 @@ void EMGLLF_core(
 				for (int s=0; s<p; s++)
 				{
 					//Gram2(j,s,r)=transpose(X2(:,j,r))*(X2(:,s,r));
-					double dotProduct = 0.;
+					float dotProduct = 0.;
 					for (int u=0; u<n; u++)
 						dotProduct += X2[ai(u,j,r,n,p,k)] * X2[ai(u,s,r,n,p,k)];
 					Gram2[ai(j,s,r,p,p,k)] = dotProduct;
@@ -117,7 +117,7 @@ void EMGLLF_core(
 		for (int r=0; r<k; r++)
 		{
 			//b(r) = sum(sum(abs(phi(:,:,r))));
-			double sumAbsPhi = 0.;
+			float sumAbsPhi = 0.;
 			for (int u=0; u<p; u++)
 				for (int v=0; v<m; v++)
 					sumAbsPhi += fabs(phi[ai(u,v,r,p,m,k)]);
@@ -126,16 +126,16 @@ void EMGLLF_core(
 		//gam2 = sum(gam,1);
 		for (int u=0; u<k; u++)
 		{
-			double sumOnColumn = 0.;
+			float sumOnColumn = 0.;
 			for (int v=0; v<n; v++)
 				sumOnColumn += gam[mi(v,u,n,k)];
 			gam2[u] = sumOnColumn;
 		}
 		//a=sum(gam*transpose(log(pi)));
-		double a = 0.;
+		float a = 0.;
 		for (int u=0; u<n; u++)
 		{
-			double dotProduct = 0.;
+			float dotProduct = 0.;
 			for (int v=0; v<k; v++)
 				dotProduct += gam[mi(u,v,n,k)] * log(pi[v]);
 			a += dotProduct;
@@ -144,7 +144,7 @@ void EMGLLF_core(
 		//tant que les proportions sont negatives
 		int kk = 0;
 		int pi2AllPositive = 0;
-		double invN = 1./n;
+		float invN = 1./n;
 		while (!pi2AllPositive)
 		{
 			//pi2(:)=pi(:)+0.1^kk*(1/n*gam2(:)-pi(:));
@@ -164,15 +164,15 @@ void EMGLLF_core(
 
 		//t(m) la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
 		//(pi.^gamma)*b
-		double piPowGammaDotB = 0.;
+		float piPowGammaDotB = 0.;
 		for (int v=0; v<k; v++)
 			piPowGammaDotB += pow(pi[v],gamma) * b[v];
 		//(pi2.^gamma)*b
-		double pi2PowGammaDotB = 0.;
+		float pi2PowGammaDotB = 0.;
 		for (int v=0; v<k; v++)
 			pi2PowGammaDotB += pow(pi2[v],gamma) * b[v];
 		//transpose(gam2)*log(pi2)
-		double prodGam2logPi2 = 0.;
+		float prodGam2logPi2 = 0.;
 		for (int v=0; v<k; v++)
 			prodGam2logPi2 += gam2[v] * log(pi2[v]);
 		while (-invN*a + lambda*piPowGammaDotB < -invN*prodGam2logPi2 + lambda*pi2PowGammaDotB
@@ -190,9 +190,9 @@ void EMGLLF_core(
 				prodGam2logPi2 += gam2[v] * log(pi2[v]);
 			kk++;
 		}
-		double t = pow(0.1,kk);
+		float t = pow(0.1,kk);
 		//sum(pi+t*(pi2-pi))
-		double sumPiPlusTbyDiff = 0.;
+		float sumPiPlusTbyDiff = 0.;
 		for (int v=0; v<k; v++)
 			sumPiPlusTbyDiff += (pi[v] + t*(pi2[v] - pi[v]));
 		//pi=(pi+t*(pi2-pi))/sum(pi+t*(pi2-pi));
@@ -207,7 +207,7 @@ void EMGLLF_core(
 				for (int i=0; i<n; i++)
 				{
 					//< X2(i,:,r) , phi(:,mm,r) >
-					double dotProduct = 0.0;
+					float dotProduct = 0.0;
 					for (int u=0; u<p; u++)
 						dotProduct += X2[ai(i,u,r,n,p,k)] * phi[ai(u,mm,r,n,m,k)];
 					//ps1(i,mm,r)=Y2(i,mm,r)*dot(X2(i,:,r),phi(:,mm,r));
@@ -215,12 +215,12 @@ void EMGLLF_core(
 					nY21[ai(i,mm,r,n,m,k)] = Y2[ai(i,mm,r,n,m,k)] * Y2[ai(i,mm,r,n,m,k)];
 				}
 				//ps(mm,r)=sum(ps1(:,mm,r));
-				double sumPs1 = 0.0;
+				float sumPs1 = 0.0;
 				for (int u=0; u<n; u++)
 					sumPs1 += ps1[ai(u,mm,r,n,m,k)];
 				ps[mi(mm,r,m,k)] = sumPs1;
 				//nY2(mm,r)=sum(nY21(:,mm,r));
-				double sumNy21 = 0.0;
+				float sumNy21 = 0.0;
 				for (int u=0; u<n; u++)
 					sumNy21 += nY21[ai(u,mm,r,n,m,k)];
 				nY2[mi(mm,r,m,k)] = sumNy21;
@@ -237,7 +237,7 @@ void EMGLLF_core(
 				{
 					//sum(phi(1:j-1,mm,r).*transpose(Gram2(j,1:j-1,r)))+sum(phi(j+1:p,mm,r)
 					// .*transpose(Gram2(j,j+1:p,r)))
-					double dotPhiGram2 = 0.0;
+					float dotPhiGram2 = 0.0;
 					for (int u=0; u<j; u++)
 						dotPhiGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
 					for (int u=j+1; u<p; u++)
@@ -262,12 +262,12 @@ void EMGLLF_core(
 		/////////////
 
 		int signum;
-		double sumLogLLF2 = 0.0;
+		float sumLogLLF2 = 0.0;
 		for (int i=0; i<n; i++)
 		{
-			double sumLLF1 = 0.0;
-			double sumGamI = 0.0;
-			double minDotProduct = INFINITY;
+			float sumLLF1 = 0.0;
+			float sumGamI = 0.0;
+			float minDotProduct = INFINITY;
 
 			for (int r=0; r<k; r++)
 			{
@@ -300,7 +300,7 @@ void EMGLLF_core(
 				if (dotProducts[r] < minDotProduct)
 					minDotProduct = dotProducts[r];
 			}
-			double shift = 0.5*minDotProduct;
+			float shift = 0.5*minDotProduct;
 			for (int r=0; r<k; r++)
 			{
 				//compute det(rho(:,:,r)) [TODO: avoid re-computations]
@@ -310,7 +310,7 @@ void EMGLLF_core(
 						matrix->data[u*m+v] = rho[ai(u,v,r,m,m,k)];
 				}
 				gsl_linalg_LU_decomp(matrix, permutation, &signum);
-				double detRhoR = gsl_linalg_LU_det(matrix, signum);
+				float detRhoR = gsl_linalg_LU_det(matrix, signum);
 
 				Gam[mi(i,r,n,k)] = pi[r] * detRhoR * exp(-0.5*dotProducts[r] + shift);
 				sumLLF1 += Gam[mi(i,r,n,k)] / pow(2*M_PI,m/2.0);
@@ -327,7 +327,7 @@ void EMGLLF_core(
 		}
 		
 		//sum(pen(ite,:))
-		double sumPen = 0.0;
+		float sumPen = 0.0;
 		for (int r=0; r<k; r++)
 			sumPen += pow(pi[r],gamma) * b[r];
 		//LLF(ite)=-1/n*sum(log(LLF2(ite,:)))+lambda*sum(pen(ite,:));
@@ -338,14 +338,14 @@ void EMGLLF_core(
 			dist = (LLF[ite] - LLF[ite-1]) / (1.0 + fabs(LLF[ite]));
 		
 		//Dist1=max(max((abs(phi-Phi))./(1+abs(phi))));
-		double Dist1 = 0.0;
+		float Dist1 = 0.0;
 		for (int u=0; u<p; u++)
 		{
 			for (int v=0; v<m; v++)
 			{
 				for (int w=0; w<k; w++)
 				{
-					double tmpDist = fabs(phi[ai(u,v,w,p,m,k)]-Phi[ai(u,v,w,p,m,k)]) 
+					float tmpDist = fabs(phi[ai(u,v,w,p,m,k)]-Phi[ai(u,v,w,p,m,k)]) 
 						/ (1.0+fabs(phi[ai(u,v,w,p,m,k)]));
 					if (tmpDist > Dist1)
 						Dist1 = tmpDist;
@@ -353,14 +353,14 @@ void EMGLLF_core(
 			}
 		}
 		//Dist2=max(max((abs(rho-Rho))./(1+abs(rho))));
-		double Dist2 = 0.0;
+		float Dist2 = 0.0;
 		for (int u=0; u<m; u++)
 		{
 			for (int v=0; v<m; v++)
 			{
 				for (int w=0; w<k; w++)
 				{
-					double tmpDist = fabs(rho[ai(u,v,w,m,m,k)]-Rho[ai(u,v,w,m,m,k)]) 
+					float tmpDist = fabs(rho[ai(u,v,w,m,m,k)]-Rho[ai(u,v,w,m,m,k)]) 
 						/ (1.0+fabs(rho[ai(u,v,w,m,m,k)]));
 					if (tmpDist > Dist2)
 						Dist2 = tmpDist;
@@ -368,12 +368,12 @@ void EMGLLF_core(
 			}
 		}
 		//Dist3=max(max((abs(pi-Pi))./(1+abs(Pi))));
-		double Dist3 = 0.0;
+		float Dist3 = 0.0;
 		for (int u=0; u<n; u++)
 		{
 			for (int v=0; v<k; v++)
 			{
-				double tmpDist = fabs(pi[v]-Pi[v]) / (1.0+fabs(pi[v]));
+				float tmpDist = fabs(pi[v]-Pi[v]) / (1.0+fabs(pi[v]));
 				if (tmpDist > Dist3)
 					Dist3 = tmpDist;
 			}

@@ -3,13 +3,13 @@
 #include "utils.h"
 
 // Compute pseudo-inverse of a square matrix
-static double* pinv(const double* matrix, int dim)
+static float* pinv(const float* matrix, int dim)
 {
 	gsl_matrix* U = gsl_matrix_alloc(dim,dim);
 	gsl_matrix* V = gsl_matrix_alloc(dim,dim);
 	gsl_vector* S = gsl_vector_alloc(dim);
 	gsl_vector* work = gsl_vector_alloc(dim);
-	double EPS = 1e-10; //threshold for singular value "== 0"
+	float EPS = 1e-10; //threshold for singular value "== 0"
 	
 	//copy matrix into U
 	copyArray(matrix, U->data, dim*dim);
@@ -19,12 +19,12 @@ static double* pinv(const double* matrix, int dim)
 	gsl_vector_free(work);
 
 	// Obtain pseudo-inverse by V*S^{-1}*t(U)
-	double* inverse = (double*)malloc(dim*dim*sizeof(double));
+	float* inverse = (float*)malloc(dim*dim*sizeof(float));
 	for (int i=0; i<dim; i++)
 	{
 		for (int ii=0; ii<dim; ii++)
 		{
-			double dotProduct = 0.0;
+			float dotProduct = 0.0;
 			for (int j=0; j<dim; j++)
 				dotProduct += V->data[i*dim+j] * (S->data[j] > EPS ? 1.0/S->data[j] : 0.0) * U->data[ii*dim+j];
 			inverse[i*dim+ii] = dotProduct;
@@ -40,17 +40,17 @@ static double* pinv(const double* matrix, int dim)
 // TODO: comment EMGrank purpose
 void EMGrank_core(
 	// IN parameters
-	const double* Pi, // parametre de proportion
-	const double* Rho, // parametre initial de variance renormalisé
+	const float* Pi, // parametre de proportion
+	const float* Rho, // parametre initial de variance renormalisé
 	int mini, // nombre minimal d'itérations dans l'algorithme EM
 	int maxi, // nombre maximal d'itérations dans l'algorithme EM
-	const double* X, // régresseurs
-	const double* Y, // réponse
-	double tau, // seuil pour accepter la convergence
+	const float* X, // régresseurs
+	const float* Y, // réponse
+	float tau, // seuil pour accepter la convergence
 	const int* rank, // vecteur des rangs possibles
 	// OUT parameters
-	double* phi, // parametre de moyenne renormalisé, calculé par l'EM
-	double* LLF, // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
+	float* phi, // parametre de moyenne renormalisé, calculé par l'EM
+	float* LLF, // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
 	// additional size parameters
 	int n, // taille de l'echantillon
 	int p, // nombre de covariables
@@ -58,20 +58,20 @@ void EMGrank_core(
 	int k) // nombre de composantes
 {
 	// Allocations, initializations
-	double* Phi = (double*)calloc(p*m*k,sizeof(double));
-	double* hatBetaR = (double*)malloc(p*m*sizeof(double));
+	float* Phi = (float*)calloc(p*m*k,sizeof(float));
+	float* hatBetaR = (float*)malloc(p*m*sizeof(float));
 	int signum;
-	double invN = 1.0/n;
+	float invN = 1.0/n;
 	int deltaPhiBufferSize = 20;
-	double* deltaPhi = (double*)malloc(deltaPhiBufferSize*sizeof(double));
+	float* deltaPhi = (float*)malloc(deltaPhiBufferSize*sizeof(float));
 	int ite = 0;
-	double sumDeltaPhi = 0.0;
-	double* YiRhoR = (double*)malloc(m*sizeof(double));
-	double* XiPhiR = (double*)malloc(m*sizeof(double));
-	double* Xr = (double*)malloc(n*p*sizeof(double));
-	double* Yr = (double*)malloc(n*m*sizeof(double));
-	double* tXrXr = (double*)malloc(p*p*sizeof(double));
-	double* tXrYr = (double*)malloc(p*m*sizeof(double));
+	float sumDeltaPhi = 0.0;
+	float* YiRhoR = (float*)malloc(m*sizeof(float));
+	float* XiPhiR = (float*)malloc(m*sizeof(float));
+	float* Xr = (float*)malloc(n*p*sizeof(float));
+	float* Yr = (float*)malloc(n*m*sizeof(float));
+	float* tXrXr = (float*)malloc(p*p*sizeof(float));
+	float* tXrYr = (float*)malloc(p*m*sizeof(float));
 	gsl_matrix* matrixM = gsl_matrix_alloc(p, m);
 	gsl_matrix* matrixE = gsl_matrix_alloc(m, m);
 	gsl_permutation* permutation = gsl_permutation_alloc(m);
@@ -115,7 +115,7 @@ void EMGrank_core(
 			{
 				for (int jj=0; jj<p; jj++)
 				{
-					double dotProduct = 0.0;
+					float dotProduct = 0.0;
 					for (int u=0; u<cardClustR; u++)
 						dotProduct += Xr[mi(u,j,n,p)] * Xr[mi(u,jj,n,p)];
 					tXrXr[mi(j,jj,p,p)] = dotProduct;
@@ -123,14 +123,14 @@ void EMGrank_core(
 			}
 
 			//Get pseudo inverse = (t(Xr)*Xr)^{-1}
-			double* invTXrXr = pinv(tXrXr, p);
+			float* invTXrXr = pinv(tXrXr, p);
 			
 			// Compute tXrYr = t(Xr) * Yr
 			for (int j=0; j<p; j++)
 			{
 				for (int jj=0; jj<m; jj++)
 				{
-					double dotProduct = 0.0;
+					float dotProduct = 0.0;
 					for (int u=0; u<cardClustR; u++)
 						dotProduct += Xr[mi(u,j,n,p)] * Yr[mi(u,j,n,m)];
 					tXrYr[mi(j,jj,p,m)] = dotProduct;
@@ -142,7 +142,7 @@ void EMGrank_core(
 			{
 				for (int jj=0; jj<m; jj++)
 				{
-					double dotProduct = 0.0;
+					float dotProduct = 0.0;
 					for (int u=0; u<p; u++)
 						dotProduct += invTXrXr[mi(j,u,p,p)] * tXrYr[mi(u,jj,p,m)];
 					matrixM->data[j*m+jj] = dotProduct;
@@ -164,7 +164,7 @@ void EMGrank_core(
 			{
 				for (int jj=0; jj<m; jj++)
 				{
-					double dotProduct = 0.0;
+					float dotProduct = 0.0;
 					for (int u=0; u<m; u++)
 						dotProduct += U[j*m+u] * S->data[u] * V->data[jj*m+u];
 					hatBetaR[mi(j,jj,p,m)] = dotProduct;
@@ -176,7 +176,7 @@ void EMGrank_core(
 			{
 				for (int jj=0; jj<m; jj++)
 				{
-					double dotProduct=0.0;
+					float dotProduct=0.0;
 					for (int u=0; u<m; u++)
 						dotProduct += hatBetaR[mi(j,u,p,m)] * Rho[ai(u,jj,r,m,m,k)];
 					phi[ai(j,jj,r,p,m,k)] = dotProduct;
@@ -188,11 +188,11 @@ void EMGrank_core(
 		// Etape E //
 		/////////////
 		
-		double sumLogLLF2 = 0.0;
+		float sumLogLLF2 = 0.0;
 		for (int i=0; i<n; i++)
 		{
-			double sumLLF1 = 0.0;
-			double maxLogGamIR = -INFINITY;
+			float sumLLF1 = 0.0;
+			float maxLogGamIR = -INFINITY;
 			for (int r=0; r<k; r++)
 			{
 				//Compute
@@ -207,7 +207,7 @@ void EMGrank_core(
 						matrixE->data[j*m+jj] = Rho[ai(j,jj,r,m,m,k)];
 				}
 				gsl_linalg_LU_decomp(matrixE, permutation, &signum);
-				double detRhoR = gsl_linalg_LU_det(matrixE, signum);
+				float detRhoR = gsl_linalg_LU_det(matrixE, signum);
 
 				//compute Y(i,:)*Rho(:,:,r)
 				for (int j=0; j<m; j++)
@@ -226,10 +226,10 @@ void EMGrank_core(
 				}
 
 				//compute dotProduct < Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) . Y(:,i)*rho(:,:,r)-X(i,:)*phi(:,:,r) >
-				double dotProduct = 0.0;
+				float dotProduct = 0.0;
 				for (int u=0; u<m; u++)
 					dotProduct += (YiRhoR[u]-XiPhiR[u]) * (YiRhoR[u]-XiPhiR[u]);
-				double logGamIR = log(Pi[r]) + log(detRhoR) - 0.5*dotProduct;
+				float logGamIR = log(Pi[r]) + log(detRhoR) - 0.5*dotProduct;
 
 				//Z(i) = index of max (gam(i,:))
 				if (logGamIR > maxLogGamIR)
@@ -247,14 +247,14 @@ void EMGrank_core(
 		*LLF = -invN * sumLogLLF2;
 
 		//newDeltaPhi = max(max((abs(phi-Phi))./(1+abs(phi))));
-		double newDeltaPhi = 0.0;
+		float newDeltaPhi = 0.0;
 		for (int j=0; j<p; j++)
 		{
 			for (int jj=0; jj<m; jj++)
 			{
 				for (int r=0; r<k; r++)
 				{
-					double tmpDist = fabs(phi[ai(j,jj,r,p,m,k)]-Phi[ai(j,jj,r,p,m,k)])
+					float tmpDist = fabs(phi[ai(j,jj,r,p,m,k)]-Phi[ai(j,jj,r,p,m,k)])
 						/ (1.0+fabs(phi[ai(j,jj,r,p,m,k)]));
 					if (tmpDist > newDeltaPhi)
 						newDeltaPhi = tmpDist;

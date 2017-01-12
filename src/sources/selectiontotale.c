@@ -7,23 +7,23 @@
 // Main job on raw inputs (after transformation from mxArray)
 void selectiontotale_core(
 	// IN parameters
-	const double* phiInit, // parametre initial de moyenne renormalisé
-	const double* rhoInit, // parametre initial de variance renormalisé
-	const double* piInit,// parametre initial des proportions
-	const double* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
+	const float* phiInit, // parametre initial de moyenne renormalisé
+	const float* rhoInit, // parametre initial de variance renormalisé
+	const float* piInit,// parametre initial des proportions
+	const float* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
 	int mini, // nombre minimal d'itérations dans lambdaIndex'algorithme EM
 	int maxi, // nombre maximal d'itérations dans lambdaIndex'algorithme EM
-	double gamma, // valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
-	const double* glambda, // valeur des paramètres de régularisation du Lasso
-	const double* X,// régresseurs
-	const double* Y,// réponse
-	double seuil, // seuil pour prendre en compte une variable
-	double tau, // seuil pour accepter la convergence
+	float gamma, // valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
+	const float* glambda, // valeur des paramètres de régularisation du Lasso
+	const float* X,// régresseurs
+	const float* Y,// réponse
+	float seuil, // seuil pour prendre en compte une variable
+	float tau, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
 	int* A1, // matrice des coefficients des parametres selectionnes
 	int* A2, // matrice des coefficients des parametres non selectionnes
-	double* Rho,// estimateur ainsi calculé par le Lasso
-	double* Pi,// estimateur ainsi calculé par le Lasso
+	float* Rho,// estimateur ainsi calculé par le Lasso
+	float* Pi,// estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n,// taille de lambdaIndex'echantillon
 	int p,// nombre de covariables
@@ -51,11 +51,11 @@ void selectiontotale_core(
 	for (lambdaIndex=0; lambdaIndex<L; lambdaIndex++)
 	{
 		//allocate output variables
-		double* phi = (double*)malloc(p*m*k*sizeof(double));
-		double* rho = (double*)malloc(m*m*k*sizeof(double));
-		double* pi = (double*)malloc(k*sizeof(double));
-		double* LLF = (double*)malloc(maxi*sizeof(double));
-		double* S = (double*)malloc(p*m*k*sizeof(double));
+		float* phi = (float*)malloc(p*m*k*sizeof(float));
+		float* rho = (float*)malloc(m*m*k*sizeof(float));
+		float* pi = (float*)malloc(k*sizeof(float));
+		float* LLF = (float*)malloc(maxi*sizeof(float));
+		float* S = (float*)malloc(p*m*k*sizeof(float));
 		EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau,
 			phi,rho,pi,LLF,S,
 			n,p,m,k);
@@ -72,7 +72,7 @@ void selectiontotale_core(
 			int cpt2 = 0;
 			for (int jj=0; jj<m; jj++)
 			{
-				double maxPhi = 0.0;
+				float maxPhi = 0.0;
 				for (int r=0; r<k; r++)
 				{
 					if (fabs(phi[ai(j,jj,r,p,m,k)]) > maxPhi)
