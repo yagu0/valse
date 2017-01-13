@@ -4,16 +4,16 @@
 
 int main(int argc, char** argv)
 {
-	////////////
-	// INPUTS //
-	////////////
-
 	int* dimensions = readArray_int("dimensions");
 	int n = dimensions[0];
 	int p = dimensions[1];
 	int m = dimensions[2];
 	int k = dimensions[3];
 	free(dimensions);
+
+	////////////
+	// INPUTS //
+	////////////
 
 	float* phiInit = readArray_real("phiInit");
 	float* rhoInit = readArray_real("rhoInit");
