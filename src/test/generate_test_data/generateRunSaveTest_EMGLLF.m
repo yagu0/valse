@@ -19,7 +19,7 @@ function[] = generateRunSaveTest_EMGLLF(n, p, m, k, mini, maxi, gamma, lambda, v
 
 	testFolder = 'data/';
 	mkdir(testFolder);
-	delimiter = '\n';
+	delimiter = ' ';
 
 	%save inputs
 	dlmwrite(strcat(testFolder,'phiInit'), reshape(phiInit,1,[]), delimiter);
