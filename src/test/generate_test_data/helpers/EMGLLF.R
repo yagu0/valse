@@ -1,9 +1,9 @@
 EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau){
   #matrix dimensions
   n = dim(X)[1]
-  p = dim[phiInit][1]
-  m = dim[phiInit][2]
-  k = dim[phiInit][3]
+  p = dim(phiInit)[1]
+  m = dim(phiInit)[2]
+  k = dim(phiInit)[3]
   
   #init outputs
   phi = phiInit
@@ -68,10 +68,10 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     kk = 0
     pi2AllPositive = FALSE
     while(pi2AllPositive == FALSE){
-      pi2 = pi + 0.1^kk * ((1/n)*gam2 - pi)
+      Pi2 = Pi + 0.1^kk * ((1/n)*gam2 - Pi)
       pi2AllPositive = TRUE
       for(r in 1:k){
-        if(pi2[r] < 0){
+        if(Pi2[r] < 0){
           pi2AllPositive = false;
           break
         }
@@ -81,12 +81,12 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     
     #t[m]la plus grande valeur dans la grille O.1^k tel que ce soit
     #décroissante ou constante
-    while((-1/n*a+lambda*((pi.^gamma)*b))<(-1/n*gam2*t(log(pi2))+lambda.*(pi2.^gamma)*b) && kk<1000){
-      pi2 = pi+0.1^kk*(1/n*gam2-pi)
+    while((-1/n*a+lambda*((Pi.^gamma)*b))<(-1/n*gam2*t(log(Pi2))+lambda.*(Pi2.^gamma)*b) && kk<1000){
+      Pi2 = Pi+0.1^kk*(1/n*gam2-Pi)
       kk = kk+1
     }
     t = 0.1^(kk)
-    pi = (pi+t*(pi2-pi)) / sum(pi+t*(pi2-pi))
+    Pi = (Pi+t*(Pi2-Pi)) / sum(Pi+t*(Pi2-Pi))
     
     #Pour phi et rho
     for(r in 1:k){
@@ -104,13 +104,14 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       for(j in 1:p){
         for(mm in 1:m){
           S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + dot(phi[1:j-1,mm,r],Gram2[j,1:j-1,r])  + dot(phi[j+1:p,mm,r],Gram2[j,j+1:p,r])
-          if(abs(S(j,mm,r)) <= n*lambda*(pi(r)^gamma))
+          if(abs(S(j,mm,r)) <= n*lambda*(Pi[r]^gamma)){
             phi[j,mm,r]=0
-          else{
-            if(S[j,mm,r]> n*lambda*(Pi[r]^gamma))
+          }else{
+            if(S[j,mm,r]> n*lambda*(Pi[r]^gamma)){
               phi[j,mm,r] = (n*lambda*(Pi[r]^gamma)-S[j,mm,r])/Gram2[j,j,r]
-          else
-            phi[j,mm,r] = -(n*lambda*(Pi[r]^gamma)+S[j,mm,r])/Gram2[j,j,r]
+            }else{
+              phi[j,mm,r] = -(n*lambda*(Pi[r]^gamma)+S[j,mm,r])/Gram2[j,j,r]
+            }
           }
         }
       }
