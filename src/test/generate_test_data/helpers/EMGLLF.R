@@ -61,7 +61,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     for(r in 1:k){
       b[r] = sum(sum(abs(phi[,,r])))
     }
-    gam2 = sum(gam[1,])  #BIG DOUTE
+    gam2 = colSums(gam)
     a = sum(gam*t(log(Pi)))
     
     #tant que les props sont negatives
