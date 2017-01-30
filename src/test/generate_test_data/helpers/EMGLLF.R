@@ -38,10 +38,10 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     #calcul associé à Y et X
     for(r in 1:k){
       for(mm in 1:m){
-        Y2[,mm,r] = sqrt(gam[,r]) .* Y[,mm]
+        Y2[,mm,r] = sqrt(gam[,r]) ^ Y[,mm]
       }
       for(i in 1:n){
-        X2[i,,r] = X[i,] .* sqrt(gam[i,r])
+        X2[i,,r] = X[i,] ^ sqrt(gam[i,r])
       }
       for(mm in 1:m){
         ps2[,mm,r] = crossprod(X2[,,r],Y2[,mm,r])
@@ -92,18 +92,18 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     for(r in 1:k){
       for(mm in 1:m){
         for(i in 1:n){
-          ps1[i,mm,r] = Y2[i,mm,r] * dot(X2(i,:,r), phi(:,mm,r))
+          ps1[i,mm,r] = Y2[i,mm,r] * X2[i,,r]%*% t(phi[,mm,r])
           nY21[i,mm,r] = (Y2[i,mm,r])^2
         }
-        ps[mm,r] = sum(ps1(:,mm,r));
-        nY2[mm,r] = sum(nY21(:,mm,r));
+        ps[mm,r] = sum(ps1[,mm,r])
+        nY2[mm,r] = sum(nY21[,mm,r])
         rho[mm,mm,r] = ((ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*(gam2[r])))/(2*nY2[mm,r]))
       }
     }
     for(r in 1:k){
       for(j in 1:p){
         for(mm in 1:m){
-          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + dot(phi[1:j-1,mm,r],Gram2[j,1:j-1,r])  + dot(phi[j+1:p,mm,r],Gram2[j,j+1:p,r])
+          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + phi[1:j-1,mm,r]%*%t(Gram2[j,1:j-1,r])  + phi[j+1:p,mm,r]%*%t(Gram2[j,j+1:p,r])
           if(abs(S(j,mm,r)) <= n*lambda*(Pi[r]^gamma)){
             phi[j,mm,r]=0
           }else{
@@ -146,7 +146,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     
     sumPen = 0
     for(r in 1:k){
-      sumPen = sumPen + Pi[r].^gamma^b[r]
+      sumPen = sumPen + Pi[r]^gamma^b[r]
     }
     LLF[ite] = -(1/n)*sumLogLLF2 + lambda*sumPen
     
@@ -155,10 +155,10 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     else
       dist = (LLF[ite]-LLF[ite-1])/(1+abs(LLF[ite]))
     
-    Dist1=max(max(max((abs(phi-Phi))./(1+abs(phi)))))
-    Dist2=max(max(max((abs(rho-Rho))./(1+abs(rho)))))
-    Dist3=max(max((abs(Pi-PI))./(1+abs(PI))))
-    dist2=max([Dist1,Dist2,Dist3])
+    Dist1=max(max(max((abs(phi-Phi))/(1+abs(phi)))))
+    Dist2=max(max(max((abs(rho-Rho))/(1+abs(rho)))))
+    Dist3=max(max((abs(Pi-PI))/(1+abs(PI))))
+    dist2=max(c(Dist1,Dist2,Dist3))
     
     ite=ite+1
   }
