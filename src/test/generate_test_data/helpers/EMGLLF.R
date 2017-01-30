@@ -19,7 +19,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
   b = rep(0, k)
   pen = matrix(0, maxi, k)
   X2 = array(0, dim=c(n,p,k))
-  Y2 = array(0, dim=c(p,m,k))
+  Y2 = array(0, dim=c(n,m,k))
   dist = 0
   dist2 = 0
   ite = 1
@@ -38,17 +38,17 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     #calcul associé à Y et X
     for(r in 1:k){
       for(mm in 1:m){
-        Y2[,mm,r] = sqrt(gam[,r]) ^ Y[,mm]
+        Y2[,mm,r] = sqrt(gam[,r]) * Y[,mm]  ##bon calcul ? idem pour X2 ??...
       }
       for(i in 1:n){
-        X2[i,,r] = X[i,] ^ sqrt(gam[i,r])
+        X2[i,,r] = X[i,] *sqrt(gam[i,r])
       }
       for(mm in 1:m){
         ps2[,mm,r] = crossprod(X2[,,r],Y2[,mm,r])
       }
       for(j in 1:p){
         for(s in 1:p){
-          Gram2[j,s,r] = tcrossprod(X2[,j,r], X2[,s,r])
+          Gram2[j,s,r] = crossprod(X2[,j,r], X2[,s,r])
         }
       }
     }
@@ -62,7 +62,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       b[r] = sum(sum(abs(phi[,,r])))
     }
     gam2 = colSums(gam)
-    a = sum(gam*t(log(Pi)))
+    a = sum(gam%*%(log(Pi)))
     
     #tant que les props sont negatives
     kk = 0
@@ -81,7 +81,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     
     #t[m]la plus grande valeur dans la grille O.1^k tel que ce soit
     #décroissante ou constante
-    while((-1/n*a+lambda*((Pi.^gamma)*b))<(-1/n*gam2*t(log(Pi2))+lambda.*(Pi2.^gamma)*b) && kk<1000){
+    while((-1/n*a+lambda*((Pi^gamma)%*%t(b)))<(-1/n*gam2%*%t(log(Pi2))+lambda*(Pi2^gamma)%*%t(b)) && kk<1000){
       Pi2 = Pi+0.1^kk*(1/n*gam2-Pi)
       kk = kk+1
     }
@@ -92,7 +92,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     for(r in 1:k){
       for(mm in 1:m){
         for(i in 1:n){
-          ps1[i,mm,r] = Y2[i,mm,r] * X2[i,,r]%*% t(phi[,mm,r])
+          ps1[i,mm,r] = Y2[i,mm,r] * (X2[i,,r]%*%(phi[,mm,r]))
           nY21[i,mm,r] = (Y2[i,mm,r])^2
         }
         ps[mm,r] = sum(ps1[,mm,r])
@@ -101,10 +101,15 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       }
     }
     for(r in 1:k){
-      for(j in 1:p){
+      p1 = p-1
+      for(j in 1:p1){
         for(mm in 1:m){
-          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + phi[1:j-1,mm,r]%*%t(Gram2[j,1:j-1,r])  + phi[j+1:p,mm,r]%*%t(Gram2[j,j+1:p,r])
-          if(abs(S(j,mm,r)) <= n*lambda*(Pi[r]^gamma)){
+          j1 = j-1
+          j2 = j+1
+          v1 = c(1:j1)
+          v2 = c(j2:p)
+          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + phi[v1,mm,r]%*%(Gram2[j,v1,r])  + phi[v2,mm,r]%*%(Gram2[j,v2,r])  #erreur indice
+          if(abs(S[j,mm,r]) <= n*lambda*(Pi[r]^gamma)){
             phi[j,mm,r]=0
           }else{
             if(S[j,mm,r]> n*lambda*(Pi[r]^gamma)){
@@ -163,6 +168,6 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     ite=ite+1
   }
     
-  Pi = transpose(Pi)
+  Pi = t(Pi)
   return(list(phi=phi, rho=rho, Pi=Pi, LLF=LLF, S=S))
 }
