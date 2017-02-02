@@ -1,4 +1,6 @@
-EMGLLF = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
+source("/home/goehry/Documents/valse/valse/R/vec_bin.R")
+require(MASS)
+EMGrank = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
   #matrix dimensions
   n = dim(X)[1]
   p = dim(X)[2]
@@ -29,11 +31,21 @@ EMGLLF = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
         next
       }
       #U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
-      [U,S,V] = svd(ginv(crossprod(X[Z_indice,]))%*% (X[Z_indice,])%*%Y[Z_indice,]      )
+      sv = svd(ginv( crossprod(X[Z_indice,]) )   %*%   crossprod(X[Z_indice,], Y[Z_indice,])     )
+      S = diag(sv$d)
+      U = sv$u
+      V = sv$v
       #Set m-rank(r) singular values to zero, and recompose
       #best rank(r) approximation of the initial product
-      S[rank(r)+1:end,] = 0
-      phi[,,r] = U %*%S%*%t(V)%*%Rho[,,r]
+      if(r==k){
+        j_r_1 = length(S)
+      }
+      else{
+        j_r_1 = c(rank[r]+1:length(S))
+      }
+      S[j_r_1] = 0
+      S = diag(S, nrow = ncol(U))
+      phi[,,r] = U %*% S %*% t(V) %*% Rho[,,r]
     }
   
   #Etape E et calcul de LLF
@@ -59,7 +71,8 @@ EMGLLF = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
   #update distance parameter to check algorithm convergence (delta(phi, Phi))
   deltaPhi = c(deltaPhi, max(max(max((abs(phi-Phi))/(1+abs(phi))))) )
   if(length(deltaPhi) > deltaPhiBufferSize){
-    deltaPhi = deltaPhi[2:length(deltaPhi)]
+    l_1 = c(2:length(deltaPhi))
+    deltaPhi = deltaPhi[l_1]
   }
   sumDeltaPhi = sum(abs(deltaPhi))
   
