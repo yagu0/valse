@@ -1,6 +1,16 @@
 #ifndef valse_utils_H
 #define valse_utils_H
 
+//#include <stdint.h>
+
+/********
+ * Types
+ *******/
+
+typedef float Real;
+//typedef uint32_t UInt;
+//typedef int32_t Int;
+
 /*******************
  * tune parallelism
  *******************/

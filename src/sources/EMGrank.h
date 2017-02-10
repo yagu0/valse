@@ -1,19 +1,21 @@
 #ifndef valse_EMGrank_H
 #define valse_EMGrank_H
 
+#include "utils.h"
+
 void EMGrank_core(
 	// IN parameters
-	const float* Pi,
-	const float* Rho,
+	const Real* Pi,
+	const Real* Rho,
 	int mini,
 	int maxi,
-	const float* X,
-	const float* Y,
-	float tau,
+	const Real* X,
+	const Real* Y,
+	Real tau,
 	const int* rank,
 	// OUT parameters
-	float* phi,
-	float* LLF,
+	Real* phi,
+	Real* LLF,
 	// additional size parameters
 	int n,
 	int p,

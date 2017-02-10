@@ -1,27 +1,29 @@
 #ifndef valse_constructionModelesLassoMLE_H
 #define valse_constructionModelesLassoMLE_H
 
+#include "utils.h"
+
 void constructionModelesLassoMLE_core(
 	// IN parameters
-	const float* phiInit,
-	const float* rhoInit,
-	const float* piInit,
-	const float* gamInit,
+	const Real* phiInit,
+	const Real* rhoInit,
+	const Real* piInit,
+	const Real* gamInit,
 	int mini,
 	int maxi,
-	float gamma,
-	const float* glambda,
-	const float* X,
-	const float* Y,
-	float seuil,
-	float tau,
+	Real gamma,
+	const Real* glambda,
+	const Real* X,
+	const Real* Y,
+	Real seuil,
+	Real tau,
 	const int* A1,
 	const int* A2,
 	// OUT parameters
-	float* phi,
-	float* rho,
-	float* pi,
-	float* lvraisemblance,
+	Real* phi,
+	Real* rho,
+	Real* pi,
+	Real* lvraisemblance,
 	// additional size parameters
 	int n,
 	int p,

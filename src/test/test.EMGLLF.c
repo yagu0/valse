@@ -1,6 +1,8 @@
 #include "EMGLLF.h"
-#include "utils.h"
+#include "test_utils.h"
 #include <stdlib.h>
+
+#include <stdio.h>
 
 int main(int argc, char** argv)
 {
@@ -40,7 +42,6 @@ int main(int argc, char** argv)
 	////////////////////
 	// Call to EMGLLF //
 	////////////////////
-
 	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
 		phi,rho,pi,LLF,S,
 		n,p,m,k);

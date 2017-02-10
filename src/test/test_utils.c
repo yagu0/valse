@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include "utils.h"
 
 // Check if array == refArray
 void compareArray(const char* ID, const void* array, const void* refArray, int size,
@@ -61,6 +62,7 @@ void* readArray(const char* fileName, int isinteger)
 	void* array = malloc(n*elementSize);
 	for (int i=0; i<n; i++)
 	{
+		fgets(bufferNum, 64, arrayFile);
 		// transform buffer content into float or int, and store it at appropriate location
 		if (isinteger)
 			((int*)array)[i] = atoi(bufferNum);
@@ -85,10 +87,16 @@ float* readArray_real(const char* fileName)
 
 int read_int(const char* fileName)
 {
-	return readArray_int(fileName)[0];
+	int* array = readArray_int(fileName);
+	int res = array[0];
+	free(array);
+	return res;
 }
 
 float read_real(const char* fileName)
 {
-	return readArray_real(fileName)[0];
+	Real* array = readArray_real(fileName);
+	Real res = array[0];
+	free(array);
+	return res;
 }

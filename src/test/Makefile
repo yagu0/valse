@@ -12,19 +12,19 @@ all: $(LIB) test.EMGLLF test.EMGrank test.constructionModelesLassoMLE test.EMGra
 $(LIB): $(LIB_OBJ)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
-test.EMGLLF: test.EMGLLF.o utils.o
+test.EMGLLF: test.EMGLLF.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoMLE: test.constructionModelesLassoMLE.o utils.o
+test.constructionModelesLassoMLE: test.constructionModelesLassoMLE.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.EMGrank: test.EMGrank.o utils.o
+test.EMGrank: test.EMGrank.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoRank: test.constructionModelesLassoRank.o utils.o
+test.constructionModelesLassoRank: test.constructionModelesLassoRank.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.selectionTotale: test.selectionTotale.o utils.o
+test.selectionTotale: test.selectionTotale.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
 %.o: %.c

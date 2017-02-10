@@ -1,25 +1,27 @@
 #ifndef valse_EMGLLF_H
 #define valse_EMGLLF_H
 
+#include "utils.h"
+
 void EMGLLF_core(
 	// IN parameters
-	const float* phiInit,
-	const float* rhoInit,
-	const float* piInit,
-	const float* gamInit,
+	const Real* phiInit,
+	const Real* rhoInit,
+	const Real* piInit,
+	const Real* gamInit,
 	int mini,
 	int maxi,
-	float gamma,
-	float lambda,
-	const float* X,
-	const float* Y,
-	float tau,
+	Real gamma,
+	Real lambda,
+	const Real* X,
+	const Real* Y,
+	Real tau,
 	// OUT parameters
-	float* phi,
-	float* rho,
-	float* pi,
-	float* LLF,
-	float* S,
+	Real* phi,
+	Real* rho,
+	Real* pi,
+	Real* LLF,
+	Real* S,
 	// additional size parameters
 	int n,
 	int p,

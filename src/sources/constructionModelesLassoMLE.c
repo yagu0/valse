@@ -7,25 +7,25 @@
 // TODO: comment on constructionModelesLassoMLE purpose
 void constructionModelesLassoMLE_core(
 	// IN parameters
-	const float* phiInit, // parametre initial de moyenne renormalisé
-	const float* rhoInit, // parametre initial de variance renormalisé
-	const float* piInit,// parametre initial des proportions
-	const float* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
+	const Real* phiInit, // parametre initial de moyenne renormalisé
+	const Real* rhoInit, // parametre initial de variance renormalisé
+	const Real* piInit,// parametre initial des proportions
+	const Real* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
 	int mini,// nombre minimal d'itérations dans l'algorithme EM
 	int maxi,// nombre maximal d'itérations dans l'algorithme EM
-	float gamma,// valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
-	const float* glambda, // valeur des paramètres de régularisation du Lasso
-	const float* X, // régresseurs
-	const float* Y, // réponse
-	float seuil,// seuil pour prendre en compte une variable
-	float tau,// seuil pour accepter la convergence
+	Real gamma,// valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
+	const Real* glambda, // valeur des paramètres de régularisation du Lasso
+	const Real* X, // régresseurs
+	const Real* Y, // réponse
+	Real seuil,// seuil pour prendre en compte une variable
+	Real tau,// seuil pour accepter la convergence
 	const int* A1, // matrice des coefficients des parametres selectionnes
 	const int* A2, // matrice des coefficients des parametres non selectionnes
 	// OUT parameters
-	float* phi,// estimateur ainsi calculé par le Lasso
-	float* rho,// estimateur ainsi calculé par le Lasso
-	float* pi, // estimateur ainsi calculé par le Lasso
-	float* lvraisemblance, // estimateur ainsi calculé par le Lasso
+	Real* phi,// estimateur ainsi calculé par le Lasso
+	Real* rho,// estimateur ainsi calculé par le Lasso
+	Real* pi, // estimateur ainsi calculé par le Lasso
+	Real* lvraisemblance, // estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n, // taille de l'echantillon
 	int p, // nombre de covariables
@@ -58,7 +58,7 @@ void constructionModelesLassoMLE_core(
 			continue;
 
 		//Xa = X(:,a)
-		float* Xa = (float*)malloc(n*lengthA*sizeof(float));
+		Real* Xa = (Real*)malloc(n*lengthA*sizeof(Real));
 		for (int i=0; i<n; i++)
 		{
 			for (int j=0; j<lengthA; j++)
@@ -66,7 +66,7 @@ void constructionModelesLassoMLE_core(
 		}
 
 		//phia = phiInit(a,:,:)
-		float* phia = (float*)malloc(lengthA*m*k*sizeof(float));
+		Real* phia = (Real*)malloc(lengthA*m*k*sizeof(Real));
 		for (int j=0; j<lengthA; j++)
 		{
 			for (int mm=0; mm<m; mm++)
@@ -78,11 +78,11 @@ void constructionModelesLassoMLE_core(
 
 		//[phiLambda,rhoLambda,piLambda,~,~] = EMGLLF(...
 		//	phiInit(a,:,:),rhoInit,piInit,gamInit,mini,maxi,gamma,0,X(:,a),Y,tau);
-		float* phiLambda = (float*)malloc(lengthA*m*k*sizeof(float));
-		float* rhoLambda = (float*)malloc(m*m*k*sizeof(float));
-		float* piLambda = (float*)malloc(k*sizeof(float));
-		float* LLF = (float*)malloc((maxi+1)*sizeof(float));
-		float* S = (float*)malloc(lengthA*m*k*sizeof(float));
+		Real* phiLambda = (Real*)malloc(lengthA*m*k*sizeof(Real));
+		Real* rhoLambda = (Real*)malloc(m*m*k*sizeof(Real));
+		Real* piLambda = (Real*)malloc(k*sizeof(Real));
+		Real* LLF = (Real*)malloc((maxi+1)*sizeof(Real));
+		Real* S = (Real*)malloc(lengthA*m*k*sizeof(Real));
 		EMGLLF_core(phia,rhoInit,piInit,gamInit,mini,maxi,gamma,0.0,Xa,Y,tau,
 			phiLambda,rhoLambda,piLambda,LLF,S,
 			n,lengthA,m,k);
@@ -154,12 +154,12 @@ void constructionModelesLassoMLE_core(
 		free(b);
 
 		int signum;
-		float* densite = (float*)calloc(L*n,sizeof(float));
-		float sumLogDensit = 0.0;
+		Real* densite = (Real*)calloc(L*n,sizeof(Real));
+		Real sumLogDensit = 0.0;
 		gsl_matrix* matrix = gsl_matrix_alloc(m, m);
 		gsl_permutation* permutation = gsl_permutation_alloc(m);
-		float* YiRhoR = (float*)malloc(m*sizeof(float));
-		float* XiPhiR = (float*)malloc(m*sizeof(float));
+		Real* YiRhoR = (Real*)malloc(m*sizeof(Real));
+		Real* XiPhiR = (Real*)malloc(m*sizeof(Real));
 		for (int i=0; i<n; i++)
 		{
 			//~ for r=1:k
@@ -176,7 +176,7 @@ void constructionModelesLassoMLE_core(
 						matrix->data[u*m+v] = rho[ai4(u,v,r,lambdaIndex,m,m,k,L)];
 				}
 				gsl_linalg_LU_decomp(matrix, permutation, &signum);
-				float detRhoR = gsl_linalg_LU_det(matrix, signum);
+				Real detRhoR = gsl_linalg_LU_det(matrix, signum);
 
 				//compute Y(i,:)*rho(:,:,r,lambdaIndex)
 				for (int u=0; u<m; u++)
@@ -196,7 +196,7 @@ void constructionModelesLassoMLE_core(
 				// On peut remplacer X par Xa dans ce dernier calcul, mais je ne sais pas si c'est intéressant ...
 
 				// compute dotProduct < delta . delta >
-				float dotProduct = 0.0;
+				Real dotProduct = 0.0;
 				for (int u=0; u<m; u++)
 					dotProduct += (YiRhoR[u]-XiPhiR[u]) * (YiRhoR[u]-XiPhiR[u]);
 

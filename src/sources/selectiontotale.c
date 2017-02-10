@@ -7,23 +7,23 @@
 // Main job on raw inputs (after transformation from mxArray)
 void selectiontotale_core(
 	// IN parameters
-	const float* phiInit, // parametre initial de moyenne renormalisé
-	const float* rhoInit, // parametre initial de variance renormalisé
-	const float* piInit,// parametre initial des proportions
-	const float* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
+	const Real* phiInit, // parametre initial de moyenne renormalisé
+	const Real* rhoInit, // parametre initial de variance renormalisé
+	const Real* piInit,// parametre initial des proportions
+	const Real* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
 	int mini, // nombre minimal d'itérations dans lambdaIndex'algorithme EM
 	int maxi, // nombre maximal d'itérations dans lambdaIndex'algorithme EM
-	float gamma, // valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
-	const float* glambda, // valeur des paramètres de régularisation du Lasso
-	const float* X,// régresseurs
-	const float* Y,// réponse
-	float seuil, // seuil pour prendre en compte une variable
-	float tau, // seuil pour accepter la convergence
+	Real gamma, // valeur de gamma : puissance des proportions dans la pénalisation pour un Lasso adaptatif
+	const Real* glambda, // valeur des paramètres de régularisation du Lasso
+	const Real* X,// régresseurs
+	const Real* Y,// réponse
+	Real seuil, // seuil pour prendre en compte une variable
+	Real tau, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
 	int* A1, // matrice des coefficients des parametres selectionnes
 	int* A2, // matrice des coefficients des parametres non selectionnes
-	float* Rho,// estimateur ainsi calculé par le Lasso
-	float* Pi,// estimateur ainsi calculé par le Lasso
+	Real* Rho,// estimateur ainsi calculé par le Lasso
+	Real* Pi,// estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n,// taille de lambdaIndex'echantillon
 	int p,// nombre de covariables
@@ -51,11 +51,11 @@ void selectiontotale_core(
 	for (lambdaIndex=0; lambdaIndex<L; lambdaIndex++)
 	{
 		//allocate output variables
-		float* phi = (float*)malloc(p*m*k*sizeof(float));
-		float* rho = (float*)malloc(m*m*k*sizeof(float));
-		float* pi = (float*)malloc(k*sizeof(float));
-		float* LLF = (float*)malloc(maxi*sizeof(float));
-		float* S = (float*)malloc(p*m*k*sizeof(float));
+		Real* phi = (Real*)malloc(p*m*k*sizeof(Real));
+		Real* rho = (Real*)malloc(m*m*k*sizeof(Real));
+		Real* pi = (Real*)malloc(k*sizeof(Real));
+		Real* LLF = (Real*)malloc(maxi*sizeof(Real));
+		Real* S = (Real*)malloc(p*m*k*sizeof(Real));
 		EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau,
 			phi,rho,pi,LLF,S,
 			n,p,m,k);
@@ -72,7 +72,7 @@ void selectiontotale_core(
 			int cpt2 = 0;
 			for (int jj=0; jj<m; jj++)
 			{
-				float maxPhi = 0.0;
+				Real maxPhi = 0.0;
 				for (int r=0; r<k; r++)
 				{
 					if (fabs(phi[ai(j,jj,r,p,m,k)]) > maxPhi)

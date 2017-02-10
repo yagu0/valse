@@ -1,26 +1,28 @@
 #ifndef valse_selectiontotale_H
 #define valse_selectiontotale_H
 
+#include "utils.h"
+
 // Main job on raw inputs (after transformation from mxArray)
 void selectiontotale_core(
 	// IN parameters
-	const float* phiInit,
-	const float* rhoInit,
-	const float* piInit,
-	const float* gamInit,
+	const Real* phiInit,
+	const Real* rhoInit,
+	const Real* piInit,
+	const Real* gamInit,
 	int mini,
 	int maxi,
-	float gamma,
-	const float* glambda,
-	const float* X,
-	const float* Y,
-	float seuil,
-	float tau,
+	Real gamma,
+	const Real* glambda,
+	const Real* X,
+	const Real* Y,
+	Real seuil,
+	Real tau,
 	// OUT parameters
 	int* A1,
 	int* A2,
-	float* Rho,
-	float* Pi,
+	Real* Rho,
+	Real* Pi,
 	// additional size parameters
 	int n,
 	int p,
