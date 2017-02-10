@@ -37,55 +37,38 @@ void compareArray_int(const char* ID, const void* array, const void* refArray, i
 // Read array by columns (as in MATLAB) and return by-rows encoding
 void* readArray(const char* fileName, int isinteger)
 {
-	// need to prepend '../data/' (not really nice code...)
+	// need to prepend 'data/' (not really nice code...)
 	char* fullFileName = (char*)calloc(5+strlen(fileName)+1, sizeof(char));
 	strcat(fullFileName, "data/");
 	strcat(fullFileName, fileName);
 
 	// first pass to know how many elements to allocate
 	char* command = (char*)calloc(12+strlen(fullFileName)+8+1, sizeof(char));
-	strcat(command, "grep -o ' ' ");
+	strcat(command, "wc -l ");
 	strcat(command, fullFileName);
-	strcat(command, " | wc -l");
-	FILE *countSpaces = popen(command, "r");
-	char* buffer = (char*)calloc(32, sizeof(char));
-	fgets(buffer, sizeof(buffer), countSpaces);
-	int n = atoi(buffer) + 1;
-	free(buffer);
-	pclose(countSpaces);
+	FILE *arraySize = popen(command, "r");
+	char* bufferNum = (char*)calloc(64, sizeof(char));
+	fgets(bufferNum, sizeof(bufferNum), arraySize);
+	int n = atoi(bufferNum);
+	pclose(arraySize);
 
 	// open file for reading
-	FILE* file = fopen(fullFileName, "r");
+	FILE* arrayFile = fopen(fullFileName, "r");
 	free(fullFileName);
 
-	int d = 1;
-	size_t elementSize = isinteger
-		? sizeof(int)
-		: sizeof(float);
-
 	// read all values, and convert them to by-rows matrices format
+	size_t elementSize = isinteger ? sizeof(int) : sizeof(float);
 	void* array = malloc(n*elementSize);
-	char curChar = ' ';
-	char bufferNum[64];
-	for (int u=0; u<n; u++)
+	for (int i=0; i<n; i++)
 	{
-		// read number (as a string)
-		int bufferIndex = 0;
-		while (!feof(file) && curChar!=' ')
-		{
-			curChar = fgetc(file);
-			bufferNum[bufferIndex++] = curChar;
-		}
-		bufferNum[bufferIndex] = 0;
-		// transform string into float, and store it at appropriate location
+		// transform buffer content into float or int, and store it at appropriate location
 		if (isinteger)
-			((int*)array)[u] = atoi(bufferNum);
+			((int*)array)[i] = atoi(bufferNum);
 		else
-			((float*)array)[u] = atof(bufferNum);
-		// position to next non-separator character
-		curChar = fgetc(file);
+			((float*)array)[i] = atof(bufferNum);
 	}
-	fclose(file);
+	fclose(arrayFile);
+	free(bufferNum);
 
 	return array;
 }

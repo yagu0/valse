@@ -169,5 +169,5 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
   }
     
   Pi = t(Pi)
-  return(list(phi=phi, rho=rho, Pi=Pi, LLF=LLF, S=S))
+  return(list("phi"=phi, "rho"=rho, "pi"=Pi, "LLF"=LLF, "S"=S))
 }
