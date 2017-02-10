@@ -9,9 +9,9 @@ constructionModelesLassoRank = function(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rang
   deltaRank = rangmax - rangmin + 1
   Size = deltaRank^k
   Rank = matrix(0, Size, k)
-  for(r in 1:k){
-    Rank[,r] = rangmin + 
-  }
+#  for(r in 1:k) {
+#    Rank[,r] = rangmin +  <--- #FIXME:
+#  }
   
   phi = array(0, dim=c(p,m,k,L*Size))
   lvraisemblance = matrix(0, L*Size, 2)

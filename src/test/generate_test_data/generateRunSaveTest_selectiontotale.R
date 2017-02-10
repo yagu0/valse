@@ -3,11 +3,13 @@ generateRunSaveTest_selectiontotale= function(n=200, p=15, m=10, k=3, mini=5, ma
   dir.create(testFolder, showWarnings=FALSE, mode="0755")
   delimiter = " "
   
+	require(valse)
+
   #Generate phiInit,piInit,...
-  params = basicInitParameters(n, p, m, k)
+  params = valse:::basic_Init_Parameters(n, p, m, k)
   
   #Generate X and Y
-  generateIOdef = generateIOdefault(n, p, m, k)
+  generateIOdef = valse:::generateIOdefault(n, p, m, k)
   
   #save inputs
   write.table(paste(testFolder,"phiInit",sep=""), params$phiInit, sep=delimiter)

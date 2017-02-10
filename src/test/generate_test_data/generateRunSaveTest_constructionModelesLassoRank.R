@@ -17,7 +17,8 @@ generateRunSaveTest_constructionModelesLassoRank = function(n=200, p=15, m=10, L
     }
   }
   #Generate X and Y
-  generateIOdef = generateIOdefault(n, p, m, k)
+	require(valse)
+  generateIOdef = valse:::generateIOdefault(n, p, m, k)
   
   A1 = matrix(0,p,L)
   for(i in 1:L){

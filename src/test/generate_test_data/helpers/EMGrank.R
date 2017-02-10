@@ -1,4 +1,3 @@
-source("/home/goehry/Documents/valse/valse/R/vec_bin.R")
 require(MASS)
 EMGrank = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
   #matrix dimensions
@@ -24,7 +23,7 @@ EMGrank = function(Pi, Rho, mini, maxi, X, Y, tau, rank){
   while(ite<=mini || (ite<=maxi && sumDeltaPhi>tau)){
     #M step: Mise à jour de Beta (et donc phi)
     for(r in 1:k){
-      Z_bin = vec_bin(Z,r)
+      Z_bin = valse:::vec_bin(Z,r)
       Z_vec = Z_bin$vec #vecteur 0 et 1 aux endroits o? Z==r
       Z_indice = Z_bin$indice 
       if(sum(Z_indice) == 0){

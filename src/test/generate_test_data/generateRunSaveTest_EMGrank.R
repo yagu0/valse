@@ -13,7 +13,8 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
   }
 
   #Generate X and Y
-  generateIOdef = generateIOdefault(n, p, m, k)
+	require(valse)
+  generateIOdef = valse:::generateIOdefault(n, p, m, k)
   
   #save inputs
   write.table(paste(testFolder,"rho",sep=""), rho, sep=delimiter)

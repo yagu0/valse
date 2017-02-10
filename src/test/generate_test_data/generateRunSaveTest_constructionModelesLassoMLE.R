@@ -4,7 +4,8 @@ generateRunSaveTest_constructionModelesLassoMLE = function(n=200, p=15, m=10, k=
   delimiter = " "
   
   #Generate phiInit,piInit,...
-  params = basicInitParameters(n, p, m, k)
+	require(valse)
+  params = valse:::basic_Init_Parameters(n, p, m, k)
 
   #save inputs
   write.table(paste(testFolder,"phiInit",sep=""), params$phiInit, sep=delimiter)

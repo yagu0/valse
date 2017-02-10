@@ -6,7 +6,8 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	delimiter = " "
 
 	#save inputs
-	params = basicInitParameters(n, p, m, k)
+	require(valse)
+	params = valse:::basic_Init_Parameters(n, p, m, k)
 	io = generateIOdefault(n, p, m, k)
 	write.table(paste(testFolder,"phiInit",sep=""), params$phiInit, sep=delimiter);
 	write.table(paste(testFolder,"rhoInit",sep=""), params$rhoInit, sep=delimiter);
