@@ -83,7 +83,7 @@ void EMGLLF_core(
 			{
 				//X2(i,:,r)=X(i,:).*sqrt(gam(i,r));
 				for (int u=0; u<p; u++)
-					X2[ai(i,u,r,n,m,k)] = sqrt(gam[mi(i,r,n,k)]) * X[mi(i,u,n,p)];
+					X2[ai(i,u,r,n,p,k)] = sqrt(gam[mi(i,r,n,k)]) * X[mi(i,u,n,p)];
 			}
 			for (int mm=0; mm<m; mm++)
 			{
@@ -93,7 +93,7 @@ void EMGLLF_core(
 					Real dotProduct = 0.;
 					for (int v=0; v<n; v++)
 						dotProduct += X2[ai(v,u,r,n,m,k)] * Y2[ai(v,mm,r,n,m,k)];
-					ps2[ai(u,mm,r,n,m,k)] = dotProduct;
+					ps2[ai(u,mm,r,p,m,k)] = dotProduct;
 				}
 			}
 			for (int j=0; j<p; j++)
@@ -220,11 +220,7 @@ void EMGLLF_core(
 					sumPs1 += ps1[ai(u,mm,r,n,m,k)];
 				ps[mi(mm,r,m,k)] = sumPs1;
 				//nY2(mm,r)=sum(nY21(:,mm,r));
-
-
-				Real sumNy21 = sqrt(sumPs1); //0.0; ////////////TODO: 0.0 is correct; valgrind says that sumPs1 is uninitialized............
-
-
+				Real sumNy21 = 0.0;
 				for (int u=0; u<n; u++)
 					sumNy21 += nY21[ai(u,mm,r,n,m,k)];
 				nY2[mi(mm,r,m,k)] = sumNy21;
