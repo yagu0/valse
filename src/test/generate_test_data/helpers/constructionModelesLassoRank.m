@@ -1,4 +1,4 @@
-function[phi,lvraisemblance] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax)
+function[phi,llh] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax)
 
 	PI = 4.0 * atan(1.0);
 
@@ -22,7 +22,7 @@ function[phi,lvraisemblance] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y
 
 	%output parameters
 	phi = zeros(p,m,k,L*Size);
-	lvraisemblance = zeros(L*Size,2);
+	llh = zeros(L*Size,2);
 	for lambdaIndex=1:L
 		%On ne garde que les colonnes actives
 		%active sera l'ensemble des variables informatives
@@ -31,7 +31,7 @@ function[phi,lvraisemblance] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y
 		if length(active) > 0
 			for j=1:Size
 				[phiLambda,LLF] = EMGrank(Pi(:,lambdaIndex),Rho(:,:,:,lambdaIndex),mini,maxi,X(:,active),Y,tau,Rank(j,:));
-				lvraisemblance((lambdaIndex-1)*Size+j,:) = [LLF, sum(Rank(j,:) .* (length(active)-Rank(j,:)+m))];
+				llh((lambdaIndex-1)*Size+j,:) = [LLF, sum(Rank(j,:) .* (length(active)-Rank(j,:)+m))];
 				phi(active,:,:,(lambdaIndex-1)*Size+j) = phiLambda;
 			end
 		end

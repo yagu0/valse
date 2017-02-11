@@ -49,11 +49,11 @@ function[] = generateRunSaveTest_constructionModelesLassoRank(n, p, m, k, L, min
 	dlmwrite(strcat(testFolder,'rangmax'), rangmax, delimiter);
 	dlmwrite(strcat(testFolder,'dimensions'), [n,p,m,k,L], delimiter);
 
-	[phi,lvraisemblance] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax);
+	[phi,llh] = constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax);
 
 	%save output
 	Size = (rangmax-rangmin+1)^k;
 	dlmwrite(strcat(testFolder,'phi'), reshape(phi,1,[]), delimiter);
-	dlmwrite(strcat(testFolder,'lvraisemblance'), reshape(lvraisemblance,1,[]), delimiter);
+	dlmwrite(strcat(testFolder,'llh'), reshape(llh,1,[]), delimiter);
 
 end

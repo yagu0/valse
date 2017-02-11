@@ -23,7 +23,7 @@ void constructionModelesLassoMLE_core(
 	Real* phi,
 	Real* rho,
 	Real* pi,
-	Real* lvraisemblance,
+	Real* llh,
 	// additional size parameters
 	int n,
 	int p,

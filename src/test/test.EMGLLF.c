@@ -2,8 +2,6 @@
 #include "test_utils.h"
 #include <stdlib.h>
 
-#include <stdio.h>
-
 int main(int argc, char** argv)
 {
 	int* dimensions = readArray_int("dimensions");
@@ -15,36 +13,34 @@ int main(int argc, char** argv)
 
 	////////////
 	// INPUTS //
-	////////////
-
-	float* phiInit = readArray_real("phiInit");
-	float* rhoInit = readArray_real("rhoInit");
-	float* piInit = readArray_real("piInit");
-	float* gamInit = readArray_real("gamInit");
+	Real* phiInit = readArray_real("phiInit");
+	Real* rhoInit = readArray_real("rhoInit");
+	Real* piInit = readArray_real("piInit");
+	Real* gamInit = readArray_real("gamInit");
 	int mini = read_int("mini");
 	int maxi = read_int("maxi");
-	float gamma = read_real("gamma");
-	float lambda = read_real("lambda");
-	float* X = readArray_real("X");
-	float* Y = readArray_real("Y");
-	float tau = read_real("tau");
+	Real gamma = read_real("gamma");
+	Real lambda = read_real("lambda");
+	Real* X = readArray_real("X");
+	Real* Y = readArray_real("Y");
+	Real tau = read_real("tau");
+	////////////
 
 	/////////////
 	// OUTPUTS //
+	Real* phi = (Real*)malloc(p*m*k*sizeof(Real));
+	Real* rho = (Real*)malloc(m*m*k*sizeof(Real));
+	Real* pi = (Real*)malloc(k*sizeof(Real));
+	Real* LLF = (Real*)malloc(maxi*sizeof(Real));
+	Real* S = (Real*)malloc(p*m*k*sizeof(Real));
 	/////////////
-
-	float* phi = (float*)malloc(p*m*k*sizeof(float));
-	float* rho = (float*)malloc(m*m*k*sizeof(float));
-	float* pi = (float*)malloc(k*sizeof(float));
-	float* LLF = (float*)malloc(maxi*sizeof(float));
-	float* S = (float*)malloc(p*m*k*sizeof(float));
 
 	////////////////////
 	// Call to EMGLLF //
-	////////////////////
 	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
 		phi,rho,pi,LLF,S,
 		n,p,m,k);
+	////////////////////
 
 	free(phiInit);
 	free(rhoInit);
@@ -54,27 +50,27 @@ int main(int argc, char** argv)
 	free(Y);
 
 	// Compare to reference outputs
-	float* ref_phi = readArray_real("phi");
+	Real* ref_phi = readArray_real("phi");
 	compareArray_real("phi", phi, ref_phi, p*m*k);
 	free(phi);
 	free(ref_phi);
 
-	float* ref_rho = readArray_real("rho");
+	Real* ref_rho = readArray_real("rho");
 	compareArray_real("rho", rho, ref_rho, m*m*k);
 	free(rho);
 	free(ref_rho);
 
-	float* ref_pi = readArray_real("pi");
+	Real* ref_pi = readArray_real("pi");
 	compareArray_real("pi", pi, ref_pi, k);
 	free(pi);
 	free(ref_pi);
 
-	float* ref_LLF = readArray_real("LLF");
+	Real* ref_LLF = readArray_real("LLF");
 	compareArray_real("LLF", LLF, ref_LLF, maxi);
 	free(LLF);
 	free(ref_LLF);
 
-	float* ref_S = readArray_real("S");
+	Real* ref_S = readArray_real("S");
 	compareArray_real("S", S, ref_S, p*m*k);
 	free(S);
 	free(ref_S);

@@ -1,5 +1,6 @@
 #include "EMGrank.h"
 #include "test_utils.h"
+#include <stdlib.h>
 
 int main(int argc, char** argv)
 {
@@ -12,46 +13,43 @@ int main(int argc, char** argv)
 
 	////////////
 	// INPUTS //
-	////////////
-
-	float* Rho = readArray_real("Rho");
-	float* Pi = readArray_real("Pi");
+	Real* rho = readArray_real("rho");
+	Real* pi = readArray_real("pi");
 	int mini = read_int("mini");
 	int maxi = read_int("maxi");
-	float* X = readArray_real("X");
-	float* Y = readArray_real("Y");
-	float tau = read_real("tau");
+	Real* X = readArray_real("X");
+	Real* Y = readArray_real("Y");
+	Real tau = read_real("tau");
 	int* rank = readArray_int("rank");
+	////////////
 
 	/////////////
 	// OUTPUTS //
+	Real* phi = (Real*)malloc(p*m*k*sizeof(Real));
+	Real* LLF = (Real*)malloc(1*sizeof(Real));
 	/////////////
-
-	float* phi = (float*)malloc(p*m*k*sizeof(float));
-	float* LLF = (float*)malloc(1*sizeof(float));
 
 	//////////////////////////
 	// Main call to EMGrank //
-	//////////////////////////
-
-	EMGrank(Pi,Rho,mini,maxi,X,Y,tau,rank,
+	EMGrank_core(pi,rho,mini,maxi,X,Y,tau,rank,
 		phi,LLF,
 		n,p,m,k);
+	//////////////////////////
 
-	free(Rho);
-	free(Pi);
+	free(rho);
+	free(pi);
 	free(X);
 	free(Y);
 	free(rank);
 
 	// Compare to reference outputs
-	float* ref_phi = readArray_real("phi");
+	Real* ref_phi = readArray_real("phi");
 	compareArray_real("phi", phi, ref_phi, p*m*k);
 	free(phi);
 	free(ref_phi);
 
 	// LLF
-	float* ref_LLF = readArray_real("LLF");
+	Real* ref_LLF = readArray_real("LLF");
 	compareArray_real("LLF", LLF, ref_LLF, 1);
 	free(LLF);
 	free(ref_LLF);

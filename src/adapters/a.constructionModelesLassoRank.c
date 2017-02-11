@@ -46,13 +46,13 @@ SEXP constructionModelesLassoRank(
 	/////////////
 
 	int Size = pow(rangmax-rangmin+1,k);
-	SEXP phi, lvraisemblance, dimPhi;
+	SEXP phi, llh, dimPhi;
 	PROTECT(dimPhi = allocVector(INTSXP, 4));
 	int* pDimPhi = INTEGER(dimPhi);
 	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k; pDimPhi[3] = L*Size;
 	PROTECT(phi = allocArray(REALSXP, dimPhi));
-	PROTECT(lvraisemblance = allocMatrix(REALSXP, L*Size, 2));
-	double *pPhi=REAL(phi), *pLvraisemblance=REAL(lvraisemblance);
+	PROTECT(llh = allocMatrix(REALSXP, L*Size, 2));
+	double *pPhi=REAL(phi), *pllh=REAL(llh);
 
 	//////////////////////////////////////////
 	// Call to constructionModelesLassoRank //
@@ -60,19 +60,19 @@ SEXP constructionModelesLassoRank(
 
 	constructionModelesLassoRank_core(
 		Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax,
-		pPhi,pLvraisemblance,
+		pPhi,pllh,
 		n,p,m,k,L);
 
 	// Build list from OUT params and return it
 	SEXP listParams, listNames;
 	PROTECT(listParams = allocVector(VECSXP, 2));
-	char* lnames[2] = {"phi", "lvraisemblance"}; //lists labels
+	char* lnames[2] = {"phi", "llh"}; //lists labels
 	PROTECT(listNames = allocVector(STRSXP,2));
 	for (int i=0; i<2; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
 	setAttrib(listParams, R_NamesSymbol, listNames);
 	SET_VECTOR_ELT(listParams, 0, phi);
-	SET_VECTOR_ELT(listParams, 1, lvraisemblance);
+	SET_VECTOR_ELT(listParams, 1, llh);
 
 	UNPROTECT(5);
 	return listParams;

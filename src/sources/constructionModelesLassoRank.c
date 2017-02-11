@@ -19,7 +19,7 @@ void constructionModelesLassoRank_core(
 	int rangmax,	//rang maximum autorisé
 	// OUT parameters (all pointers, to be modified)
 	Real* phi,// estimateur ainsi calculé par le Lasso
-	Real* lvraisemblance,// estimateur ainsi calculé par le Lasso
+	Real* llh,// estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n,// taille de l'echantillon
 	int p,// nombre de covariables
@@ -106,13 +106,13 @@ for (int r=0; r<k; r++)
 			free(Xactive);
 			free(PiLambda);
 			free(RhoLambda);
-			//lvraisemblance((lambdaIndex-1)*Size+j,:) = [LLF, dot(Rank(j,:), length(active)-Rank(j,:)+m)];
-			lvraisemblance[mi(lambdaIndex*Size+j,0,L*Size,2)] = LLF;
+			//llh((lambdaIndex-1)*Size+j,:) = [LLF, dot(Rank(j,:), length(active)-Rank(j,:)+m)];
+			llh[mi(lambdaIndex*Size+j,0,L*Size,2)] = LLF;
 			//dot(Rank(j,:), length(active)-Rank(j,:)+m)
 			Real dotProduct = 0.0;
 			for (int r=0; r<k; r++)
 				dotProduct += Rank[mi(j,r,Size,k)] * (longueurActive-Rank[mi(j,r,Size,k)]+m);
-			lvraisemblance[mi(lambdaIndex*Size+j,1,Size*L,2)] = dotProduct;
+			llh[mi(lambdaIndex*Size+j,1,Size*L,2)] = dotProduct;
 			//phi(active,:,:,(lambdaIndex-1)*Size+j) = phiLambda;
 			for (int jj=0; jj<longueurActive; jj++)
 			{

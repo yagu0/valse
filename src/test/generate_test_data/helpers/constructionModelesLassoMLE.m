@@ -1,4 +1,4 @@
-function[phi,rho,pi,lvraisemblance] = constructionModelesLassoMLE(...
+function[phi,rho,pi,llh] = constructionModelesLassoMLE(...
 	phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2)
 
 	PI = 4.0 * atan(1.0);
@@ -12,7 +12,7 @@ function[phi,rho,pi,lvraisemblance] = constructionModelesLassoMLE(...
 	phi = zeros(p,m,k,L);
 	rho = zeros(m,m,k,L);
 	pi = zeros(k,L);
-	lvraisemblance = zeros(L,2);
+	llh = zeros(L,2);
 
 	for lambdaIndex=1:L
 		% Procedure Lasso-MLE
@@ -51,8 +51,8 @@ function[phi,rho,pi,lvraisemblance] = constructionModelesLassoMLE(...
 					pi(r,lambdaIndex)*det(rho(:,:,r,lambdaIndex))/(sqrt(2*PI))^m*exp(-dot(delta,delta)/2.0);
 			end
 		end
-		lvraisemblance(lambdaIndex,1) = sum(log(densite(:,lambdaIndex)));
-		lvraisemblance(lambdaIndex,2) = (dimension+m+1)*k-1;
+		llh(lambdaIndex,1) = sum(log(densite(:,lambdaIndex)));
+		llh(lambdaIndex,2) = (dimension+m+1)*k-1;
 	end
 
 end

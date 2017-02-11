@@ -18,7 +18,7 @@ void constructionModelesLassoRank_core(
 	int rangmax,
 	// OUT parameters
 	Real* phi,
-	Real* lvraisemblance,
+	Real* llh,
 	// additional size parameters
 	int n,
 	int p,

@@ -132,7 +132,7 @@ void EMGrank_core(
 				{
 					Real dotProduct = 0.0;
 					for (int u=0; u<cardClustR; u++)
-						dotProduct += Xr[mi(u,j,n,p)] * Yr[mi(u,j,n,m)];
+						dotProduct += Xr[mi(u,j,n,p)] * Yr[mi(u,jj,n,m)];
 					tXrYr[mi(j,jj,p,m)] = dotProduct;
 				}
 			}
@@ -281,7 +281,7 @@ void EMGrank_core(
 			for (int jj=0; jj<p; jj++)
 			{
 				for (int r=0; r<k; r++)
-					Phi[ai(j,jj,r,p,m,k)] = phi[ai(j,jj,r,p,m,k)];
+					Phi[ai(jj,j,r,p,m,k)] = phi[ai(jj,j,r,p,m,k)];
 			}
 		}
 		ite++;

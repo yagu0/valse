@@ -28,7 +28,7 @@ modelSelection = function(LLF)
 			}
 			b = max(a)
 			#indices[i] : first indices of the binary vector where u_i ==1
-			indices[i] = which.max(vec_bin(LLF,b)[[1]])
+			indices[i] = which.max(LLF == b)
 		}
 	}
 

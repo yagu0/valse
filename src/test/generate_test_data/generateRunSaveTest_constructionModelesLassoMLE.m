@@ -51,12 +51,12 @@ function[] = generateRunSaveTest_constructionModelesLassoMLE(n, p, m, k, mini, m
 	dlmwrite(strcat(testFolder,'A2'), reshape(A2,1,[]), delimiter);
 	dlmwrite(strcat(testFolder,'dimensions'), [n,p,m,k,L], delimiter);
 
-	[phi,rho,pi,lvraisemblance] = constructionModelesLassoMLE(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2);
+	[phi,rho,pi,llh] = constructionModelesLassoMLE(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2);
 
 	%save output
 	dlmwrite(strcat(testFolder,'phi'), reshape(phi,1,[]), delimiter);
 	dlmwrite(strcat(testFolder,'rho'), reshape(rho,1,[]), delimiter);
 	dlmwrite(strcat(testFolder,'pi'), reshape(pi,1,[]), delimiter);
-	dlmwrite(strcat(testFolder,'lvraisemblance'), reshape(lvraisemblance,1,[]), delimiter);
+	dlmwrite(strcat(testFolder,'llh'), reshape(llh,1,[]), delimiter);
 
 end

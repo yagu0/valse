@@ -10,7 +10,7 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
   phi = array(0, dim=c(p,m,k,L))
   rho = array(0, dim=c(m,m,k,L))
   Pi = matrix(0, k, L)
-  lvraisemblance = matrix(0, L, 2)
+  llh = matrix(0, L, 2) #log-likelihood
 
   for(lambdaIndex in 1:L){
     a = A1[, 1, lambdaIndex]
@@ -51,8 +51,8 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
 				densite[i,lambdaIndex] = densite[i,lambdaIndex] +	Pi[r,lambdaIndex]*det(rho[,,r,lambdaIndex])/(sqrt(2*pi))^m*exp(-tcrossprod(delta)/2.0)
 			}
 		}
-		lvraisemblance[lambdaIndex,1] = sum(log(densite[,lambdaIndex]))
-		lvraisemblance[lambdaIndex,2] = (dimension+m+1)*k-1
+		llh[lambdaIndex,1] = sum(log(densite[,lambdaIndex]))
+		llh[lambdaIndex,2] = (dimension+m+1)*k-1
   }
-  return(list(phi=phi, rho=rho, Pi=Pi, lvraisemblance = lvraisemblance))
+  return(list(phi=phi, rho=rho, Pi=Pi, llh = llh))
 }

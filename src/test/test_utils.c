@@ -8,14 +8,14 @@
 void compareArray(const char* ID, const void* array, const void* refArray, int size,
 	int isinteger)
 {
-	float EPS = 1e-5; //precision
+	Real EPS = 1e-5; //precision
 	printf("Checking %s\n",ID);
-	float maxError = 0.0;
+	Real maxError = 0.0;
 	for (int i=0; i<size; i++)
 	{
-		float error = isinteger
+		Real error = isinteger
 			? fabs(((int*)array)[i] - ((int*)refArray)[i])
-			: fabs(((float*)array)[i] - ((float*)refArray)[i]);
+			: fabs(((Real*)array)[i] - ((Real*)refArray)[i]);
 		if (error >= maxError)
 			maxError = error;
 	}
@@ -48,6 +48,7 @@ void* readArray(const char* fileName, int isinteger)
 	strcat(command, "wc -l ");
 	strcat(command, fullFileName);
 	FILE *arraySize = popen(command, "r");
+	free(command);
 	char* bufferNum = (char*)calloc(64, sizeof(char));
 	fgets(bufferNum, sizeof(bufferNum), arraySize);
 	int n = atoi(bufferNum);
@@ -58,16 +59,16 @@ void* readArray(const char* fileName, int isinteger)
 	free(fullFileName);
 
 	// read all values, and convert them to by-rows matrices format
-	size_t elementSize = isinteger ? sizeof(int) : sizeof(float);
+	size_t elementSize = isinteger ? sizeof(int) : sizeof(Real);
 	void* array = malloc(n*elementSize);
 	for (int i=0; i<n; i++)
 	{
 		fgets(bufferNum, 64, arrayFile);
-		// transform buffer content into float or int, and store it at appropriate location
+		// transform buffer content into Real or int, and store it at appropriate location
 		if (isinteger)
 			((int*)array)[i] = atoi(bufferNum);
 		else
-			((float*)array)[i] = atof(bufferNum);
+			((Real*)array)[i] = atof(bufferNum);
 	}
 	fclose(arrayFile);
 	free(bufferNum);
@@ -80,9 +81,9 @@ int* readArray_int(const char* fileName)
 	return (int*)readArray(fileName, 1);
 }
 
-float* readArray_real(const char* fileName)
+Real* readArray_real(const char* fileName)
 {
-	return (float*)readArray(fileName, 0);
+	return (Real*)readArray(fileName, 0);
 }
 
 int read_int(const char* fileName)
@@ -93,7 +94,7 @@ int read_int(const char* fileName)
 	return res;
 }
 
-float read_real(const char* fileName)
+Real read_real(const char* fileName)
 {
 	Real* array = readArray_real(fileName);
 	Real res = array[0];

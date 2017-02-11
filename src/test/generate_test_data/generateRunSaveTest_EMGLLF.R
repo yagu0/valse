@@ -3,12 +3,12 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 {
 	testFolder = "data/"
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
-	delimiter = " "
 
-	#save inputs
 	require(valse)
 	params = valse:::basic_Init_Parameters(n, p, m, k)
 	io = generateIOdefault(n, p, m, k)
+
+	#save inputs
 	write.table(as.double(params$phiInit), paste(testFolder,"phiInit",sep=""),
 		row.names=F, col.names=F)
 	write.table(as.double(params$rhoInit), paste(testFolder,"rhoInit",sep=""),

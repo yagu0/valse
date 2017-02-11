@@ -52,7 +52,7 @@ SEXP constructionModelesLassoMLE(
 	// OUTPUTS //
 	/////////////
 
-	SEXP phi, rho, pi, lvraisemblance, dimPhi, dimRho;
+	SEXP phi, rho, pi, llh, dimPhi, dimRho;
 	PROTECT(dimPhi = allocVector(INTSXP, 4));
 	int* pDimPhi = INTEGER(dimPhi);
 	pDimPhi[0] = p; pDimPhi[1] = m; pDimPhi[2] = k; pDimPhi[3] = L;
@@ -62,8 +62,8 @@ SEXP constructionModelesLassoMLE(
 	PROTECT(phi = allocArray(REALSXP, dimPhi));
 	PROTECT(rho = allocArray(REALSXP, dimRho));
 	PROTECT(pi = allocMatrix(REALSXP, k, L));
-	PROTECT(lvraisemblance = allocMatrix(REALSXP, L, 2));
-	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLvraisemblance=REAL(lvraisemblance);
+	PROTECT(llh = allocMatrix(REALSXP, L, 2));
+	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pllh=REAL(llh);
 
 	/////////////////////////////////////////
 	// Call to constructionModelesLassoMLE //
@@ -71,13 +71,13 @@ SEXP constructionModelesLassoMLE(
 
 	constructionModelesLassoMLE_core(
 		phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2,
-		pPhi,pRho,pPi,pLvraisemblance,
+		pPhi,pRho,pPi,pllh,
 		n,p,m,k,L);
 
 	// Build list from OUT params and return it
 	SEXP listParams, listNames;
 	PROTECT(listParams = allocVector(VECSXP, 4));
-	char* lnames[4] = {"phi", "rho", "pi", "lvraisemblance"}; //lists labels
+	char* lnames[4] = {"phi", "rho", "pi", "llh"}; //lists labels
 	PROTECT(listNames = allocVector(STRSXP,4));
 	for (int i=0; i<4; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
@@ -85,7 +85,7 @@ SEXP constructionModelesLassoMLE(
 	SET_VECTOR_ELT(listParams, 0, phi);
 	SET_VECTOR_ELT(listParams, 1, rho);
 	SET_VECTOR_ELT(listParams, 2, pi);
-	SET_VECTOR_ELT(listParams, 3, lvraisemblance);
+	SET_VECTOR_ELT(listParams, 3, llh);
 
 	UNPROTECT(8);
 	return listParams;

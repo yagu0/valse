@@ -10,8 +10,8 @@ void* readArray(const char* fileName, int isInteger);
 
 int* readArray_int(const char* fileName);
 
-float* readArray_real(const char* fileName);
+Real* readArray_real(const char* fileName);
 
 int read_int(const char* fileName);
 
-float read_real(const char* fileName);
+Real read_real(const char* fileName);

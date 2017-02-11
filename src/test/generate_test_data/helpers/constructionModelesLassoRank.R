@@ -14,7 +14,7 @@ constructionModelesLassoRank = function(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rang
 #  }
   
   phi = array(0, dim=c(p,m,k,L*Size))
-  lvraisemblance = matrix(0, L*Size, 2)
+  llh = matrix(0, L*Size, 2) #log-likelihood
   for(lambdaIndex in 1:L){
     #on ne garde que les colonnes actives
     #active sera l'ensemble des variables informatives
@@ -25,10 +25,10 @@ constructionModelesLassoRank = function(Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rang
         EMG_rank = EMGrank(Pi[,lambdaIndex], Rho[,,,lambdaIndex], mini, maxi, X[, active], Y, tau, Rank[j,])
         phiLambda = EMG_rank$phi
         LLF = EMG_rank$LLF
-        lvraisemblance[(lambdaIndex-1)*Size+j,] = c(LLF, sum(Rank[j,]^(length(active)- Rank[j,]+m)))
+        llh[(lambdaIndex-1)*Size+j,] = c(LLF, sum(Rank[j,]^(length(active)- Rank[j,]+m)))
         phi[active,,,(lambdaIndex-1)*Size+j] = phiLambda
       }
     }
   }
-  return(list(phi=phi, lvraisemblance = lvraisemblance))
+  return(list(phi=phi, llh = llh))
 }

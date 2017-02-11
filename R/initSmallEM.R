@@ -33,15 +33,13 @@ initSmallEM = function(k,X,Y,tau)
 		for(r in 1:k)
 		{
 			Z = Zinit1[,repet]
-			Z_bin = vec_bin(Z,r)
-			Z_vec = Z_bin$vec #vecteur 0 et 1 aux endroits o? Z==r
-			Z_indice = Z_bin$indice #renvoit les indices o? Z==r
+			Z_indice = seq_len(n)[Z == r] #renvoit les indices où Z==r
 			
-			betaInit1[,,r,repet] = ginv( crossprod(X[Z_indice,]) )   %*%   crossprod(X[Z_indice,], Y[Z_indice,]) 
+			betaInit1[,,r,repet] = ginv(crossprod(X[Z_indice,])) %*% crossprod(X[Z_indice,], Y[Z_indice,])
 			sigmaInit1[,,r,repet] = diag(m)
 			phiInit1[,,r,repet] = betaInit1[,,r,repet] #/ sigmaInit1[,,r,repet]
 			rhoInit1[,,r,repet] = solve(sigmaInit1[,,r,repet])
-			piInit1[repet,r] = sum(Z_vec)/n
+			piInit1[repet,r] = mean(Z == r)
 		}
 		
 		for(i in 1:n)

@@ -7,7 +7,7 @@
  * Types
  *******/
 
-typedef float Real;
+typedef double Real;
 //typedef uint32_t UInt;
 //typedef int32_t Int;
 

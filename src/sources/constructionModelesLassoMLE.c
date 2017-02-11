@@ -25,7 +25,7 @@ void constructionModelesLassoMLE_core(
 	Real* phi,// estimateur ainsi calculé par le Lasso
 	Real* rho,// estimateur ainsi calculé par le Lasso
 	Real* pi, // estimateur ainsi calculé par le Lasso
-	Real* lvraisemblance, // estimateur ainsi calculé par le Lasso
+	Real* llh, // estimateur ainsi calculé par le Lasso
 	// additional size parameters
 	int n, // taille de l'echantillon
 	int p, // nombre de covariables
@@ -204,8 +204,8 @@ void constructionModelesLassoMLE_core(
 			}
 			sumLogDensit += log(densite[lambdaIndex*n+i]);
 		}
-		lvraisemblance[mi(lambdaIndex,0,L,2)] = sumLogDensit;
-		lvraisemblance[mi(lambdaIndex,1,L,2)] = (dimension+m+1)*k-1;
+		llh[mi(lambdaIndex,0,L,2)] = sumLogDensit;
+		llh[mi(lambdaIndex,1,L,2)] = (dimension+m+1)*k-1;
 
 		free(a);
 		free(YiRhoR);
