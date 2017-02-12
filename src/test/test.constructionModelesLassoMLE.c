@@ -1,5 +1,8 @@
 #include "constructionModelesLassoMLE.h"
 #include "test_utils.h"
+#include <stdlib.h>
+
+#include <stdio.h>
 
 int main(int argc, char** argv)
 {
@@ -39,7 +42,7 @@ int main(int argc, char** argv)
 
 	/////////////////////////////////////////
 	// Call to constructionModelesLassoMLE //
-	constructionModelesLassoMLE(
+	constructionModelesLassoMLE_core(
 		phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau,A1,A2,
 		phi,rho,pi,llh,
 		n,p,m,k,L);
@@ -56,22 +59,22 @@ int main(int argc, char** argv)
 	free(glambda);
 
 	// Compare to reference outputs
-	Real* ref_phi = readArray_real("phi",dimPhi,4);
+	Real* ref_phi = readArray_real("phi");
 	compareArray_real("phi", phi, ref_phi, p*m*k*L);
 	free(phi);
 	free(ref_phi);
 
-	Real* ref_rho = readArray_real("rho",dimRho,4);
+	Real* ref_rho = readArray_real("rho");
 	compareArray_real("rho", rho, ref_rho, m*m*k*L);
 	free(rho);
 	free(ref_rho);
 
-	Real* ref_pi = readArray_real("pi",dimPi,2);
+	Real* ref_pi = readArray_real("pi");
 	compareArray_real("pi", pi, ref_pi, k*L);
 	free(pi);
 	free(ref_pi);
 
-	Real* ref_llh = readArray_real("llh",dimllh,2);
+	Real* ref_llh = readArray_real("llh");
 	compareArray_real("llh", llh, ref_llh, L*2);
 	free(llh);
 	free(ref_llh);

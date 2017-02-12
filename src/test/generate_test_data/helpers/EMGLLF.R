@@ -135,7 +135,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 			{
 				#FIXME: numerical problems, because 0 < det(Rho[,,r] < EPS; what to do ?!
         #       consequence: error in while() at line 77
-				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r] + shift) * det(rho[,,r])
+				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r] + shift) #* det(rho[,,r])
         sumLLF1 = sumLLF1 + Gam[i,r] / (2*base::pi)^(m/2)
       }
       sumLogLLF2 = sumLogLLF2 + log(sumLLF1)

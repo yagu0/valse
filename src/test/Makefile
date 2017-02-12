@@ -33,7 +33,7 @@ test.selectionTotale: $(LIB) test.selectionTotale.o test_utils.o
 	$(CC) -fPIC -o $@ -c $< $(CFLAGS) $(INCLUDES)
 
 clean:
-	rm -f *.o ../sources/*.o
+	rm -f *.o ../sources/*.o ../adapters/*.o
 
 cclean: clean
 	rm -f $(LIB) $(TESTS)

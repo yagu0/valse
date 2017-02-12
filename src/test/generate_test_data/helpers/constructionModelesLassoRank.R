@@ -45,5 +45,5 @@ constructionModelesLassoRank = function(pi,rho,mini,maxi,X,Y,tau,A1,rangmin,rang
       }
     }
   }
-  return (list(phi=phi, llh = llh))
+  return (list("phi"=phi, "llh" = llh))
 }

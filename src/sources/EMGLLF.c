@@ -92,7 +92,7 @@ void EMGLLF_core(
 				{
 					Real dotProduct = 0.;
 					for (int v=0; v<n; v++)
-						dotProduct += X2[ai(v,u,r,n,m,k)] * Y2[ai(v,mm,r,n,m,k)];
+						dotProduct += X2[ai(v,u,r,n,p,k)] * Y2[ai(v,mm,r,n,m,k)];
 					ps2[ai(u,mm,r,p,m,k)] = dotProduct;
 				}
 			}
@@ -317,7 +317,7 @@ void EMGLLF_core(
 				Real detRhoR = gsl_linalg_LU_det(matrix, signum);
 
 				//FIXME: det(rho[,,r]) too small(?!). See EMGLLF.R
-				Gam[mi(i,r,n,k)] = pi[r] * exp(-0.5*sqNorm2[r] + shift) * detRhoR;
+				Gam[mi(i,r,n,k)] = pi[r] * exp(-0.5*sqNorm2[r] + shift) ; //* detRhoR;
 				sumLLF1 += Gam[mi(i,r,n,k)] / gaussConstM;
 				sumGamI += Gam[mi(i,r,n,k)];
 			}

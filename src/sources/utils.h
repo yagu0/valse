@@ -37,10 +37,6 @@ typedef double Real;
 #define ai4(i,j,k,m,d1,d2,d3,d4)\
 	m*d1*d2*d3 + k*d1*d2 + j*d1 + i
 
-// Array5 Index ; TODO? ...
-#define ai5(i,j,k,m,n,d1,d2,d3,d4,d5)\
-	n*d1*d2*d3*d4 + m*d1*d2*d3 + k*d1*d2 + j*d1 + i
-
 /*************************
  * Array copy & "zeroing"
  ************************/

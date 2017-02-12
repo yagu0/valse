@@ -34,7 +34,7 @@ generateRunSaveTest_constructionModelesLassoMLE = function(n=200, p=15, m=10, k=
 		row.names=F, col.names=F)
   write.table(as.double(gamma), paste(testFolder,"gamma",sep=""),
 		row.names=F, col.names=F)
-  write.table(as.double(lambda), paste(testFolder,"lambda",sep=""),
+  write.table(as.double(glambda), paste(testFolder,"glambda",sep=""),
 		row.names=F, col.names=F)
   write.table(as.double(xy$X), paste(testFolder,"X",sep=""),
 		row.names=F, col.names=F)

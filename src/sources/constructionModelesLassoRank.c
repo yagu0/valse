@@ -55,6 +55,8 @@ void constructionModelesLassoRank_core(
 	//Initialize phi to zero, because unactive variables won't be assigned
 	for (int i=0; i<p*m*k*L*Size; i++)
 		phi[i] = 0.0;
+	for (int i=0; i<L*Size*2; i++)
+		llh[i] = INFINITY;
 
 	//initiate parallel section
 	int lambdaIndex;
