@@ -3,5 +3,5 @@
 .RData
 *.swp
 *~
-/man/
+/man/*
 !/man/*-package.Rd
