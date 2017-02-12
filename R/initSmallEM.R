@@ -13,7 +13,7 @@ initSmallEM = function(k,X,Y,tau)
 	m = ncol(Y)
 	p = ncol(X)
   
-	Zinit1 = array(0, dim=c(n,20)) 
+	Zinit1 = array(0, dim=c(n,20))
 	betaInit1 = array(0, dim=c(p,m,k,20))
 	sigmaInit1 = array(0, dim = c(m,m,k,20))
 	phiInit1 = array(0, dim = c(p,m,k,20))
@@ -35,7 +35,8 @@ initSmallEM = function(k,X,Y,tau)
 			Z = Zinit1[,repet]
 			Z_indice = seq_len(n)[Z == r] #renvoit les indices où Z==r
 			
-			betaInit1[,,r,repet] = ginv(crossprod(X[Z_indice,])) %*% crossprod(X[Z_indice,], Y[Z_indice,])
+			betaInit1[,,r,repet] = ginv(crossprod(X[Z_indice,])) %*%
+				crossprod(X[Z_indice,], Y[Z_indice,])
 			sigmaInit1[,,r,repet] = diag(m)
 			phiInit1[,,r,repet] = betaInit1[,,r,repet] #/ sigmaInit1[,,r,repet]
 			rhoInit1[,,r,repet] = solve(sigmaInit1[,,r,repet])
@@ -56,7 +57,8 @@ initSmallEM = function(k,X,Y,tau)
 		miniInit = 10
 		maxiInit = 11
 		
-		new_EMG = .Call("EMGLLF_core",phiInit1[,,,repet],rhoInit1[,,,repet],piInit1[repet,],gamInit1[,,repet],miniInit,maxiInit,1,0,X,Y,tau)
+		new_EMG = .Call("EMGLLF_core",phiInit1[,,,repet],rhoInit1[,,,repet],piInit1[repet,],
+			gamInit1[,,repet],miniInit,maxiInit,1,0,X,Y,tau)
 		LLFEessai = new_EMG$LLF
 		LLFinit1[repet] = LLFEessai[length(LLFEessai)]
 	}

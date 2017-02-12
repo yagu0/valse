@@ -1,6 +1,7 @@
 #include "constructionModelesLassoRank.h"
 #include "test_utils.h"
 #include <stdlib.h>
+#include <math.h>
 
 int main(int argc, char** argv)
 {
@@ -14,8 +15,8 @@ int main(int argc, char** argv)
 
 	////////////
 	// INPUTS //
-	Real* Pi = readArray_real("Pi");
-	Real* Rho = readArray_real("Rho");
+	Real* pi = readArray_real("pi");
+	Real* rho = readArray_real("rho");
 	int mini = read_int("mini");
 	int maxi = read_int("maxi");
 	Real* X = readArray_real("X");
@@ -36,13 +37,13 @@ int main(int argc, char** argv)
 	/////////////////////////////////////////
 	// Call to constructionModelesLassoMLE //
 	constructionModelesLassoRank_core(
-		Pi,Rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax,
+		pi,rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax,
 		phi,llh,
 		n,p,m,k,L);
 	/////////////////////////////////////////
 
-	free(Rho);
-	free(Pi);
+	free(rho);
+	free(pi);
 	free(X);
 	free(Y);
 	free(A1);

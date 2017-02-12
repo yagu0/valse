@@ -1,11 +1,11 @@
 #' Among a collection of models, this function constructs a subcollection of models with
-#' models having strictly different dimensions, keeping the model which minimizes 
+#' models having strictly different dimensions, keeping the model which minimizes
 #' the likelihood if there were several with the same dimension
 #'
 #' @param LLF a matrix, the first column corresponds to likelihoods for several models
 #'				the second column corresponds to the dimensions of the corresponding models.
 #'
-#' @return a list with indices, a vector of indices selected models, 
+#' @return a list with indices, a vector of indices selected models,
 #'				 and D1, a vector of corresponding dimensions
 #' @export
 #'
@@ -34,3 +34,7 @@ modelSelection = function(LLF)
 
 	return (list(indices=indices,D1=D1))
 }
+
+#TODO:
+## Programme qui sélectionne un modèle
+## proposer à l'utilisation différents critères (BIC, AIC, slope heuristic)

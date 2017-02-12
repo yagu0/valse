@@ -7,8 +7,8 @@
 // TODO: comment on constructionModelesLassoRank purpose
 void constructionModelesLassoRank_core(
 	// IN parameters
-	const Real* Pi,// parametre initial des proportions
-	const Real* Rho, // parametre initial de variance renormalisé
+	const Real* pi,// parametre initial des proportions
+	const Real* rho, // parametre initial de variance renormalisé
 	int mini, // nombre minimal d'itérations dans l'algorithme EM
 	int maxi, // nombre maximal d'itérations dans l'algorithme EM
 	const Real* X,// régresseurs
@@ -31,18 +31,22 @@ void constructionModelesLassoRank_core(
 	int deltaRank = rangmax-rangmin+1;
 	int Size = (int)pow(deltaRank,k);
 	int* Rank = (int*)malloc(Size*k*sizeof(int));
-for (int r=0; r<k; r++)
-{
-		//On veut le tableau de toutes les combinaisons de rangs possibles
-		//Dans la première colonne : on répète (rangmax-rangmin)^(k-1) chaque chiffre : ca remplit la colonne
-		//Dans la deuxieme : on répète (rangmax-rangmin)^(k-2) chaque chiffre, et on fait ca (rangmax-rangmin)^2 fois 
-		//...
-		//Dans la dernière, on répète chaque chiffre une fois, et on fait ca (rangmin-rangmax)^(k-1) fois.
+	for (int r=0; r<k; r++)
+	{
+		// On veut le tableau de toutes les combinaisons de rangs possibles
+		// Dans la première colonne : on répète (rangmax-rangmin)^(k-1) chaque chiffre :
+		//   ça remplit la colonne
+		// Dans la deuxieme : on répète (rangmax-rangmin)^(k-2) chaque chiffre,
+		//   et on fait ça (rangmax-rangmin)^2 fois
+		// ...
+		// Dans la dernière, on répète chaque chiffre une fois,
+		//   et on fait ça (rangmin-rangmax)^(k-1) fois.
 		int indexInRank = 0;
 		int value = 0;
 		while (indexInRank < Size)
 		{
-			for (int u=0; u<pow(deltaRank,k-r-1); u++)
+			int upperBoundU = (int)pow(deltaRank,k-r-1);
+			for (int u=0; u<upperBoundU; u++)
 				Rank[mi(indexInRank++,r,Size,k)] = rangmin + value;
 			value = (value+1) % deltaRank;
 		}
@@ -68,7 +72,6 @@ for (int r=0; r<k; r++)
 			if (A1[mi(j,lambdaIndex,p,L)] != 0)
 				active[longueurActive++] = A1[mi(j,lambdaIndex,p,L)] - 1;
 		}
-
 		if (longueurActive == 0)
 			continue;
 
@@ -77,7 +80,6 @@ for (int r=0; r<k; r++)
 		Real LLF;
 		for (int j=0; j<Size; j++)
 		{
-			//[phiLambda,LLF] = EMGrank(Pi(:,lambdaIndex),Rho(:,:,:,lambdaIndex),mini,maxi,X(:,active),Y,tau,Rank(j,:));
 			int* rank = (int*)malloc(k*sizeof(int));
 			for (int r=0; r<k; r++)
 				rank[r] = Rank[mi(j,r,Size,k)];
@@ -87,39 +89,42 @@ for (int r=0; r<k; r++)
 				for (int jj=0; jj<longueurActive; jj++)
 					Xactive[mi(i,jj,n,longueurActive)] = X[mi(i,active[jj],n,p)];
 			}
-			Real* PiLambda = (Real*)malloc(k*sizeof(Real));
+			Real* piLambda = (Real*)malloc(k*sizeof(Real));
 			for (int r=0; r<k; r++)
-				PiLambda[r] = Pi[mi(r,lambdaIndex,k,L)];
-			Real* RhoLambda = (Real*)malloc(m*m*k*sizeof(Real));
+				piLambda[r] = pi[mi(r,lambdaIndex,k,L)];
+			Real* rhoLambda = (Real*)malloc(m*m*k*sizeof(Real));
 			for (int u=0; u<m; u++)
 			{
 				for (int v=0; v<m; v++)
 				{
 					for (int r=0; r<k; r++)
-						RhoLambda[ai(u,v,r,m,m,k)] = Rho[ai4(u,v,r,lambdaIndex,m,m,k,L)];
+						rhoLambda[ai(u,v,r,m,m,k)] = rho[ai4(u,v,r,lambdaIndex,m,m,k,L)];
 				}
 			}
-			EMGrank_core(PiLambda,RhoLambda,mini,maxi,Xactive,Y,tau,rank,
+			EMGrank_core(piLambda,rhoLambda,mini,maxi,Xactive,Y,tau,rank,
 				phiLambda,&LLF,
 				n,longueurActive,m,k);
 			free(rank);
 			free(Xactive);
-			free(PiLambda);
-			free(RhoLambda);
-			//llh((lambdaIndex-1)*Size+j,:) = [LLF, dot(Rank(j,:), length(active)-Rank(j,:)+m)];
+			free(piLambda);
+			free(rhoLambda);
+			//llh[(lambdaIndex-1)*Size+j,] = c(LLF, ...)
 			llh[mi(lambdaIndex*Size+j,0,L*Size,2)] = LLF;
-			//dot(Rank(j,:), length(active)-Rank(j,:)+m)
+			//sum(Rank[j,] * (length(active)- Rank[j,] + m)) )
 			Real dotProduct = 0.0;
 			for (int r=0; r<k; r++)
 				dotProduct += Rank[mi(j,r,Size,k)] * (longueurActive-Rank[mi(j,r,Size,k)]+m);
 			llh[mi(lambdaIndex*Size+j,1,Size*L,2)] = dotProduct;
-			//phi(active,:,:,(lambdaIndex-1)*Size+j) = phiLambda;
+			//phi[active,,,(lambdaIndex-1)*Size+j] = res$phi
 			for (int jj=0; jj<longueurActive; jj++)
 			{
 				for (int mm=0; mm<m; mm++)
 				{
 					for (int r=0; r<k; r++)
-						phi[ai5(active[jj],mm,r,lambdaIndex,j,p,m,k,L,Size)] = phiLambda[jj*m*k+mm*k+r];
+					{
+						phi[ai4(active[jj],mm,r,lambdaIndex*Size+j,p,m,k,L*Size)] =
+							phiLambda[ai(jj,mm,r,longueurActive,m,k)];
+					}
 				}
 			}
 		}

@@ -6,25 +6,27 @@ LIB = libvalse_core.so
 LIB_SRC = $(wildcard ../sources/*.c)
 LIB_OBJ = $(LIB_SRC:.c=.o)
 INCLUDES = -I../sources
+TESTS = test.EMGLLF test.EMGrank test.constructionModelesLassoMLE test.EMGrank\
+        test.constructionModelesLassoRank test.selectionTotale
 
-all: $(LIB) test.EMGLLF test.EMGrank test.constructionModelesLassoMLE test.EMGrank test.constructionModelesLassoRank test.selectionTotale
+all: $(LIB) $(TESTS)
 
 $(LIB): $(LIB_OBJ)
 	$(CC) -shared -o $@ $^ $(LDFLAGS)
 
-test.EMGLLF: test.EMGLLF.o test_utils.o
+test.EMGLLF: $(LIB) test.EMGLLF.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoMLE: test.constructionModelesLassoMLE.o test_utils.o
+test.EMGrank: $(LIB) test.EMGrank.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.EMGrank: test.EMGrank.o test_utils.o
+test.constructionModelesLassoMLE: $(LIB) test.constructionModelesLassoMLE.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.constructionModelesLassoRank: test.constructionModelesLassoRank.o test_utils.o
+test.constructionModelesLassoRank: $(LIB) test.constructionModelesLassoRank.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
-test.selectionTotale: test.selectionTotale.o test_utils.o
+test.selectionTotale: $(LIB) test.selectionTotale.o test_utils.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(TEST_LDFLAGS)
 
 %.o: %.c
@@ -34,6 +36,6 @@ clean:
 	rm -f *.o ../sources/*.o
 
 cclean: clean
-	rm -f $(LIB) $(TEST)
+	rm -f $(LIB) $(TESTS)
 
 .PHONY: all clean cclean

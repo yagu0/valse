@@ -1,14 +1,21 @@
 Package: valse
-Title: Variable selection with mixture of models
+Title: VAriabLe SElection with mixture of models
 Date: 2016-12-01
 Version: 0.1-0
 Description: TODO
-Authors@R: c( person("Benjamin Auder", "Developer", role=c("ctb","cre"), email="Benjamin.Auder@math.u-psud.fr"),
-	person("Benjamin Goehry", "User", role="aut", email = "Benjamin.Goehry@math.u-psud.fr"),
-	person("Emilie Devijver", "User", role="ctb", email = "Emilie.Devijver@kuleuven.be"))
+Author: Benjamin Auder <Benjamin.Auder@math.u-psud.fr> [aut,cre],
+    Benjamin Goehry <Benjamin.Goehry@math.u-psud.fr> [aut]
+    Emilie Devijver <Emilie.Devijver@kuleuven.be> [aut]
+Maintainer: Benjamin Auder <Benjamin.Auder@math.u-psud.fr>
 Depends:
-    R (>= 2.15)
-LazyData: yes
+    R (>= 3.0.0)
+Imports:
+    MASS
+Suggests:
+    parallel,
+    testthat,
+    knitr
 URL: http://git.auder.net/?p=valse.git
-License: MIT
+License: MIT + file LICENSE
+VignetteBuilder: knitr
 RoxygenNote: 5.0.1

@@ -1,4 +1,4 @@
 Trouver un jeu de données (+) intéressant (que les autres) ?
 Ajouter toy datasets pour les tests (ou piocher dans MASS ?)
 
-ED : j'ai simulé un truc basique via 'generateIOdefault(10,5,6,2)'
+ED : j'ai simulé un truc basique via 'generateXYdefault(10,5,6,2)'

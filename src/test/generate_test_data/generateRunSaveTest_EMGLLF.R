@@ -5,8 +5,8 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
 
 	require(valse)
-	params = valse:::basic_Init_Parameters(n, p, m, k)
-	io = generateIOdefault(n, p, m, k)
+	params = valse:::basicInitParameters(n, p, m, k)
+	xy = valse:::generateXYdefault(n, p, m, k)
 
 	#save inputs
 	write.table(as.double(params$phiInit), paste(testFolder,"phiInit",sep=""),
@@ -25,17 +25,17 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 		row.names=F, col.names=F)
 	write.table(as.double(lambda), paste(testFolder,"lambda",sep=""),
 		row.names=F, col.names=F)
-	write.table(as.double(io$X), paste(testFolder,"X",sep=""),
+	write.table(as.double(xy$X), paste(testFolder,"X",sep=""),
 		row.names=F, col.names=F)
-	write.table(as.double(io$Y), paste(testFolder,"Y",sep=""),
+	write.table(as.double(xy$Y), paste(testFolder,"Y",sep=""),
 		row.names=F, col.names=F)
 	write.table(as.double(tau), paste(testFolder,"tau",sep=""),
 		row.names=F, col.names=F)
-	write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
+	write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensxyns",sep=""),
 		row.names=F, col.names=F)
 
 	res = EMGLLF(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,maxi,
-		gamma,lambda,io$X,io$Y,tau)
+		gamma,lambda,xy$X,xy$Y,tau)
 
 	#save outputs
 	write.table(as.double(res$phi), paste(testFolder,"phi",sep=""), row.names=F, col.names=F)
