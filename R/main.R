@@ -27,9 +27,10 @@ Valse = setRefClass(
 		kmin = "integer",
 		# maximum number of components in the mixture
 		kmax = "integer",
-		rangmin = "integer",
-		rangmax = "integer",
-		
+		# ranks for the Lasso-Rank procedure
+		rank.min = "integer",
+		rank.max = "integer",
+
 		# Computed through the workflow
 
 		# initialisation for the reparametrized conditional mean parameter
@@ -54,7 +55,7 @@ Valse = setRefClass(
 		Pi = "numeric",
 
 		#immutable (TODO:?)
-		seuil = "numeric"
+		thresh = "numeric"
 	),
 
 	methods = list(
@@ -75,9 +76,9 @@ Valse = setRefClass(
 			eps <<- ifelse (hasArg("eps"), eps, 1e-6)
 			kmin <<- ifelse (hasArg("kmin"), kmin, as.integer(2))
 			kmax <<- ifelse (hasArg("kmax"), kmax, as.integer(3))
-			rangmin <<- ifelse (hasArg("rangmin"), rangmin, as.integer(2))
-			rangmax <<- ifelse (hasArg("rangmax"), rangmax, as.integer(3))
-			seuil <<- 1e-15 #immutable (TODO:?)
+			rank.min <<- ifelse (hasArg("rank.min"), rank.min, as.integer(2))
+			rank.max <<- ifelse (hasArg("rank.max"), rank.max, as.integer(3))
+			thresh <<- 1e-15 #immutable (TODO:?)
 		},
 
 		##################################
@@ -114,7 +115,7 @@ Valse = setRefClass(
 			#from the grid: A1 corresponding to selected variables, and
 			#A2 corresponding to unselected variables.
 			params = selectiontotale(
-				phiInit,rhoInit,piInit,tauInit,mini,maxi,gamma,gridLambda,X,Y,seuil,eps)
+				phiInit,rhoInit,piInit,tauInit,mini,maxi,gamma,gridLambda,X,Y,thresh,eps)
 			A1 <<- params$A1
 			A2 <<- params$A2
 			Rho <<- params$Rho
@@ -128,7 +129,7 @@ Valse = setRefClass(
 			#compute parameter estimations, with the Maximum Likelihood
 			#Estimator, restricted on selected variables.
 			return ( constructionModelesLassoMLE(
-				phiInit,rhoInit,piInit,tauInit,mini,maxi,gamma,gridLambda,X,Y,seuil,eps,A1,A2) )
+				phiInit,rhoInit,piInit,tauInit,mini,maxi,gamma,gridLambda,X,Y,thresh,eps,A1,A2) )
 		},
 
 		runProcedure2 = function()
@@ -138,14 +139,14 @@ Valse = setRefClass(
 			#compute parameter estimations, with the Low Rank
 			#Estimator, restricted on selected variables.
 			return ( constructionModelesLassoRank(Pi,Rho,mini,maxi,X,Y,eps,
-				A1,rangmin,rangmax) )
+				A1,rank.min,rank.max) )
 		},
 
 		run = function()
 		{
 			"main loop: over all k and all lambda"
 
-			# Run the all procedure, 1 with the
+			# Run the whole procedure, 1 with the
 			#maximum likelihood refitting, and 2 with the Low Rank refitting.
 			p = dim(phiInit)[1]
 			m = dim(phiInit)[2]
@@ -205,6 +206,7 @@ Valse = setRefClass(
 		# 			#TODO
 		# 			#model = odel(...)
 		# 		end
+		# Give at least the slope heuristic and BIC, and AIC ?
 
 		)
 )
