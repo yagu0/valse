@@ -42,4 +42,5 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 		list("selected"=selectedVariables,"Rho"=params$Rho,"Pi"=params$Pi)
 	})
 	parallel::stopCluster(cl)
+	out
 }
