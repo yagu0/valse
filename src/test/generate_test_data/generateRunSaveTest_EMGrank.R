@@ -1,3 +1,5 @@
+source("helpers/EMGrank.R")
+
 generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, gamma=1.0,
 	rank = c(1,2,4))
 {
@@ -9,7 +11,7 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
 	require(valse)
   xy = valse:::generateXYdefault(n, p, m, k)
 
-  testFolder = "data/"
+  testFolder = "../data/"
   dir.create(testFolder, showWarnings=FALSE, mode="0755")
   #save inputs
   write.table(as.double(rho), paste(testFolder,"rho",sep=""),
@@ -28,7 +30,7 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
 		row.names=F, col.names=F)
   write.table(as.integer(rank), paste(testFolder,"rank",sep=""),
 		row.names=F, col.names=F)
-  write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensxyns",sep=""),
+  write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
   res = EMGrank(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank)

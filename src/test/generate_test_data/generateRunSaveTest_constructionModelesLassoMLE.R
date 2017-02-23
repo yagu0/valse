@@ -1,3 +1,5 @@
+source("helpers/constructionModelesLassoMLE.R")
+
 generateRunSaveTest_constructionModelesLassoMLE = function(n=200, p=15, m=10, k=3, mini=5,
 	maxi=10, gamma=1.0, glambda=list(0.0,0.01,0.02,0.03,0.05,0.1,0.2,0.3,0.5,0.7,0.85,0.99))
 {
@@ -17,7 +19,7 @@ generateRunSaveTest_constructionModelesLassoMLE = function(n=200, p=15, m=10, k=
   params = valse:::basicInitParameters(n, p, m, k)
   xy = valse:::generateXYdefault(n, p, m, k)
 
-  testFolder = "data/"
+  testFolder = "../data/"
   dir.create(testFolder, showWarnings=FALSE, mode="0755")
   #save inputs
   write.table(as.double(params$phiInit), paste(testFolder,"phiInit",sep=""),

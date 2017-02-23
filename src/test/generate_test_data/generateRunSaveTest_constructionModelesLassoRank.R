@@ -1,3 +1,5 @@
+source("helpers/constructionModelesLassoRank.R")
+
 generateRunSaveTest_constructionModelesLassoRank = function(n=200, p=15, m=10, k=3, L=12, mini=5,
 	maxi=10, gamma=1.0, rangmin=3, rangmax=6)
 {
@@ -13,7 +15,7 @@ generateRunSaveTest_constructionModelesLassoRank = function(n=200, p=15, m=10, k
 	require(valse)
   xy = valse:::generateXYdefault(n, p, m, k)
 
-  testFolder = "data/"
+  testFolder = "../data/"
   dir.create(testFolder, showWarnings=FALSE, mode="0755")
   #save inputs
   write.table(as.double(pi), paste(testFolder,"pi",sep=""),

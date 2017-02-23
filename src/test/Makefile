@@ -36,6 +36,6 @@ clean:
 	rm -f *.o ../sources/*.o ../adapters/*.o
 
 cclean: clean
-	rm -f $(LIB) $(TESTS)
+	rm -f *.so $(TESTS)
 
 .PHONY: all clean cclean
