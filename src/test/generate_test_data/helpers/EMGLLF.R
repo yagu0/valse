@@ -72,7 +72,8 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       pi2AllPositive = all(pi2 >= 0)
       kk = kk+1
     }
-    
+
+#if (ite==2) browser()
     #t[m] la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
     while( kk < 1000 && -a/n + lambda * sum(pi^gamma * b) <
 			-sum(gam2 * log(pi2))/n + lambda * sum(pi2^gamma * b) )
@@ -95,6 +96,8 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
         }
         ps[mm,r] = sum(ps1[,mm,r])
         nY2[mm,r] = sum(nY21[,mm,r])
+
+#TODO: debug rho computation
         rho[mm,mm,r] = (ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*gam2[r])) / (2*nY2[mm,r])
       }
     }
