@@ -22,13 +22,14 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
 
     res = EMGLLF(phiInit[a,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[,a],Y,tau)
 
+		#TODO: supprimer ça et utiliser parLapply(...)
     for (j in 1:length(a))
       phi[a[j],,,lambdaIndex] = res$phi[j,,]
     rho[,,,lambdaIndex] = res$rho
     pi[,lambdaIndex] = res$pi
 
     dimension = 0
-    for (j in 1:p)
+    for (j in 1:p) #TODO: doit pouvoir être fait beaucoup plus simplement
 		{
       b = A2[j,2:dim(A2)[2],lambdaIndex]
       b = b[b!=0]
@@ -40,7 +41,7 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
 
     #on veut calculer l'EMV avec toutes nos estimations
 		densite = matrix(0, nrow=n, ncol=L)
-		for (i in 1:n)
+		for (i in 1:n) #TODO: pas besoin de cette boucle (vectorize)
 		{
 			for (r in 1:k)
 			{
