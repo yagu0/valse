@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,\n\tX,Y,seuil,tau,selected)\n{\n\t#TODO: parameter ncores (chaque tâche peut aussi demander du parallélisme...)\n\tcl = parallel::makeCluster( parallel::detectCores() / 4 )\n\tparallel::clusterExport(cl=cl,\n\t\tvarlist=c(\"phiInit\",\"rhoInit\",\"gamInit\",\"mini\",\"maxi\",\"glambda\",\"X\",\"Y\",\"seuil\",\"tau\"),\n\t\tenvir=environment())\n\t#Pour chaque lambda de la grille, on calcule les coefficients\n\tout = parLapply( seq_along(glambda), function(lambdaindex)\n\t{\n\t\tn = dim(X)[1]\n\t\tp = dim(phiInit)[1]\n\t\tm = dim(phiInit)[2]\n\t\tk = dim(phiInit)[3]\n\n\t\t#TODO: phiInit[selected] et X[selected] sont bien sûr faux; par quoi remplacer ?\n\t\t#lambda == 0 c'est normal ? -> ED : oui, ici on calcule le maximum de vraisembance, donc on ne pénalise plus\n    res = EMGLLF(phiInit[selected],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[selected],Y,tau)\n\n\t\t#comment évaluer la dimension à partir du résultat et de [not]selected ?\n    #dimension = ...\n\n    #on veut calculer la vraisemblance avec toutes nos estimations\n\t\tdensite = vector(\"double\",n)\n\t\tfor (r in 1:k)\n\t\t{\n\t\t\tdelta = Y%*%rho[,,r] - (X[selected]%*%res$phi[selected,,r])\n\t\t\tdensite = densite + pi[r] *\n\t\t\t\tdet(rho[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)\n\t\t}\n\t\tllh = c( sum(log(densite[,lambdaIndex])), (dimension+m+1)*k-1 )\n\t\tlist(\"phi\"=res$phi, \"rho\"=res$rho, \"pi\"=res$pi, \"llh\" = llh)\n\t})\n\tparallel::stopCluster(cl)\n\tout\n}\n",
+    "created" : 1488803513260.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1470456796",
+    "id" : "C0098B3E",
+    "lastKnownWriteTime" : 1488803686,
+    "last_content_update" : 1488803686911,
+    "path" : "~/valse/R/constructionModelesLassoMLE.R",
+    "project_path" : "R/constructionModelesLassoMLE.R",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

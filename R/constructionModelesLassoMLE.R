@@ -15,13 +15,13 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
 		k = dim(phiInit)[3]
 
 		#TODO: phiInit[selected] et X[selected] sont bien sûr faux; par quoi remplacer ?
-		#lambda == 0 c'est normal ?
+		#lambda == 0 c'est normal ? -> ED : oui, ici on calcule le maximum de vraisembance, donc on ne pénalise plus
     res = EMGLLF(phiInit[selected],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[selected],Y,tau)
 
 		#comment évaluer la dimension à partir du résultat et de [not]selected ?
     #dimension = ...
 
-    #on veut calculer l'EMV avec toutes nos estimations
+    #on veut calculer la vraisemblance avec toutes nos estimations
 		densite = vector("double",n)
 		for (r in 1:k)
 		{
