@@ -1,8 +1,11 @@
 #' Construct the data-driven grid for the regularization parameters used for the Lasso estimator
 #' @param phiInit value for phi
-#' @param rhoInt	value for rho
+#' @param rhoInit	value for rho
 #' @param piInit	value for pi
 #' @param gamInit value for gamma
+#' @param X matrix of covariates (of size n*p)
+#' @param Y matrix of responses (of size n*m)
+#' @param gamma power of weights in the penalty
 #' @param mini		minimum number of iterations in EM algorithm
 #' @param maxi		maximum number of iterations in EM algorithm
 #' @param tau		threshold to stop EM algorithm

@@ -92,7 +92,7 @@ Valse = setRefClass(
 			#smallEM initializes parameters by k-means and regression model in each component,
 			#doing this 20 times, and keeping the values maximizing the likelihood after 10
 			#iterations of the EM algorithm.
-			init = initSmallEM(k,X,Y,eps)
+			init = initSmallEM(k,X,Y)
 			phiInit <<- init$phi0
 			rhoInit <<- init$rho0
 			piInit	<<- init$pi0

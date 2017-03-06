@@ -16,7 +16,8 @@ Maintainer: Benjamin Auder <Benjamin.Auder@math.u-psud.fr>
 Depends:
     R (>= 3.0.0)
 Imports:
-    MASS
+    MASS,
+    methods
 Suggests:
     parallel,
     testthat,
