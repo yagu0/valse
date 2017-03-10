@@ -1,3 +1,3 @@
-#ignore object files, library and test executables
+# Ignore object files, library and test executables
 *.o
 *.so
