@@ -1,4 +1,5 @@
 #' selectVariables
+#'
 #' It is a function which construct, for a given lambda, the sets of relevant variables.
 #'
 #' @param phiInit an initial estimator for phi (size: p*m*k)
@@ -19,30 +20,43 @@
 #' @examples TODO
 #'
 #' @export
-selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,X,Y,seuil,tau)
+#'
+selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,
+	X,Y,thresh,tau, ncores=1) #ncores==1 ==> no //
 {
-	#TODO: parameter ncores (chaque tâche peut aussi demander du parallélisme...)
-	cl = parallel::makeCluster( parallel::detectCores() / 4 )
-	parallel::clusterExport(cl=cl,
-		varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","seuil","tau"),
-		envir=environment())
-	#Pour chaque lambda de la grille, on calcule les coefficients
-	out = parLapply( seq_along(glambda), function(lambdaindex)
+	if (ncores > 1)
 	{
+		cl = parallel::makeCluster(ncores)
+		parallel::clusterExport(cl=cl,
+			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","tau"),
+			envir=environment())
+	}
+
+	# Calcul pour un lambda
+	computeCoefs <-function(lambda)
+	{
+		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
+
 		p = dim(phiInit)[1]
 		m = dim(phiInit)[2]
-
-		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau)
 
 		#selectedVariables: list where element j contains vector of selected variables in [1,m]
 		selectedVariables = lapply(1:p, function(j) {
 			#from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
 			#and finally return the corresponding indices
-			seq_len(m)[ apply( abs(params$phi[j,,]) > seuil, 1, any ) ]
+			seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
 		})
 
 		list("selected"=selectedVariables,"Rho"=params$Rho,"Pi"=params$Pi)
-	})
-	parallel::stopCluster(cl)
+	}
+
+	# Pour chaque lambda de la grille, on calcule les coefficients
+	out <-
+		if (ncores > 1)
+			parLapply(cl, seq_along(glambda, computeCoefs)
+		else
+			lapply(seq_along(glambda), computeCoefs)
+	if (ncores > 1)
+		parallel::stopCluster(cl)
 	out
 }
