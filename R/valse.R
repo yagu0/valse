@@ -47,8 +47,7 @@ valse = function(X,Y,procedure,selecMod,gamma = 1,mini = 10,
     #from the grid: A1 corresponding to selected variables, and
     #A2 corresponding to unselected variables.
     params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,gridLambda,X,Y,1e-8,eps)
-    A1 <<- params$A1
-    A2 <<- params$A2
+    selected <<- params$selected
     Rho <<- params$Rho
     Pi <<- params$Pi
     
@@ -58,7 +57,7 @@ valse = function(X,Y,procedure,selecMod,gamma = 1,mini = 10,
       #Estimator, restricted on selected variables.
       model = constructionModelesLassoMLE(
         phiInit, rhoInit,piInit,tauInit,mini,maxi,
-        gamma,gridLambda,X,Y,thresh,eps,A1,A2)
+        gamma,gridLambda,X,Y,thresh,eps,selected)
       ################################################
       ### Regarder la SUITE
       r1 = runProcedure1()
