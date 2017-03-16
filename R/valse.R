@@ -40,15 +40,13 @@ valse = function(X,Y,procedure,selecMod,gamma = 1,mini = 10,
     piInit	<<- init$piInit
     gamInit <<- init$gamInit
     
-    gridLambda <<- gridLambda(phiInit, rhoInit, piInit, tauInit, X, Y, gamma, mini, maxi, eps)
+    gridLambda <<- gridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
     
     print("Compute relevant parameters")
     #select variables according to each regularization parameter
     #from the grid: A1 corresponding to selected variables, and
     #A2 corresponding to unselected variables.
-    params = selectiontotale(phiInit,rhoInit,piInit,tauInit,
-                             mini,maxi,gamma,gridLambda,
-                             X,Y,thresh,eps)
+    params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,gridLambda,X,Y,1e-8,eps)
     A1 <<- params$A1
     A2 <<- params$A2
     Rho <<- params$Rho
