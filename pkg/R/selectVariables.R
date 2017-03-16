@@ -41,22 +41,24 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 		m = dim(phiInit)[2]
 
 		#selectedVariables: list where element j contains vector of selected variables in [1,m]
-		selectedVariables = lapply(1:p, function(j) {
+		selectedVariables = sapply(1:p, function(j) { ## je me suis permise de changer le type, 
+		  ##une liste de liste ca devenait compliqué je trouve pour choper ce qui nous intéresse
 			#from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
 			#and finally return the corresponding indices
-			seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
+			#seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
+		  c(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ], 
+		    rep(0, m-length(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ] ) ))
 		})
 
-		list("selected"=selectedVariables,"Rho"=params$Rho,"Pi"=params$Pi)
+		list("selected"=selectedVariables,"Rho"=params$rho,"Pi"=params$pi)
 	}
 
 	# Pour chaque lambda de la grille, on calcule les coefficients
 	out <-
-		if (ncores > 1)
-			parLapply(cl, seq_along(glambda, computeCoefs)
-		else
-			lapply(seq_along(glambda), computeCoefs)
-	if (ncores > 1)
-		parallel::stopCluster(cl)
+		if (ncores > 1){
+			parLapply(cl, seq_along(glambda, computeCoefs))}
+		else lapply(seq_along(glambda), computeCoefs)
+	if (ncores > 1){
+		parallel::stopCluster(cl)}
 	out
 }
