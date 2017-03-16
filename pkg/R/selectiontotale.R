@@ -37,7 +37,7 @@ selectiontotale = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
       p = dim(phiInit)[1]
       m = dim(phiInit)[2]
       #selectedVariables: list where element j contains vector of selected variables in [1,m]
-      selectedVariables[[lambdaIndex]] = lapply(1:p, function(j) {
+      selectedVariables[[lambdaIndex]] = sapply(1:p, function(j) {
         #from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
         #and finally return the corresponding indices
         seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
