@@ -1,9 +1,9 @@
 #' Generate a sample of (X,Y) of size n
-#' @param meanX matrix of group means for covariates (of size p*K)
-#' @param covX covariance for covariates (of size p*p*K)
+#' @param meanX matrix of group means for covariates (of size p)
+#' @param covX covariance for covariates (of size p*p)
 #' @param covY covariance for the response vector (of size m*m*K)
 #' @param pi	 proportion for each cluster
-#' @param beta regression matrix
+#' @param beta regression matrix, of size p*m*k
 #' @param n		sample size
 #'
 #' @return list with X and Y
@@ -12,20 +12,23 @@ generateXY = function(meanX, covX, covY, pi, beta, n)
 {
 	p = dim(covX)[1]
 	m = dim(covY)[1]
-	k = dim(covX)[3]
+	k = dim(covY)[3]
 
 	X = matrix(nrow=n,ncol=p)
 	Y = matrix(nrow=n,ncol=m)
+	class = matrix(nrow = n)
 
 	require(MASS) #simulate from a multivariate normal distribution
 	for (i in 1:n)
 	{
-		class = sample(1:k, 1, prob=pi)
-		X[i,] = mvrnorm(1, meanX[,class], covX[,,class])
-		Y[i,] = mvrnorm(1, X[i,] %*% beta[,,class], covY[,,class])
+		class[i] = sample(1:k, 1, prob=pi)
+		X[i,] = mvrnorm(1, meanX, covX)
+		print(X[i,])
+		print(beta[,,class[i]])
+		Y[i,] = mvrnorm(1, X[i,] %*% beta[,,class[i]], covY[,,class[i]])
 	}
 
-	return (list(X=X,Y=Y))
+	return (list(X=X,Y=Y, class = class))
 }
 
 #' Generate a sample of (X,Y) of size n with default values

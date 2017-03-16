@@ -19,8 +19,8 @@ gridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi
 	m = dim(phiInit)[2]
 	k = dim(phiInit)[3]
 
-	list_EMG = .Call("EMGLLF_core",phiInit,rhoInit,piInit,gamInit,mini,maxi,1,0,X,Y,tau)
-
+	#list_EMG = .Call("EMGLLF_core",phiInit,rhoInit,piInit,gamInit,mini,maxi,1,0,X,Y,tau)
+  list_EMG = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,1,0,X,Y,tau)
 	grid = array(0, dim=c(p,m,k))
 	for (i in 1:p)
 	{

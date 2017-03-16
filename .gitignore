@@ -1,2 +1,3 @@
 # Ignore Rstudio project files
 *.Rproj*
+.Rproj.user
