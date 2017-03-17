@@ -3,7 +3,7 @@
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
 #' @param procedure among 'LassoMLE' or 'LassoRank'
-#' @param selecMod method to select a model among 'SlopeHeuristic', 'BIC', 'AIC'
+#' @param selecMod method to select a model among 'DDSE', 'DJump', 'BIC' or 'AIC'
 #' @param gamma integer for the power in the penaly, by default = 1
 #' @param mini integer, minimum number of iterations in the EM algorithm, by default = 10
 #' @param maxi integer, maximum number of iterations in the EM algorithm, by default = 100
@@ -15,22 +15,23 @@
 #' @return a list with estimators of parameters
 #' @export
 #-----------------------------------------------------------------------
-valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'BIC',gamma = 1,mini = 10,
-                 maxi = 100,eps = 1e-4,kmin = 2,kmax = 5,
+valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 10,
+                 maxi = 100,eps = 1e-4,kmin = 2,kmax = 3,
                  rang.min = 1,rang.max = 10) {
   ##################################
   #core workflow: compute all models
   ##################################
   
-  p = dim(phiInit)[1]
-  m = dim(phiInit)[2]
+  p = dim(X)[2]
+  m = dim(Y)[2]
   n = dim(X)[1]
   
-  tableauRecap = array(, dim=c(1000,4))
+  model = list()
+  tableauRecap = array(0, dim=c(1000,4))
   cpt = 0
   print("main loop: over all k and all lambda")
-
-for (k in kmin:kmax){
+  
+  for (k in kmin:kmax){
     print(k)
     print("Parameters initialization")
     #smallEM initializes parameters by k-means and regression model in each component,
@@ -42,15 +43,15 @@ for (k in kmin:kmax){
     piInit	<<- init$piInit
     gamInit <<- init$gamInit
     source('~/valse/pkg/R/gridLambda.R')
-    gridLambda <<- gridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
+    grid_lambda <<- gridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
     
     print("Compute relevant parameters")
     #select variables according to each regularization parameter
     #from the grid: A1 corresponding to selected variables, and
     #A2 corresponding to unselected variables.
     
-    params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,gridLambda[seq(1,length(gridLambda), by=3)],X,Y,1e-8,eps)
-    params2 = selectVariables(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,gridLambda[seq(1,length(gridLambda), by=3)],X,Y,1e-8,eps)
+    params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda,X,Y,1e-8,eps)
+    #params2 = selectVariables(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda[seq(1,length(grid_lambda), by=3)],X,Y,1e-8,eps)
     ## etrange : params et params 2 sont différents ...
     
     selected <<- params$selected
@@ -62,8 +63,12 @@ for (k in kmin:kmax){
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
       model[[k]] = constructionModelesLassoMLE(phiInit, rhoInit,piInit,gamInit,mini,maxi,gamma,X,Y,thresh,eps,selected)
-      LLH = unlist(model[[k]]$llh)[seq(1,2*length(model[[k]]),2)]
-      D = unlist(model[[k]]$llh)[seq(1,2*length(model[[k]]),2)+1]
+      llh = matrix(ncol = 2)
+      for (l in seq_along(model[[k]])){
+        llh = rbind(llh, model[[k]][[l]]$llh)
+      }
+      LLH = llh[-1,1]
+      D = llh[-1,2]
     } else {
       print('run the procedure Lasso-Rank')
       #compute parameter estimations, with the Low Rank
@@ -89,15 +94,19 @@ for (k in kmin:kmax){
     cpt = cpt+length(model[[k]])
   }
   print('Model selection')
-  
-  tableauRecap = array(dim = c())
-  if (selecMod == 'SlopeHeuristic') {
-    
+  tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
+  tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
+  data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
+  require(capushe)
+  modSel = capushe(data, n)
+  if (selecMod == 'DDSE') {
+    indModSel = as.numeric(modSel@DDSE@model)
+  } else if (selecMod == 'Djump') {
+    indModSel = as.numeric(modSel@Djump@model)
   } else if (selecMod == 'BIC') {
-    BIC = -2*tableauRecap[,1]+log(n)*tableauRecap[,2]
-    indMinBIC = which.min(BIC)
-    return(model[[tableauRecap[indMinBIC,3]]][[tableauRecap[indMinBIC,4]]])
+    indModSel = modSel@BIC_capushe$model
   } else if (selecMod == 'AIC') {
-    
+    indModSel = modSel@AIC_capushe$model
   }
+  return(model[[tableauRecap[indModSel,3]]][[tableauRecap[indModSel,4]]])
 }

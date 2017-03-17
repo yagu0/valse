@@ -2,12 +2,10 @@
 % Please edit documentation in R/selectVariables.R
 \name{selectVariables}
 \alias{selectVariables}
-\title{selectVaribles
-It is a function which construct, for a given lambda, the sets of
-relevant variables and irrelevant variables.}
+\title{selectVariables}
 \usage{
 selectVariables(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, glambda,
-  X, Y, thres, tau)
+  X, Y, thresh, tau, ncores = 1)
 }
 \arguments{
 \item{phiInit}{an initial estimator for phi (size: p*m*k)}
@@ -30,17 +28,15 @@ selectVariables(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, glambda,
 
 \item{Y}{matrix of responses}
 
-\item{thres}{threshold to consider a coefficient to be equal to 0}
-
 \item{tau}{threshold to say that EM algorithm has converged}
+
+\item{thres}{threshold to consider a coefficient to be equal to 0}
 }
 \value{
-TODO
+a list of outputs, for each lambda in grid: selected,Rho,Pi
 }
 \description{
-selectVaribles
-It is a function which construct, for a given lambda, the sets of
-relevant variables and irrelevant variables.
+It is a function which construct, for a given lambda, the sets of relevant variables.
 }
 \examples{
 TODO

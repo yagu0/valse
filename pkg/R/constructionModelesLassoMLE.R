@@ -49,7 +49,8 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
     pi = list()
     llh = list()
     
-    for (lambda in 1:L){
+    out = lapply( seq_along(selected), function(lambda)
+    {
       sel.lambda = selected[[lambda]]
       col.sel = which(colSums(sel.lambda)!=0)
       res_EM = EMGLLF(phiInit[col.sel,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[,col.sel],Y,tau)
@@ -78,11 +79,9 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
           det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)
       }
       llhLambda = c( sum(log(densite)), (dimension+m+1)*k-1 )
-      rho[[lambda]] = rhoLambda
-      phi[[lambda]] = phiLambda
-      pi[[lambda]] = piLambda
-      llh[[lambda]] = llhLambda
+      list("phi"= phiLambda, "rho"= rhoLambda, "pi"= piLambda, "llh" = llhLambda)
     }
+    )
+    return(out)
   }
-  return(list("phi"=phi, "rho"=rho, "pi"=pi, "llh" = llh))
 }

@@ -7,15 +7,15 @@
 generateXY(meanX, covX, covY, pi, beta, n)
 }
 \arguments{
-\item{meanX}{matrix of group means for covariates (of size p*K)}
+\item{meanX}{matrix of group means for covariates (of size p)}
 
-\item{covX}{covariance for covariates (of size p*p*K)}
+\item{covX}{covariance for covariates (of size p*p)}
 
 \item{covY}{covariance for the response vector (of size m*m*K)}
 
 \item{pi}{proportion for each cluster}
 
-\item{beta}{regression matrix}
+\item{beta}{regression matrix, of size p*m*k}
 
 \item{n}{sample size}
 }
