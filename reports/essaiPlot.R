@@ -18,7 +18,7 @@ kSel = c(1,2)
 par(mfrow = c(1,3))
 
 for (r in kSel){
-  image.plot(t(abs(model$phi[,,r])),title="hat{beta}",xaxt="n",yaxt="n", 
+  image.plot(t(abs(model$phi[,,r])),xaxt="n",yaxt="n", 
              col=gray(rev(seq(0,64,length.out=65))/65),breaks=seq(0,valMax,length.out=66))
 }
 image.plot(t(abs(model$phi[,,kSel[1]]-model$phi[,,kSel[2]])), 
