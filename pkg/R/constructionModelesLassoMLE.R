@@ -51,35 +51,38 @@ constructionModelesLassoMLE = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,
     
     out = lapply( seq_along(selected), function(lambda)
     {
+      print(lambda)
       sel.lambda = selected[[lambda]]
       col.sel = which(colSums(sel.lambda)!=0)
-      res_EM = EMGLLF(phiInit[col.sel,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[,col.sel],Y,tau)
-      phiLambda2 = res_EM$phi
-      rhoLambda = res_EM$rho
-      piLambda = res_EM$pi
-      for (j in 1:length(col.sel)){
-        phiLambda[col.sel[j],,] = phiLambda2[j,,]
-      }
-      
-      dimension = 0
-      for (j in 1:p){
-        b = setdiff(1:m, sel.lambda[,j])
-        if (length(b) > 0){
-          phiLambda[j,b,] = 0.0
+      if (length(col.sel)>0){
+        res_EM = EMGLLF(phiInit[col.sel,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0.,X[,col.sel],Y,tau)
+        phiLambda2 = res_EM$phi
+        rhoLambda = res_EM$rho
+        piLambda = res_EM$pi
+        for (j in 1:length(col.sel)){
+          phiLambda[col.sel[j],,] = phiLambda2[j,,]
         }
-        dimension = dimension + sum(sel.lambda[,j]!=0)
+        
+        dimension = 0
+        for (j in 1:p){
+          b = setdiff(1:m, sel.lambda[,j])
+          if (length(b) > 0){
+            phiLambda[j,b,] = 0.0
+          }
+          dimension = dimension + sum(sel.lambda[,j]!=0)
+        }
+        
+        #on veut calculer la vraisemblance avec toutes nos estimations
+        densite = vector("double",n)
+        for (r in 1:k)
+        {
+          delta = Y%*%rhoLambda[,,r] - (X[, col.sel]%*%phiLambda[col.sel,,r])
+          densite = densite + piLambda[r] *
+            det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)
+        }
+        llhLambda = c( sum(log(densite)), (dimension+m+1)*k-1 )
+        list("phi"= phiLambda, "rho"= rhoLambda, "pi"= piLambda, "llh" = llhLambda)
       }
-      
-      #on veut calculer la vraisemblance avec toutes nos estimations
-      densite = vector("double",n)
-      for (r in 1:k)
-      {
-        delta = Y%*%rhoLambda[,,r] - (X[, col.sel]%*%phiLambda[col.sel,,r])
-        densite = densite + piLambda[r] *
-          det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)
-      }
-      llhLambda = c( sum(log(densite)), (dimension+m+1)*k-1 )
-      list("phi"= phiLambda, "rho"= rhoLambda, "pi"= piLambda, "llh" = llhLambda)
     }
     )
     return(out)

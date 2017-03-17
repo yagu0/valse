@@ -32,6 +32,7 @@ selectiontotale = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
     cpt = 0
     #Pour chaque lambda de la grille, on calcule les coefficients
     for (lambdaIndex in 1:length(glambda)){
+      print(lambdaIndex)
       params = 
         EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda[lambdaIndex],X,Y,tau)
       p = dim(phiInit)[1]
