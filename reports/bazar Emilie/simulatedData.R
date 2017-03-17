@@ -10,12 +10,12 @@ library("mclust")
   T = seq(0,1.5,length.out = p)
   T2 = seq(0,3, length.out = 2*p)
   n = 100
-  x1 = cos(2*pi*T) + 0.2*cos(4*2*pi*T) +2*c(rep(0,round(length(T)/7)),rep(1,round(length(T)*(1-1/7))))
+  x1 = cos(2*base::pi*T) + 0.2*cos(4*2*base::pi*T) + 0.3*c(rep(0,round(length(T)/7)),rep(1,round(length(T)*(1-1/7))))+1
   plot(T,x1)
   lines(T,x1)
-
-  sigmaX = 0.085
-  sigmaY = 0.1
+  
+  sigmaX = 0.12
+  sigmaY = 0.12
   beta = list()
   p1= 0.5
   beta[[1]] =diag(c(rep(p1,5),rep(1,5), rep(p1,5), rep(1, p-15)))
@@ -94,7 +94,7 @@ for (ite in c(1:ITE)){
   ###########
   ## k-means 1
   ###########
-  mod1 = Mclust(t(XY[ite,,]),G = 2, mode='VII')
+  mod1 = Mclust(t(XY[ite,,]),G = 1:2, mode='VII')
   ARI1[ite] = adjustedRandIndex(mod1$classification, affec[[ite]])
   Kmod1[ite] = mod1$G
   # ###########

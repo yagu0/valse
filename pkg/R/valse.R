@@ -16,7 +16,7 @@
 #' @export
 #-----------------------------------------------------------------------
 valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 10,
-                 maxi = 50,eps = 1e-4,kmin = 2,kmax = 3,
+                 maxi = 50,eps = 1e-4,kmin = 2,kmax = 2,
                  rang.min = 1,rang.max = 10) {
   ##################################
   #core workflow: compute all models
@@ -45,9 +45,9 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
     source('~/valse/pkg/R/gridLambda.R')
     grid_lambda <<- gridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
     
-    # if (length(grid_lambda)>50){
-    #   grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = 50)]
-    # }
+    if (length(grid_lambda)>100){
+      grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = 100)]
+    }
     print("Compute relevant parameters")
     #select variables according to each regularization parameter
     #from the grid: A1 corresponding to selected variables, and
@@ -56,7 +56,6 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
     params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda,X,Y,1e-8,eps)
     #params2 = selectVariables(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda[seq(1,length(grid_lambda), by=3)],X,Y,1e-8,eps)
     ## etrange : params et params 2 sont différents ...
-    
     selected <<- params$selected
     Rho <<- params$Rho
     Pi <<- params$Pi

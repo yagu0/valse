@@ -29,7 +29,7 @@ selectiontotale = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
     selectedVariables = list()
     Rho = list()
     Pi = list()
-    cpt = 0
+    cpt = 1
     #Pour chaque lambda de la grille, on calcule les coefficients
     for (lambdaIndex in 1:length(glambda)){
       print(lambdaIndex)
@@ -39,14 +39,16 @@ selectiontotale = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
       m = dim(phiInit)[2]
       #selectedVariables: list where element j contains vector of selected variables in [1,m]
       if (sum(params$phi) != 0){
-        cpt = cpt+1
-      selectedVariables[[cpt]] = sapply(1:p, function(j) {
-        #from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
-        #and finally return the corresponding indices
-        c(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ], rep(0, m-length(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ] ) ))
-      })
-      Rho[[cpt]] = params$rho
-      Pi[[cpt]] = params$pi
+        selectedVariables[[cpt]] = sapply(1:p, function(j) {
+          #from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
+          #and finally return the corresponding indices
+          c(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ], rep(0, m-length(seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ] ) ))
+        })
+        if (length(unique(selectedVariables)) == length(selectedVariables)){
+          Rho[[cpt]] = params$rho
+          Pi[[cpt]] = params$pi
+          cpt = cpt+1
+        }
       }
     }
     list("selected"=selectedVariables,"Rho"=Rho,"Pi"=Pi)
