@@ -72,7 +72,6 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       kk = kk+1
     }
 
-#if (ite==2) browser()
     #t[m] la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
     while( kk < 1000 && -a/n + lambda * sum(pi^gamma * b) <
 			-sum(gam2 * log(pi2))/n + lambda * sum(pi2^gamma * b) )
@@ -103,9 +102,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 			{
         for (mm in 1:m)
 				{
-          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p, j),r])
-#						(if(j>1) sum(phi[1:(j-1),mm,r] * Gram2[j,1:(j-1),r]) else 0) +
-#						(if(j<p) sum(phi[(j+1):p,mm,r] * Gram2[j,(j+1):p,r]) else 0)
+          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p,j),r])
           if (abs(S[j,mm,r]) <= n*lambda*(pi[r]^gamma))
             phi[j,mm,r]=0
           else if(S[j,mm,r] > n*lambda*(pi[r]^gamma))
@@ -131,8 +128,6 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       sumLLF1 = 0.0;
       for (r in 1:k)
 			{
-				#FIXME: numerical problems, because 0 < det(Rho[,,r] < EPS; what to do ?!
-        #       consequence: error in while() at line 77
 				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r])* det(rho[,,r])
         sumLLF1 = sumLLF1 + Gam[i,r] / (2*base::pi)^(m/2)
       }
