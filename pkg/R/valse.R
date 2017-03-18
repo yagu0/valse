@@ -42,7 +42,6 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
     rhoInit <<- init$rhoInit
     piInit	<<- init$piInit
     gamInit <<- init$gamInit
-    source('~/valse/pkg/R/gridLambda.R')
     grid_lambda <<- gridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
     
     if (length(grid_lambda)>100){
