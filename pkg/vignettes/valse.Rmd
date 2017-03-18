@@ -1,0 +1,23 @@
+---
+title: "valse package vignette"
+output: html_document
+---
+
+```{r include = FALSE}
+library(valse)
+```
+
+The code below demonstrates blabla... in [valse](https://github.com/blabla/valse) package.
+Each plot displays blabla...
+
+## Des jolis plot 1
+
+```{r}
+#plotBla1(...)
+```
+
+## Des jolies couleurs 2
+
+```{r}
+#plotBla2(...)
+```
