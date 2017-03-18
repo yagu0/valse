@@ -3,8 +3,13 @@ q = 8
 k = 2
 D = 20
 
-meanX = rep(0,p)
-covX = 0.1*diag(p)
+meanX = matrix(nrow=p,ncol=k)
+meanX[,1] = rep(0,p)
+meanX[,2] = rep(1,p)
+
+covX = array(dim=c(p,p,k))
+covX[,,1] = 0.1*diag(p)
+covX[,,2] = 0.5*diag(p)
 
 covY = array(dim = c(q,q,k))
 covY[,,1] = 0.1*diag(q)

@@ -1,10 +1,10 @@
 #' Generate a sample of (X,Y) of size n
-#' @param meanX matrix of group means for covariates (of size p)
-#' @param covX covariance for covariates (of size p*p)
-#' @param covY covariance for the response vector (of size m*m*K)
-#' @param pi	 proportion for each cluster
+#' @param meanX matrix of group means for covariates (p x K)
+#' @param covX covariance for covariates (p x p x K)
+#' @param covY covariance for the response vector (m x m x K)
+#' @param pi proportion for each cluster
 #' @param beta regression matrix, of size p*m*k
-#' @param n		sample size
+#' @param n sample size
 #'
 #' @return list with X and Y
 #' @export
@@ -22,9 +22,7 @@ generateXY = function(meanX, covX, covY, pi, beta, n)
 	for (i in 1:n)
 	{
 		class[i] = sample(1:k, 1, prob=pi)
-		X[i,] = mvrnorm(1, meanX, covX)
-		print(X[i,])
-		print(beta[,,class[i]])
+		X[i,] = mvrnorm(1, meanX[,class[i]], covX[,,class[i]])
 		Y[i,] = mvrnorm(1, X[i,] %*% beta[,,class[i]], covY[,,class[i]])
 	}
 

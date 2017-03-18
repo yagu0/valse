@@ -128,7 +128,7 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
       sumLLF1 = 0.0;
       for (r in 1:k)
 			{
-				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r])* det(rho[,,r])
+				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r]) #* det(rho[,,r]) #FIXME: still issues here ?!?!
         sumLLF1 = sumLLF1 + Gam[i,r] / (2*base::pi)^(m/2)
       }
       sumLogLLF2 = sumLogLLF2 + log(sumLLF1)
