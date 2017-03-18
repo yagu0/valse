@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 #Testing procedure for EMGLLF (inside this folder):
 
@@ -14,6 +15,7 @@
       # I'm happy with default values - feel free to give args
       generateRunSaveTest_EMGLLF() "\
       | R --slave
+		cd ..
 
 #2) Compile test C code
 		# Next line might be required sometimes, to destroy all .o and .so
