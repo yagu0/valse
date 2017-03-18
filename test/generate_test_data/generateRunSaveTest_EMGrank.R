@@ -33,7 +33,7 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
   write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
-  res = EMGrank(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank)
+  res = EMGrank_R(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank)
 
   #save output
   write.table(as.double(res$phi), paste(testFolder,"phi",sep=""), row.names=F,col.names=F)

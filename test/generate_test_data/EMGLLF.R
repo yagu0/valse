@@ -1,4 +1,4 @@
-EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
+EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 {
   #matrix dimensions
   n = dim(X)[1]
@@ -30,7 +30,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
   Gam = matrix(0, n,k)
   EPS = 1E-15
   
-  while(ite <= mini || (ite<= maxi && (dist>= tau || dist2 >= sqrt(tau))))
+  while(ite <= mini || (ite <= maxi && (dist >= tau || dist2 >= sqrt(tau))))
 	{
     Phi = phi
     Rho = rho

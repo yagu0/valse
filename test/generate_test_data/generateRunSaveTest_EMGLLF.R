@@ -36,7 +36,7 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
-	res = EMGLLF(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,maxi,
+	res = EMGLLF_R(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,maxi,
 		gamma,lambda,xy$X,xy$Y,tau)
 
 	#save outputs

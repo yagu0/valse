@@ -1,4 +1,5 @@
 #helper to always have matrices as arg (TODO: put this elsewhere? improve?)
+# --> Yes, we should use by-columns storage everywhere... [later!]
 matricize <- function(X)
 {
 	if (!is.matrix(X))
@@ -7,7 +8,7 @@ matricize <- function(X)
 }
 
 require(MASS)
-EMGrank = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
+EMGrank_R = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
   #matrix dimensions
   n = dim(X)[1]
