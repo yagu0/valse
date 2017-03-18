@@ -15,18 +15,16 @@ set -e
       # I'm happy with default values - feel free to give args
       generateRunSaveTest_EMGLLF() "\
       | R --slave
-		cd ..
+    cd ..
 
 #2) Compile test C code
-		# Next line might be required sometimes, to destroy all .o and .so
-    make cclean
-		# Next line compile the test into an executable named "test.EMGLLF"
+    # Next line compile the test into an executable named "test.EMGLLF"
     make test.EMGLLF
 
 #3) Run it!
     # Fingers crossed, hoping everything is alright
     ./test.EMGLLF
-		# Ask valgrind (generally better idea ;) )
-		valgrind ./test.EMGLLF
+    # Ask valgrind (generally better idea ;) )
+    #valgrind ./test.EMGLLF
 
 #For EMGrank: same procedure, just change EMGLLF to EMGrank everwhere.
