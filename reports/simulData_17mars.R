@@ -5,10 +5,10 @@ simulData_17mars = function(ite){
   ## Modele
   ###########
   K = 2
-  p = 48
+  p = 20
   T = seq(0,1.5,length.out = p)
   T2 = seq(0,3, length.out = 2*p)
-  n = 100
+  n = 30
   x1 = cos(2*base::pi*T) + 0.2*cos(4*2*base::pi*T) + 0.3*c(rep(0,round(length(T)/7)),rep(1,round(length(T)*(1-1/7))))+1
   sigmaX = 0.12
   sigmaY = 0.12

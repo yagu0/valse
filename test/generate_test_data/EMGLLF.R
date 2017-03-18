@@ -1,4 +1,4 @@
-EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
+EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 {
   #matrix dimensions
   n = dim(X)[1]
@@ -30,7 +30,7 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
   Gam = matrix(0, n,k)
   EPS = 1E-15
   
-  while(ite <= mini || (ite <= maxi && (dist >= tau || dist2 >= sqrt(tau))))
+  while(ite <= mini || (ite<= maxi && (dist>= tau || dist2 >= sqrt(tau))))
 	{
     Phi = phi
     Rho = rho
@@ -72,6 +72,7 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
       kk = kk+1
     }
 
+#if (ite==2) browser()
     #t[m] la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
     while( kk < 1000 && -a/n + lambda * sum(pi^gamma * b) <
 			-sum(gam2 * log(pi2))/n + lambda * sum(pi2^gamma * b) )
@@ -102,7 +103,9 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
 			{
         for (mm in 1:m)
 				{
-          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p,j),r])
+          S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p, j),r])
+#						(if(j>1) sum(phi[1:(j-1),mm,r] * Gram2[j,1:(j-1),r]) else 0) +
+#						(if(j<p) sum(phi[(j+1):p,mm,r] * Gram2[j,(j+1):p,r]) else 0)
           if (abs(S[j,mm,r]) <= n*lambda*(pi[r]^gamma))
             phi[j,mm,r]=0
           else if(S[j,mm,r] > n*lambda*(pi[r]^gamma))
@@ -128,7 +131,9 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
       sumLLF1 = 0.0;
       for (r in 1:k)
 			{
-				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r]) #* det(rho[,,r]) #FIXME: still issues here ?!?!
+				#FIXME: numerical problems, because 0 < det(Rho[,,r] < EPS; what to do ?!
+        #       consequence: error in while() at line 77
+				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r])* det(rho[,,r])
         sumLLF1 = sumLLF1 + Gam[i,r] / (2*base::pi)^(m/2)
       }
       sumLogLLF2 = sumLogLLF2 + log(sumLLF1)
