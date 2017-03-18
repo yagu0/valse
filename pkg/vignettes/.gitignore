@@ -1,0 +1,14 @@
+#ignore jupyter generated file (ipynb, HTML)
+*.html
+*.ipynb
+
+#and various (pdf)LaTeX files, in case of
+*.tex
+*.pdf
+*.aux
+*.dvi
+*.log
+*.out
+*.toc
+*.synctex.gz
+/figure/
