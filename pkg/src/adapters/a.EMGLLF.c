@@ -2,6 +2,7 @@
 #include <Rdefines.h>
 #include "EMGLLF.h"
 
+// See comments in src/sources/EMGLLF.c and R/EMGLLF.R (wrapper)
 SEXP EMGLLF(
 	SEXP phiInit_,
 	SEXP rhoInit_,

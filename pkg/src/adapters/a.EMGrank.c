@@ -2,6 +2,7 @@
 #include <Rdefines.h>
 #include "EMGrank.h"
 
+// See comments in src/sources/EMGrank.c and R/EMGrank.R (wrapper)
 SEXP EMGrank(
 	SEXP Pi_,
 	SEXP Rho_,
