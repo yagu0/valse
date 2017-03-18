@@ -5,6 +5,7 @@
 #ignore temporary files
 *~
 *.swp
+*.Rout
 
 #ignore R session files + RStudio files
 .Rhistory

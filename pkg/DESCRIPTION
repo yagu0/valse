@@ -28,4 +28,4 @@ Suggests:
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
