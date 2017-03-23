@@ -221,10 +221,10 @@ void EMGLLF_core(
 				for (int u=0; u<n; u++)
 					sumPs1 += ps1[ai(u,mm,r,n,m,k)];
 				ps[mi(mm,r,m,k)] = sumPs1;
-				//nY2[mm,r] = sum(nY2[,mm,r])
+				//nY2[mm,r] = sum(Y2[,mm,r])
 				Real sumNy2 = 0.;
 				for (int u=0; u<n; u++)
-					sumNy2 += nY2[ai(u,mm,r,n,m,k)];
+					sumNy2 += Y2[ai(u,mm,r,n,m,k)];
 				nY2[mi(mm,r,m,k)] = sumNy2;
 				//rho[mm,mm,r] = (ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*(gam2[r]))) / (2*nY2[mm,r])
 				rho[ai(mm,mm,r,m,m,k)] = ( ps[mi(mm,r,m,k)] + sqrt( ps[mi(mm,r,m,k)]*ps[mi(mm,r,m,k)]
