@@ -17,7 +17,6 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
   Gram2 = array(0, dim=c(p,p,k))
   ps2 = array(0, dim=c(p,m,k))
   b = rep(0, k)
-  pen = matrix(0, maxi, k)
   X2 = array(0, dim=c(n,p,k))
   Y2 = array(0, dim=c(n,m,k))
   dist = 0
@@ -119,7 +118,8 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
     ##########
     #Etape E #
     ##########
-    sumLogLLF2 = 0
+
+		sumLogLLF2 = 0
     for (i in 1:n)
 		{
       #precompute sq norms to numerically adjust their values
@@ -127,7 +127,7 @@ EMGLLF = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
       for (r in 1:k){
         sqNorm2[r] = sum( (Y[i,]%*%rho[,,r]-X[i,]%*%phi[,,r])^2 )}
 
-      #compute Gam(:,:) using shift determined above
+      #compute Gam(:,:)
       sumLLF1 = 0.0;
       for (r in 1:k)
 			{

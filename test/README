@@ -11,9 +11,9 @@ set -e
 
 #1) Generate data using R versions of EMGLLF/EMGrank (slow, but trusted)
     cd generate_test_data/
-    echo "source('generateRunSaveTest_EMGLLF.R');\
-      # I'm happy with default values - feel free to give args
-      generateRunSaveTest_EMGLLF() "\
+    echo -e "source('generateRunSaveTest_EMGLLF.R');\n \
+      # I'm happy with default values - feel free to give args\n \
+      generateRunSaveTest_EMGLLF() " \
       | R --slave
     cd ..
 
