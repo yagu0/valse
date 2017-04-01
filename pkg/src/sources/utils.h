@@ -11,16 +11,6 @@ typedef double Real;
 //typedef uint32_t UInt;
 //typedef int32_t Int;
 
-/*******************
- * tune parallelism
- *******************/
-
-// Number of OpenMP threads
-#define OMP_NUM_THREADS 8
-
-// CHUNK_SIZE = number of lambda values to be treated sequentially by a single core
-#define CHUNK_SIZE 1
-
 /*******************************
  * Matrix and arrays indexation
  *******************************/
