@@ -1,4 +1,7 @@
+#' computeGridLambda
+#'
 #' Construct the data-driven grid for the regularization parameters used for the Lasso estimator
+#'
 #' @param phiInit value for phi
 #' @param rhoInit	value for rho
 #' @param piInit	value for pi
@@ -6,20 +9,20 @@
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
 #' @param gamma power of weights in the penalty
-#' @param mini		minimum number of iterations in EM algorithm
-#' @param maxi		maximum number of iterations in EM algorithm
-#' @param tau		threshold to stop EM algorithm
+#' @param mini minimum number of iterations in EM algorithm
+#' @param maxi maximum number of iterations in EM algorithm
+#' @param tau threshold to stop EM algorithm
+#'
 #' @return the grid of regularization parameters
+#'
 #' @export
-#-----------------------------------------------------------------------
-gridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, tau)
+computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, tau)
 {
 	n = nrow(X)
 	p = dim(phiInit)[1]
 	m = dim(phiInit)[2]
 	k = dim(phiInit)[3]
 
-	#list_EMG = .Call("EMGLLF_core",phiInit,rhoInit,piInit,gamInit,mini,maxi,1,0,X,Y,tau)
   list_EMG = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,1,0,X,Y,tau)
 	grid = array(0, dim=c(p,m,k))
 	for (i in 1:p)
@@ -29,6 +32,5 @@ gridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi
 	}
 	grid = unique(grid)
 	grid = grid[grid <=1]
-
-	return(grid)
+	grid
 }

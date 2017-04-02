@@ -1,4 +1,5 @@
 source("EMGLLF.R")
+source("helper.R")
 
 generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	gamma=1., lambda=0.5, tau=1e-6)
