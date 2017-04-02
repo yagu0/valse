@@ -45,4 +45,5 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	write.table(as.double(res$pi), paste(testFolder,"pi",sep=""), row.names=F, col.names=F)
 	write.table(as.double(res$LLF), paste(testFolder,"LLF",sep=""), row.names=F, col.names=F)
 	write.table(as.double(res$S), paste(testFolder,"S",sep=""), row.names=F, col.names=F)
+	write.table(as.integer(res$affec), paste(testFolder,"affec",sep=""), row.names=F, col.names=F)
 }

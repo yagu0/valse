@@ -22,6 +22,7 @@ void EMGLLF_core(
 	Real* pi,
 	Real* LLF,
 	Real* S,
+	int* affec,
 	// additional size parameters
 	int n,
 	int p,

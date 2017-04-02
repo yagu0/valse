@@ -33,12 +33,13 @@ int main(int argc, char** argv)
 	Real* pi = (Real*)malloc(k*sizeof(Real));
 	Real* LLF = (Real*)malloc(maxi*sizeof(Real));
 	Real* S = (Real*)malloc(p*m*k*sizeof(Real));
+	int* affec = (int*)malloc(n*sizeof(int));
 	/////////////
 
 	////////////////////
 	// Call to EMGLLF //
 	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
-		phi,rho,pi,LLF,S,
+		phi,rho,pi,LLF,S,affec,
 		n,p,m,k);
 	////////////////////
 
@@ -74,6 +75,11 @@ int main(int argc, char** argv)
 	compareArray_real("S", S, ref_S, p*m*k);
 	free(S);
 	free(ref_S);
+
+	int* ref_affec = readArray_int("affec");
+	compareArray_int("affec", affec, ref_affec, n);
+	free(affec);
+	free(ref_affec);
 
 	return 0;
 }

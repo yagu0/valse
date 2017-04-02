@@ -22,6 +22,7 @@ void EMGLLF_core(
 	Real* pi, // parametre des proportions renormalisé, calculé par l'EM
 	Real* LLF, // log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
 	Real* S,
+	int* affec,
 	// additional size parameters
 	int n, // nombre d'echantillons
 	int p, // nombre de covariables
@@ -381,7 +382,20 @@ void EMGLLF_core(
 		ite++;
 	}
 
-	//TODO: affec = apply(gam, 1,which.max) à traduire, et retourner affec aussi.
+	//affec = apply(gam, 1, which.max)
+	for (int i=0; i<n; i++)
+	{
+		Real rowMax = 0.;
+		affec[i] = 0;
+		for (int j=0; j<k; j++)
+		{
+			if (gam[mi(i,j,n,k)] > rowMax)
+			{
+				affec[i] = j+1; //R indices start at 1
+				rowMax = gam[mi(i,j,n,k)];
+			}
+		}
+	}
 
 	//free memory
 	free(b);
