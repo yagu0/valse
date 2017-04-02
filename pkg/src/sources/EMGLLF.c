@@ -77,7 +77,7 @@ void EMGLLF_core(
 			{
 				//Y2[,mm,r] = sqrt(gam[,r]) * Y[,mm]
 				for (int u=0; u<n; u++)
-					Y2[ai(u,mm,r,n,m,k)] = sqrt(gam[mi(u,r,n,k)]) * Y[mi(u,mm,m,n)];
+					Y2[ai(u,mm,r,n,m,k)] = sqrt(gam[mi(u,r,n,k)]) * Y[mi(u,mm,n,m)];
 			}
 			for (int i=0; i<n; i++)
 			{
@@ -164,33 +164,34 @@ void EMGLLF_core(
 			kk++;
 		}
 
-		//(pi.^gamma)*b
+		//sum(pi^gamma * b)
 		Real piPowGammaDotB = 0.;
 		for (int v=0; v<k; v++)
 			piPowGammaDotB += pow(pi[v],gamma) * b[v];
-		//(pi2.^gamma)*b
+		//sum(pi2^gamma * b)
 		Real pi2PowGammaDotB = 0.;
 		for (int v=0; v<k; v++)
 			pi2PowGammaDotB += pow(pi2[v],gamma) * b[v];
-		//transpose(gam2)*log(pi2)
-		Real prodGam2logPi2 = 0.;
+		//sum(gam2 * log(pi2))
+		Real gam2DotLogPi2 = 0.;
 		for (int v=0; v<k; v++)
-			prodGam2logPi2 += gam2[v] * log(pi2[v]);
+			gam2DotLogPi2 += gam2[v] * log(pi2[v]);
+
 		//t(m) la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
-		while (-invN*a + lambda*piPowGammaDotB < -invN*prodGam2logPi2 + lambda*pi2PowGammaDotB
+		while (-invN*a + lambda*piPowGammaDotB < -invN*gam2DotLogPi2 + lambda*pi2PowGammaDotB
 			&& kk<1000)
 		{
 			Real pow_01_kk = pow(0.1,kk);
 			//pi2 = pi + 0.1^kk * (1/n*gam2 - pi)
 			for (int v=0; v<k; v++)
 				pi2[v] = pi[v] + pow_01_kk * (invN*gam2[v] - pi[v]);
-			//pi2 was updated, so we recompute pi2PowGammaDotB and prodGam2logPi2
+			//pi2 was updated, so we recompute pi2PowGammaDotB and gam2DotLogPi2
 			pi2PowGammaDotB = 0.;
 			for (int v=0; v<k; v++)
 				pi2PowGammaDotB += pow(pi2[v],gamma) * b[v];
-			prodGam2logPi2 = 0.;
+			gam2DotLogPi2 = 0.;
 			for (int v=0; v<k; v++)
-				prodGam2logPi2 += gam2[v] * log(pi2[v]);
+				gam2DotLogPi2 += gam2[v] * log(pi2[v]);
 			kk++;
 		}
 		Real t = pow(0.1,kk);
@@ -209,7 +210,7 @@ void EMGLLF_core(
 			{
 				for (int i=0; i<n; i++)
 				{
-					//< X2(i,:,r) , phi(:,mm,r) >
+					//< X2[i,,r] , phi[,mm,r] >
 					Real dotProduct = 0.;
 					for (int u=0; u<p; u++)
 						dotProduct += X2[ai(i,u,r,n,p,k)] * phi[ai(u,mm,r,p,m,k)];
@@ -221,16 +222,17 @@ void EMGLLF_core(
 				for (int u=0; u<n; u++)
 					sumPs1 += ps1[ai(u,mm,r,n,m,k)];
 				ps[mi(mm,r,m,k)] = sumPs1;
-				//nY2[mm,r] = sum(Y2[,mm,r])
-				Real sumNy2 = 0.;
+				//nY2[mm,r] = sum(Y2[,mm,r]^2)
+				Real sumY2 = 0.;
 				for (int u=0; u<n; u++)
-					sumNy2 += Y2[ai(u,mm,r,n,m,k)];
-				nY2[mi(mm,r,m,k)] = sumNy2;
+					sumY2 += Y2[ai(u,mm,r,n,m,k)] * Y2[ai(u,mm,r,n,m,k)];
+				nY2[mi(mm,r,m,k)] = sumY2;
 				//rho[mm,mm,r] = (ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*(gam2[r]))) / (2*nY2[mm,r])
 				rho[ai(mm,mm,r,m,m,k)] = ( ps[mi(mm,r,m,k)] + sqrt( ps[mi(mm,r,m,k)]*ps[mi(mm,r,m,k)]
 					+ 4*nY2[mi(mm,r,m,k)] * gam2[r] ) ) / (2*nY2[mi(mm,r,m,k)]);
 			}
 		}
+
 		for (int r=0; r<k; r++)
 		{
 			for (int j=0; j<p; j++)
@@ -238,25 +240,25 @@ void EMGLLF_core(
 				for (int mm=0; mm<m; mm++)
 				{
 					//sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p,j),r])
-					Real dotPhiGram2 = 0.0;
+					Real phiDotGram2 = 0.;
 					for (int u=0; u<p; u++)
 					{
 						if (u != j)
-							dotPhiGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
+							phiDotGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
 					}
-					//S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p,j),r])
-					S[ai(j,mm,r,p,m,k)] = -rho[ai(mm,mm,r,m,m,k)] * ps2[ai(j,mm,r,p,m,k)] + dotPhiGram2;
-					Real pow_pir_gamma = pow(pi[r],gamma);
-					if (fabs(S[ai(j,mm,r,p,m,k)]) <= n*lambda*pow_pir_gamma)
-						phi[ai(j,mm,r,p,m,k)] = 0;
-					else if (S[ai(j,mm,r,p,m,k)] > n*lambda*pow_pir_gamma)
+					//S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j,-j,r])
+					S[ai(j,mm,r,p,m,k)] = -rho[ai(mm,mm,r,m,m,k)] * ps2[ai(j,mm,r,p,m,k)] + phiDotGram2;
+					Real pirPowGamma = pow(pi[r],gamma);
+					if (fabs(S[ai(j,mm,r,p,m,k)]) <= n*lambda*pirPowGamma)
+						phi[ai(j,mm,r,p,m,k)] = 0.;
+					else if (S[ai(j,mm,r,p,m,k)] > n*lambda*pirPowGamma)
 					{
-						phi[ai(j,mm,r,p,m,k)] = (n*lambda*pow_pir_gamma - S[ai(j,mm,r,p,m,k)])
+						phi[ai(j,mm,r,p,m,k)] = (n*lambda*pirPowGamma - S[ai(j,mm,r,p,m,k)])
 							/ Gram2[ai(j,j,r,p,p,k)];
 					}
 					else
 					{
-						phi[ai(j,mm,r,p,m,k)] = -(n*lambda*pow_pir_gamma + S[ai(j,mm,r,p,m,k)])
+						phi[ai(j,mm,r,p,m,k)] = -(n*lambda*pirPowGamma + S[ai(j,mm,r,p,m,k)])
 							/ Gram2[ai(j,j,r,p,p,k)];
 					}
 				}
@@ -281,7 +283,7 @@ void EMGLLF_core(
 						YiRhoR[u] += Y[mi(i,v,n,m)] * rho[ai(v,u,r,m,m,k)];
 				}
 
-				//compute X(i,:)*phi(:,:,r)
+				//compute X[i,]%*%phi[,,r]
 				for (int u=0; u<m; u++)
 				{
 					XiPhiR[u] = 0.;
@@ -311,6 +313,7 @@ void EMGLLF_core(
 				sumLLF1 += Gam[mi(i,r,n,k)] / gaussConstM;
 				sumGamI += Gam[mi(i,r,n,k)];
 			}
+
 			sumLogLLF2 += log(sumLLF1);
 			for (int r=0; r<k; r++)
 			{
