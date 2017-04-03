@@ -7,9 +7,9 @@
 #'
 #' @return a list with indices, a vector of indices selected models,
 #'				 and D1, a vector of corresponding dimensions
-#' @export
 #'
-modelSelection = function(LLF)
+#' @export
+filterModels = function(LLF)
 {
 	D = LLF[,2]
 	D1 = unique(D)
@@ -34,7 +34,3 @@ modelSelection = function(LLF)
 
 	return (list(indices=indices,D1=D1))
 }
-
-#TODO:
-## Programme qui sélectionne un modèle
-## proposer à l'utilisation différents critères (BIC, AIC, slope heuristic)

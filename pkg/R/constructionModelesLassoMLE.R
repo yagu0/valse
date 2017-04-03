@@ -75,9 +75,9 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 	#Pour chaque lambda de la grille, on calcule les coefficients
   out =
 		if (ncores > 1)
-			parLapply(cl, seq_along(glambda), computeAtLambda)
+			parLapply(cl, glambda, computeAtLambda)
 		else
-			lapply(seq_along(glambda), computeAtLambda)
+			lapply(glambda, computeAtLambda)
 
 	if (ncores > 1)
     parallel::stopCluster(cl)

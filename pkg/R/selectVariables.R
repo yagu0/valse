@@ -34,7 +34,7 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 	}
 
 	# Calcul pour un lambda
-	computeCoefs <-function(lambda)
+	computeCoefs <- function(lambda)
 	{
 		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 

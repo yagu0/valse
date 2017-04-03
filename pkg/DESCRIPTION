@@ -19,13 +19,11 @@ Depends:
     R (>= 3.0.0)
 Imports:
     MASS,
-    methods
+		parallel
 Suggests:
-    parallel,
-    testhat,
-    devtools,
-    rmarkdown
+    capushe,
+    roxygen2,
+    testhat
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
-VignetteBuilder: knitr
 RoxygenNote: 5.0.1

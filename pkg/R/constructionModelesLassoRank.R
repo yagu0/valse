@@ -10,7 +10,6 @@
 constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rangmin,
 	rangmax, ncores, verbose=FALSE)
 {
-  #get matrix sizes
   n = dim(X)[1]
   p = dim(X)[2]
   m = dim(rho)[2]
@@ -21,7 +20,7 @@ constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rang
   deltaRank = rangmax - rangmin + 1
   Size = deltaRank^k
   Rank = matrix(0, nrow=Size, ncol=k)
-  for(r in 1:k)
+  for (r in 1:k)
 	{
 		# On veut le tableau de toutes les combinaisons de rangs possibles
 		# Dans la première colonne : on répète (rangmax-rangmin)^(k-1) chaque chiffre :
@@ -34,28 +33,52 @@ constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rang
     Rank[,r] = rangmin + rep(0:(deltaRank-1), deltaRank^(r-1), each=deltaRank^(k-r))
   }
 
-	# output parameters
-  phi = array(0, dim=c(p,m,k,L*Size))
-  llh = matrix(0, L*Size, 2) #log-likelihood
-
-	# TODO: // loop
-	for(lambdaIndex in 1:L)
+  if (ncores > 1)
 	{
+    cl = parallel::makeCluster(ncores)
+    parallel::clusterExport( cl, envir=environment(),
+			varlist=c("A1","Size","Pi","Rho","mini","maxi","X","Y","tau",
+			"Rank","m","phi","ncores","verbose") )
+	}
+
+	computeAtLambda <- function(lambdaIndex)
+	{
+		if (ncores > 1)
+			require("valse") #workers start with an empty environment
+
     # on ne garde que les colonnes actives
     # 'active' sera l'ensemble des variables informatives
     active = A1[,lambdaIndex]
     active = active[-(active==0)]
+		phi = array(0, dim=c(p,m,k,Size))
+		llh = matrix(0, Size, 2) #log-likelihood
     if (length(active) > 0)
 		{
       for (j in 1:Size)
 			{
         res = EMGrank(Pi[,lambdaIndex], Rho[,,,lambdaIndex], mini, maxi,
 					X[,active], Y, tau, Rank[j,])
-        llh[(lambdaIndex-1)*Size+j,] =
-					c( res$LLF, sum(Rank[j,] * (length(active)- Rank[j,] + m)) )
-        phi[active,,,(lambdaIndex-1)*Size+j] = res$phi
+        llh = rbind(llh,
+					c( res$LLF, sum(Rank[j,] * (length(active)- Rank[j,] + m)) ) )
+        phi[active,,,] = rbind(phi[active,,,], res$phi)
       }
     }
-  }
-  return (list("phi"=phi, "llh" = llh))
+		list("llh"=llh, "phi"=phi)
+	}
+
+	#Pour chaque lambda de la grille, on calcule les coefficients
+  out =
+		if (ncores > 1)
+			parLapply(cl, seq_along(glambda), computeAtLambda)
+		else
+			lapply(seq_along(glambda), computeAtLambda)
+
+	if (ncores > 1)
+    parallel::stopCluster(cl)
+
+	# TODO: this is a bit ugly. Better use bigmemory and fill llh/phi in-place
+	# (but this also adds a dependency...)
+	llh <- do.call( rbind, lapply(out, function(model) model$llh) )
+	phi <- do.call( rbind, lapply(out, function(model) model$phi) )
+	list("llh"=llh, "phi"=phi)
 }
