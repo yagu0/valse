@@ -1,4 +1,14 @@
-constructionModelesLassoRank = function(pi,rho,mini,maxi,X,Y,tau,A1,rangmin,rangmax)
+#' constructionModelesLassoRank
+#'
+#' TODO: description
+#'
+#' @param ...
+#'
+#' @return ...
+#'
+#' export
+constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rangmin,
+	rangmax, ncores, verbose=FALSE)
 {
   #get matrix sizes
   n = dim(X)[1]
@@ -27,7 +37,9 @@ constructionModelesLassoRank = function(pi,rho,mini,maxi,X,Y,tau,A1,rangmin,rang
 	# output parameters
   phi = array(0, dim=c(p,m,k,L*Size))
   llh = matrix(0, L*Size, 2) #log-likelihood
-  for(lambdaIndex in 1:L)
+
+	# TODO: // loop
+	for(lambdaIndex in 1:L)
 	{
     # on ne garde que les colonnes actives
     # 'active' sera l'ensemble des variables informatives

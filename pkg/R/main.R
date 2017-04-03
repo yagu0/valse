@@ -20,9 +20,9 @@
 #' @examples
 #' #TODO: a few examples
 #' @export
-valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 10,
-                 maxi = 50,eps = 1e-4,kmin = 2,kmax = 2,
-                 rang.min = 1,rang.max = 10, ncores_k=1, ncores_lambda=3, verbose=FALSE)
+valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
+	eps=1e-4, kmin=2, kmax=2, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=3,
+	verbose=FALSE)
 {
   p = dim(X)[2]
   m = dim(Y)[2]
@@ -32,18 +32,18 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
   if (verbose)
 		print("main loop: over all k and all lambda")
 
-	if (ncores_k > 1)
+	if (ncores_outer > 1)
 	{
-		cl = parallel::makeCluster(ncores_k)
+		cl = parallel::makeCluster(ncores_outer)
 		parallel::clusterExport( cl=cl, envir=environment(), varlist=c("X","Y","procedure",
 			"selecMod","gamma","mini","maxi","eps","kmin","kmax","rang.min","rang.max",
-			"ncores_k","ncores_lambda","verbose","p","m","k","tableauRecap") )
+			"ncores_outer","ncores_inner","verbose","p","m","k","tableauRecap") )
 	}
 
 	# Compute model with k components
 	computeModel <- function(k)
 	{
-		if (ncores_k > 1)
+		if (ncores_outer > 1)
 			require("valse") #nodes start with an empty environment
 
 		if (verbose)
@@ -65,7 +65,7 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
     #from the grid: A1 corresponding to selected variables, and
     #A2 corresponding to unselected variables.
     S = selectVariables(P$phiInit,P$rhoInit,P$piInit,P$gamInit,mini,maxi,gamma,
-			grid_lambda,X,Y,1e-8,eps,ncores_lambda)
+			grid_lambda,X,Y,1e-8,eps,ncores_inner)
 
     if (procedure == 'LassoMLE')
 		{
@@ -74,12 +74,7 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
       model = constructionModelesLassoMLE(phiInit, rhoInit, piInit, gamInit, mini,
-				maxi, gamma, X, Y, thresh, eps, S$selected)
-      llh = matrix(ncol = 2)
-      for (l in seq_along(model[[k]]))
-        llh = rbind(llh, model[[k]][[l]]$llh)
-      LLH = llh[-1,1]
-      D = llh[-1,2]
+				maxi, gamma, X, Y, thresh, eps, S$selected, ncores_inner, verbose)
     }
 		else
 		{
@@ -88,25 +83,25 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
       #compute parameter estimations, with the Low Rank
       #Estimator, restricted on selected variables.
       model = constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, A1,
-				rank.min, rank.max)
+				rank.min, rank.max, ncores_inner, verbose)
 
       ################################################
       ### Regarder la SUITE  
-      phi = runProcedure2()$phi
-      Phi2 = Phi
-      if (dim(Phi2)[1] == 0)
-        Phi[, , 1:k,] <- phi
-      else
-      {
-        Phi <- array(0, dim = c(p, m, kmax, dim(Phi2)[4] + dim(phi)[4]))
-        Phi[, , 1:(dim(Phi2)[3]), 1:(dim(Phi2)[4])] <<- Phi2
-        Phi[, , 1:k,-(1:(dim(Phi2)[4]))] <<- phi
-      }
+#      phi = runProcedure2()$phi
+#      Phi2 = Phi
+#      if (dim(Phi2)[1] == 0)
+#        Phi[, , 1:k,] <- phi
+#      else
+#      {
+#        Phi <- array(0, dim = c(p, m, kmax, dim(Phi2)[4] + dim(phi)[4]))
+#        Phi[, , 1:(dim(Phi2)[3]), 1:(dim(Phi2)[4])] <<- Phi2
+#        Phi[, , 1:k,-(1:(dim(Phi2)[4]))] <<- phi
+#      }
     }
-    tableauRecap[[k]] = matrix(c(LLH, D, rep(k, length(model[[k]])), 1:length(model[[k]])), ncol = 4))
+    model
   }
 
-	model <-
+	model_list <-
 		if (ncores_k > 1)
 			parLapply(cl, kmin:kmax, computeModel)
 		else
@@ -114,9 +109,19 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
 	if (ncores_k > 1)
 		parallel::stopCluster(cl)
 
+	# Get summary "tableauRecap" from models
+	tableauRecap = t( sapply( seq_along(model_list), function(model) {
+		llh = matrix(ncol = 2)
+    for (l in seq_along(model))
+      llh = rbind(llh, model[[l]]$llh)
+    LLH = llh[-1,1]
+    D = llh[-1,2]
+		c(LLH, D, rep(k, length(model)), 1:length(model))
+	} ) )
+
 	if (verbose)
 		print('Model selection')
-	tableauRecap = do.call( rbind, tableaurecap ) #stack list cells into a matrix
+	tableauRecap = do.call( rbind, tableauRecap ) #stack list cells into a matrix
   tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
   tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
   data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
