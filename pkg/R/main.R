@@ -22,55 +22,59 @@
 #' @export
 valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 10,
                  maxi = 50,eps = 1e-4,kmin = 2,kmax = 2,
-                 rang.min = 1,rang.max = 10)
+                 rang.min = 1,rang.max = 10, ncores_k=1, ncores_lambda=3, verbose=FALSE)
 {
-  ####################
-  # compute all models
-  ####################
-
   p = dim(X)[2]
   m = dim(Y)[2]
   n = dim(X)[1]
-  
-  model = list()
-  tableauRecap = array(0, dim=c(1000,4))
-  cpt = 0
-  print("main loop: over all k and all lambda")
-  
-  for (k in kmin:kmax)
+
+  tableauRecap = list()
+  if (verbose)
+		print("main loop: over all k and all lambda")
+
+	if (ncores_k > 1)
 	{
-    print(k)
-    print("Parameters initialization")
+		cl = parallel::makeCluster(ncores_k)
+		parallel::clusterExport( cl=cl, envir=environment(), varlist=c("X","Y","procedure",
+			"selecMod","gamma","mini","maxi","eps","kmin","kmax","rang.min","rang.max",
+			"ncores_k","ncores_lambda","verbose","p","m","k","tableauRecap") )
+	}
+
+	# Compute model with k components
+	computeModel <- function(k)
+	{
+		if (ncores_k > 1)
+			require("valse") #nodes start with an empty environment
+
+		if (verbose)
+			print(paste("Parameters initialization for k =",k))
     #smallEM initializes parameters by k-means and regression model in each component,
     #doing this 20 times, and keeping the values maximizing the likelihood after 10
     #iterations of the EM algorithm.
-    init = initSmallEM(k, X, Y)
-    phiInit <- init$phiInit
-    rhoInit <- init$rhoInit
-    piInit	<- init$piInit
-    gamInit <- init$gamInit
-    grid_lambda <- computeGridLambda(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, maxi, eps)
-    
+    P = initSmallEM(k, X, Y)
+    grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit, X, Y,
+			gamma, mini, maxi, eps)
+
+		# TODO: 100 = magic number
     if (length(grid_lambda)>100)
       grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = 100)]
-    print("Compute relevant parameters")
+
+		if (verbose)
+			print("Compute relevant parameters")
     #select variables according to each regularization parameter
     #from the grid: A1 corresponding to selected variables, and
     #A2 corresponding to unselected variables.
-    
-    params = selectiontotale(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda,X,Y,1e-8,eps)
-    #params2 = selectVariables(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,grid_lambda[seq(1,length(grid_lambda), by=3)],X,Y,1e-8,eps)
-    ## etrange : params et params 2 sont différents ...
-    selected <- params$selected
-    Rho <- params$Rho
-    Pi <- params$Pi
-    
+    S = selectVariables(P$phiInit,P$rhoInit,P$piInit,P$gamInit,mini,maxi,gamma,
+			grid_lambda,X,Y,1e-8,eps,ncores_lambda)
+
     if (procedure == 'LassoMLE')
 		{
-      print('run the procedure Lasso-MLE')
+      if (verbose)
+				print('run the procedure Lasso-MLE')
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
-      model[[k]] = constructionModelesLassoMLE(phiInit, rhoInit,piInit,gamInit,mini,maxi,gamma,X,Y,thresh,eps,selected)
+      model = constructionModelesLassoMLE(phiInit, rhoInit, piInit, gamInit, mini,
+				maxi, gamma, X, Y, thresh, eps, S$selected)
       llh = matrix(ncol = 2)
       for (l in seq_along(model[[k]]))
         llh = rbind(llh, model[[k]][[l]]$llh)
@@ -79,12 +83,13 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
     }
 		else
 		{
-      print('run the procedure Lasso-Rank')
+      if (verbose)
+				print('run the procedure Lasso-Rank')
       #compute parameter estimations, with the Low Rank
       #Estimator, restricted on selected variables.
-      model = constructionModelesLassoRank(Pi, Rho, mini, maxi, X, Y, eps,
-                                           A1, rank.min, rank.max)
-      
+      model = constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, A1,
+				rank.min, rank.max)
+
       ################################################
       ### Regarder la SUITE  
       phi = runProcedure2()$phi
@@ -98,13 +103,24 @@ valse = function(X,Y,procedure = 'LassoMLE',selecMod = 'DDSE',gamma = 1,mini = 1
         Phi[, , 1:k,-(1:(dim(Phi2)[4]))] <<- phi
       }
     }
-    tableauRecap[(cpt+1):(cpt+length(model[[k]])), ] = matrix(c(LLH, D, rep(k, length(model[[k]])), 1:length(model[[k]])), ncol = 4)
-    cpt = cpt+length(model[[k]])
+    tableauRecap[[k]] = matrix(c(LLH, D, rep(k, length(model[[k]])), 1:length(model[[k]])), ncol = 4))
   }
-  print('Model selection')
+
+	model <-
+		if (ncores_k > 1)
+			parLapply(cl, kmin:kmax, computeModel)
+		else
+			lapply(kmin:kmax, computeModel)
+	if (ncores_k > 1)
+		parallel::stopCluster(cl)
+
+	if (verbose)
+		print('Model selection')
+	tableauRecap = do.call( rbind, tableaurecap ) #stack list cells into a matrix
   tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
   tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
   data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
+
 	require(capushe)
   modSel = capushe(data, n)
   indModSel <-

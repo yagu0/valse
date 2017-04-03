@@ -14,6 +14,7 @@
 #' @param Y			 matrix of responses
 #' @param thres	 threshold to consider a coefficient to be equal to 0
 #' @param tau		 threshold to say that EM algorithm has converged
+#' @param ncores Number or cores for parallel execution (1 to disable)
 #'
 #' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
 #'
@@ -22,7 +23,7 @@
 #' @export
 #'
 selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,
-	X,Y,thresh,tau, ncores=1) #ncores==1 ==> no //
+	X,Y,thresh,tau, ncores=3)
 {
 	if (ncores > 1)
 	{
@@ -54,7 +55,8 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 	out <-
 		if (ncores > 1)
 			parLapply(cl, glambda, computeCoefs)
-		else lapply(glambda, computeCoefs)
+		else
+			lapply(glambda, computeCoefs)
 	if (ncores > 1)
 		parallel::stopCluster(cl)
 
