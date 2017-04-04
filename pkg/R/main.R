@@ -21,7 +21,7 @@
 #' #TODO: a few examples
 #' @export
 valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
-	eps=1e-4, kmin=2, kmax=2, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=3,
+	eps=1e-4, kmin=2, kmax=4, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=1, size_coll_mod = 50,
 	verbose=FALSE)
 {
   p = dim(X)[2]
@@ -54,8 +54,8 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit, X, Y,
 			gamma, mini, maxi, eps)
 		# TODO: 100 = magic number
-    if (length(grid_lambda)>100)
-      grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = 100)]
+    if (length(grid_lambda)>size_coll_mod)
+      grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = size_coll_mod)]
 
 		if (verbose)
 			print("Compute relevant parameters")
@@ -63,15 +63,15 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     #from the grid: S$selected corresponding to selected variables
     S = selectVariables(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini, maxi, gamma,
 			grid_lambda, X, Y, 1e-8, eps, ncores_inner) #TODO: 1e-8 as arg?! eps?
-
+    
     if (procedure == 'LassoMLE')
 		{
       if (verbose)
 				print('run the procedure Lasso-MLE')
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
-      models <- constructionModelesLassoMLE(phiInit, rhoInit, piInit, gamInit, mini,
-				maxi, gamma, X, Y, thresh, eps, S$selected, ncores_inner, verbose)
+      models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini,
+				maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact = 1e3, verbose)
     }
 		else
 		{
@@ -87,12 +87,10 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 
 	# List (index k) of lists (index lambda) of models
 	models_list <-
-		#if (ncores_k > 1)
 	  if (ncores_outer > 1)
 			parLapply(cl, kmin:kmax, computeModels)
 		else
 			lapply(kmin:kmax, computeModels)
-	#if (ncores_k > 1)
 	if (ncores_outer > 1)
 		parallel::stopCluster(cl)
 
@@ -103,12 +101,13 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 	}
 
 	# Get summary "tableauRecap" from models ; TODO: jusqu'à ligne 114 à mon avis là c'est faux :/
-	tableauRecap = t( sapply( models_list, function(models) {
+	tableauRecap = sapply( models_list, function(models) {
 		llh = do.call(rbind, lapply(models, function(model) model$llh))
     LLH = llh[-1,1]
     D = llh[-1,2]
-		c(LLH, D, rep(k, length(model)), 1:length(model))
-	} ))
+		c(LLH, D, rep(k, length(LLH)), 1:length(LLH))
+	}) 
+	tableauRecap
 	if (verbose)
 		print('Model selection')
   tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
@@ -125,5 +124,5 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 			modSel@BIC_capushe$model
 		else if (selecMod == 'AIC')
 			modSel@AIC_capushe$model
-  model[[tableauRecap[indModSel,3]]][[tableauRecap[indModSel,4]]]
+  models_list[[tableauRecap[indModSel,3]]][[tableauRecap[indModSel,4]]]
 }
