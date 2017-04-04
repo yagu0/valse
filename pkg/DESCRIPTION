@@ -19,7 +19,7 @@ Depends:
     R (>= 3.0.0)
 Imports:
     MASS,
-		parallel
+    parallel
 Suggests:
     capushe,
     roxygen2,
@@ -27,3 +27,16 @@ Suggests:
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
 RoxygenNote: 5.0.1
+Collate:
+    'plot.R'
+    'main.R'
+    'selectVariables.R'
+    'filterModels.R'
+    'constructionModelesLassoRank.R'
+    'constructionModelesLassoMLE.R'
+    'computeGridLambda.R'
+    'initSmallEM.R'
+    'EMGrank.R'
+    'EMGLLF.R'
+    'generateXY.R'
+    'A_NAMESPACE.R'

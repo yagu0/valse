@@ -24,9 +24,8 @@ computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y,
 	m = dim(phiInit)[2]
 	k = dim(phiInit)[3]
 
-	# TODO: explain why gamma=1 instad of just 'gamma'?
-  list_EMG = EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi,
-		gamma=1, lamba=0, X, Y, tau)
+	list_EMG = EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi,
+		gamma, lambda=0, X, Y, tau)
 	grid = array(0, dim=c(p,m,k))
 	for (i in 1:p)
 	{
@@ -34,6 +33,5 @@ computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y,
 			grid[i,j,] = abs(list_EMG$S[i,j,]) / (n*list_EMG$pi^gamma)
 	}
 	grid = unique(grid)
-	grid = grid[grid <= 1]
 	grid
 }

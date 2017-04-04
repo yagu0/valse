@@ -87,11 +87,13 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 
 	# List (index k) of lists (index lambda) of models
 	models_list <-
-		if (ncores_k > 1)
+		#if (ncores_k > 1)
+	  if (ncores_outer > 1)
 			parLapply(cl, kmin:kmax, computeModels)
 		else
 			lapply(kmin:kmax, computeModels)
-	if (ncores_k > 1)
+	#if (ncores_k > 1)
+	if (ncores_outer > 1)
 		parallel::stopCluster(cl)
 
 	if (! requireNamespace("capushe", quietly=TRUE))
@@ -102,11 +104,11 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 
 	# Get summary "tableauRecap" from models ; TODO: jusqu'à ligne 114 à mon avis là c'est faux :/
 	tableauRecap = t( sapply( models_list, function(models) {
-		llh = do.call(rbind, lapply(models, function(model) model$llh)
+		llh = do.call(rbind, lapply(models, function(model) model$llh))
     LLH = llh[-1,1]
     D = llh[-1,2]
 		c(LLH, D, rep(k, length(model)), 1:length(model))
-	) } ) )
+	} ))
 	if (verbose)
 		print('Model selection')
   tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
