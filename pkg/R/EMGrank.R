@@ -19,6 +19,9 @@
 #' @export
 EMGrank <- function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
+	#TEMPORARY: use R version
+	return (EMGrank_R(Pi, Rho, mini, maxi, X, Y, tau, rank))
+
 	n = nrow(X) #nombre d'echantillons
 	p = ncol(X) #nombre de covariables
 	m = ncol(Y) #taille de Y (multivarié)

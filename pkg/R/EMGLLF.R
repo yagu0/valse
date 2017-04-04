@@ -25,6 +25,9 @@
 EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
 	mini, maxi, gamma, lambda, X, Y, tau)
 {
+	#TEMPORARY: use R version
+	return (EMGLLF_R(phiInit, rhoInit, piInit, gamInit,mini, maxi, gamma, lambda, X, Y, tau))
+
 	n = nrow(X) #nombre d'echantillons
 	p = ncol(X) #nombre de covariables
 	m = ncol(Y) #taille de Y (multivarié)

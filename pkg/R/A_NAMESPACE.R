@@ -1,4 +1,6 @@
 #' @include generateXY.R
+#' @include EMGLLF_R.R
+#' @include EMGrank_R.R
 #' @include EMGLLF.R
 #' @include EMGrank.R
 #' @include initSmallEM.R
