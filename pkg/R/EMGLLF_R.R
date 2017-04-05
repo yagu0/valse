@@ -1,42 +1,36 @@
 EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 {
-  #matrix dimensions
+  # Matrix dimensions
   n = dim(X)[1]
   p = dim(phiInit)[1]
   m = dim(phiInit)[2]
   k = dim(phiInit)[3]
-  
-  #init outputs
+
+  # Outputs
   phi = phiInit
   rho = rhoInit
   pi = piInit
-  LLF = rep(0, maxi)
+  llh = -Inf
   S = array(0, dim=c(p,m,k))
-  
+
+	# Algorithm variables
   gam = gamInit
   Gram2 = array(0, dim=c(p,p,k))
   ps2 = array(0, dim=c(p,m,k))
   b = rep(0, k)
   X2 = array(0, dim=c(n,p,k))
   Y2 = array(0, dim=c(n,m,k))
-  dist = 0
-  dist2 = 0
-  ite = 1
-  pi2 = rep(0, k)
-  ps = matrix(0, m,k)
-  nY2 = matrix(0, m,k)
-  ps1 = array(0, dim=c(n,m,k))
-  Gam = matrix(0, n,k)
-  EPS = 1E-15
-  
-  while(ite <= mini || (ite<= maxi && (dist>= tau || dist2 >= sqrt(tau))))
+  EPS = 1e-15
+
+  for (ite in 1:maxi)
 	{
+		# Remember last pi,rho,phi values for exit condition in the end of loop
     Phi = phi
     Rho = rho
     Pi = pi
 
-    #calcul associé à Y et X
-    for(r in 1:k)
+    # Calcul associé à Y et X
+    for (r in 1:k)
 		{
       for (mm in 1:m)
         Y2[,mm,r] = sqrt(gam[,r]) * Y[,mm]
@@ -54,14 +48,13 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
     ##########
     #Etape M #
     ##########
-    
-    #pour pi
-    for (r in 1:k)
-      b[r] = sum(abs(phi[,,r]))
+
+    # Pour pi
+    b = sapply( 1:k, function(r) sum(abs(phi[,,r])) )
     gam2 = colSums(gam)
     a = sum(gam %*% log(pi))
 
-    #tant que les props sont negatives
+    # Tant que les props sont negatives
     kk = 0
     pi2AllPositive = FALSE
     while (!pi2AllPositive)
@@ -71,7 +64,7 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
       kk = kk+1
     }
 
-    #t(m) la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
+    # t(m) la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
     while( kk < 1000 && -a/n + lambda * sum(pi^gamma * b) <
 			-sum(gam2 * log(pi2))/n + lambda * sum(pi2^gamma * b) )
 		{
@@ -86,13 +79,11 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
 		{
       for (mm in 1:m)
 			{
+				ps = 0
         for (i in 1:n)
-				{
-          ps1[i,mm,r] = Y2[i,mm,r] * sum(X2[i,,r] * phi[,mm,r])
-        }
-        ps[mm,r] = sum(ps1[,mm,r])
-        nY2[mm,r] = sum(Y2[,mm,r]^2)
-        rho[mm,mm,r] = (ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*gam2[r])) / (2*nY2[mm,r])
+          ps = ps + Y2[i,mm,r] * sum(X2[i,,r] * phi[,mm,r])
+        nY2 = sum(Y2[,mm,r]^2)
+        rho[mm,mm,r] = (ps+sqrt(ps^2+4*nY2*gam2[r])) / (2*nY2)
 			}
     }
 
@@ -117,40 +108,37 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
     #Etape E #
     ##########
 
-		sumLogLLF2 = 0
+		sumLogLLH2 = 0
     for (i in 1:n)
 		{
-      #precompute sq norms to numerically adjust their values
-      sqNorm2 = rep(0,k)
-      for (r in 1:k)
-        sqNorm2[r] = sum( (Y[i,]%*%rho[,,r]-X[i,]%*%phi[,,r])^2 )
-
-      #compute Gam[,]
-      sumLLF1 = 0.0;
+      # Update gam[,]
+      sumLLH1 = 0
+			sumGamI = 0
       for (r in 1:k)
 			{
-				Gam[i,r] = pi[r] * exp(-0.5*sqNorm2[r]) * det(rho[,,r])
-        sumLLF1 = sumLLF1 + Gam[i,r] / (2*base::pi)^(m/2)
+				gam[i,r] = pi[r] * exp(-0.5*sum( (Y[i,]%*%rho[,,r]-X[i,]%*%phi[,,r])^2 ))
+					* det(rho[,,r])
+        sumLLH1 = sumLLH1 + gam[i,r] / (2*base::pi)^(m/2)
+				sumGamI = sumGamI + gam[i,r]
       }
-      sumLogLLF2 = sumLogLLF2 + log(sumLLF1)
-      sumGamI = sum(Gam[i,])
-      if(sumGamI > EPS)
-        gam[i,] = Gam[i,] / sumGamI
-      else
-        gam[i,] = rep(0,k)
+      sumLogLLH2 = sumLogLLH2 + log(sumLLH1)
+      if(sumGamI > EPS) #else: gam[i,] is already ~=0
+        gam[i,] = gam[i,] / sumGamI
     }
 
     sumPen = sum(pi^gamma * b)
-    LLF[ite] = -sumLogLLF2/n + lambda*sumPen
-    dist = ifelse( ite == 1, LLF[ite], (LLF[ite]-LLF[ite-1]) / (1+abs(LLF[ite])) )
+		last_llh = llh
+    llh = -sumLogLLH2/n + lambda*sumPen
+    dist = ifelse( ite == 1, llh, (llh-last_llh) / (1+abs(llh)) )
     Dist1 = max( (abs(phi-Phi)) / (1+abs(phi)) )
     Dist2 = max( (abs(rho-Rho)) / (1+abs(rho)) )
     Dist3 = max( (abs(pi-Pi)) / (1+abs(Pi)) )
     dist2 = max(Dist1,Dist2,Dist3)
 
-    ite = ite+1
+    if (ite>=mini && (dist>= tau || dist2 >= sqrt(tau)))
+			break
   }
 
   affec = apply(gam, 1, which.max)
-  return(list("phi"=phi, "rho"=rho, "pi"=pi, "LLF"=LLF, "S"=S, "affec" = affec ))
+  list( "phi"=phi, "rho"=rho, "pi"=pi, "llh"=llh, "S"=S, "affec"=affec )
 }
