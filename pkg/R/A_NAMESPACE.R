@@ -7,7 +7,6 @@
 #' @include computeGridLambda.R
 #' @include constructionModelesLassoMLE.R
 #' @include constructionModelesLassoRank.R
-#' @include filterModels.R
 #' @include selectVariables.R
 #' @include main.R
 #' @include plot.R

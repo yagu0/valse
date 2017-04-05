@@ -31,7 +31,6 @@ Collate:
     'plot.R'
     'main.R'
     'selectVariables.R'
-    'filterModels.R'
     'constructionModelesLassoRank.R'
     'constructionModelesLassoMLE.R'
     'computeGridLambda.R'

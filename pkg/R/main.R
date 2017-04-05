@@ -33,10 +33,10 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 
 	if (ncores_outer > 1)
 	{
-		cl = parallel::makeCluster(ncores_outer)
+		cl = parallel::makeCluster(ncores_outer, outfile='')
 		parallel::clusterExport( cl=cl, envir=environment(), varlist=c("X","Y","procedure",
 			"selecMod","gamma","mini","maxi","eps","kmin","kmax","rang.min","rang.max",
-			"ncores_outer","ncores_inner","verbose","p","m","k","tableauRecap") )
+			"ncores_outer","ncores_inner","verbose","p","m") )
 	}
 
 	# Compute models with k components
@@ -53,7 +53,6 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     P = initSmallEM(k, X, Y)
     grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit, X, Y,
 			gamma, mini, maxi, eps)
-		# TODO: 100 = magic number
     if (length(grid_lambda)>size_coll_mod)
       grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = size_coll_mod)]
 
@@ -70,8 +69,8 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 				print('run the procedure Lasso-MLE')
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
-      models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini,
-				maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact = 1e3, verbose)
+      models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit,
+				mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact = 1e3, verbose)
     }
 		else
 		{
@@ -82,6 +81,8 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
       models <- constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, A1,
 				rank.min, rank.max, ncores_inner, verbose)
     }
+		#attention certains modeles sont NULL après selectVariables
+		models = models[sapply(models, function(cell) !is.null(cell))]
     models
   }
 
@@ -100,18 +101,19 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 		return (models_list)
 	}
 
-	# Get summary "tableauRecap" from models ; TODO: jusqu'à ligne 114 à mon avis là c'est faux :/
-	tableauRecap = sapply( models_list, function(models) {
-		llh = do.call(rbind, lapply(models, function(model) model$llh))
-    LLH = llh[-1,1]
-    D = llh[-1,2]
-		c(LLH, D, rep(k, length(LLH)), 1:length(LLH))
-	}) 
-	tableauRecap
-	if (verbose)
-		print('Model selection')
-  tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
-  tableauRecap = tableauRecap[!is.infinite(tableauRecap[,1]),]
+	# Get summary "tableauRecap" from models
+	tableauRecap = do.call( rbind, lapply( models_list, function(models) {
+		#Pour un groupe de modeles (même k, différents lambda):
+		llh = matrix(ncol = 2)
+		for (l in seq_along(models))
+			llh = rbind(llh, models[[l]]$llh)
+		LLH = llh[-1,1]
+		D = llh[-1,2]
+		k = length(models[[1]]$pi)
+		cbind(LLH, D, rep(k, length(models)), 1:length(models))
+	} ) )
+	tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
+  tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
   data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
 
   modSel = capushe::capushe(data, n)
