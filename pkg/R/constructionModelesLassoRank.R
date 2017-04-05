@@ -35,7 +35,7 @@ constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rang
 
   if (ncores > 1)
 	{
-    cl = parallel::makeCluster(ncores)
+    cl = parallel::makeCluster(ncores, outfile='')
     parallel::clusterExport( cl, envir=environment(),
 			varlist=c("A1","Size","Pi","Rho","mini","maxi","X","Y","tau",
 			"Rank","m","phi","ncores","verbose") )

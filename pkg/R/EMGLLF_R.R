@@ -150,7 +150,7 @@ EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,ta
 
     ite = ite+1
   }
-  
+
   affec = apply(gam, 1, which.max)
   return(list("phi"=phi, "rho"=rho, "pi"=pi, "LLF"=LLF, "S"=S, "affec" = affec ))
 }

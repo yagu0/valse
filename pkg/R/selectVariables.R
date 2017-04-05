@@ -27,7 +27,7 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 {
 	if (ncores > 1)
 	{
-		cl = parallel::makeCluster(ncores)
+		cl = parallel::makeCluster(ncores, outfile='')
 		parallel::clusterExport(cl=cl,
 			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","tau"),
 			envir=environment())

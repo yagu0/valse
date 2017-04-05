@@ -106,7 +106,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 		#Pour un groupe de modeles (même k, différents lambda):
 		llh = matrix(ncol = 2)
 		for (l in seq_along(models))
-			llh = rbind(llh, models[[l]]$llh)
+			llh = rbind(llh, models[[l]]$llh) #TODO: LLF? harmonize between EMGLLF and EMGrank?
 		LLH = llh[-1,1]
 		D = llh[-1,2]
 		k = length(models[[1]]$pi)
@@ -115,7 +115,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 	tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
   tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
   data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
-
+browser()
   modSel = capushe::capushe(data, n)
   indModSel <-
 		if (selecMod == 'DDSE')

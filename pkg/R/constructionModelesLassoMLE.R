@@ -12,7 +12,7 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 {
 	if (ncores > 1)
 	{
-		cl = parallel::makeCluster(ncores)
+		cl = parallel::makeCluster(ncores, outfile='')
 		parallel::clusterExport( cl, envir=environment(),
 			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","gamma","X","Y","thresh",
 			"tau","S","ncores","verbose") )
@@ -69,8 +69,8 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 	out =
 		if (ncores > 1)
 			parLapply(cl, 1:length(S), computeAtLambda)
-	else
-		lapply(1:length(S), computeAtLambda)
+		else
+			lapply(1:length(S), computeAtLambda)
 
 	if (ncores > 1)
 		parallel::stopCluster(cl)
