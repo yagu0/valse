@@ -27,7 +27,7 @@
 #' @export
 valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
 	eps=1e-4, kmin=2, kmax=4, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=1,
-	size_coll_mod=50, fast=TRUE, verbose=FALSE)
+	size_coll_mod=50, fast=TRUE, verbose=FALSE, plot = TRUE)
 {
   p = dim(X)[2]
   m = dim(Y)[2]
@@ -137,6 +137,9 @@ print(tableauRecap)
 
   mod = as.character(tableauRecap[indModSel,1])
   listMod = as.integer(unlist(strsplit(mod, "[.]")))
+  if (plot){
+    print(plot_valse())
+  }
   models_list[[listMod[1]]][[listMod[2]]]
-  models_list
+  
 }

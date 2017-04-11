@@ -22,7 +22,7 @@ plot_valse = function(){
       scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,  space = "Lab") +
       ggtitle(paste("Regression matrices in cluster",r))
   }
-  gReg
+  print(gReg)
   
   ## Differences between two clusters
   k1 = 1
@@ -31,7 +31,7 @@ plot_valse = function(){
   gDiff = ggplot(data = Melt, aes(x=Var1, y=Var2, fill=value)) +  geom_tile() + 
     scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,  space = "Lab") +
     ggtitle(paste("Difference between regression matrices in cluster",k1, "and", k2))
-  gDiff
+  print(gDiff)
   
   ### Covariance matrices
   matCov = matrix(NA, nrow = dim(model$rho[,,1])[1], ncol = K)
@@ -41,8 +41,8 @@ plot_valse = function(){
   MeltCov =  melt(matCov)
   gCov = ggplot(data =MeltCov, aes(x=Var1, y=Var2, fill=value)) +  geom_tile() + 
     scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,  space = "Lab") +
-    ggtitle(paste("Regression matrices in cluster",r))
-  gCov 
+    ggtitle("Covariance matrices")
+  print(gCov )
   
   ### proportions
   Gam = matrix(0, ncol = K, nrow = n)
@@ -61,7 +61,7 @@ plot_valse = function(){
   }
   bp <- ggplot(data.frame(gam2), aes(x=X2, y=X1, color=X2, group = X2)) +
     geom_boxplot() + theme(legend.position = "none")
-  bp + background_grid(major = "xy", minor = "none")
+  print(bp + background_grid(major = "xy", minor = "none"))
   
   ### Mean in each cluster
   XY = cbind(X,Y)
@@ -73,6 +73,6 @@ plot_valse = function(){
   }
   data = data.frame(mean = as.vector(meanPerClass), cluster = as.character(rep(1:K, each = dim(XY)[2])), time = rep(1:dim(XY)[2],K))
   g = ggplot(data, aes(x=time, y = mean, group = cluster, color = cluster))
-  g + geom_line(aes(linetype=cluster, color=cluster))+  geom_point(aes(color=cluster))
+  print(g + geom_line(aes(linetype=cluster, color=cluster))+  geom_point(aes(color=cluster)) + ggtitle('Mean per cluster'))
   
 }
