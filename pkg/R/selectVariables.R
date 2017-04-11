@@ -23,7 +23,7 @@
 #' @export
 #'
 selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,
-	X,Y,thresh,tau, ncores=3)
+	X,Y,thresh,tau, ncores=3, fast=TRUE)
 {
 	if (ncores > 1)
 	{
@@ -36,7 +36,7 @@ selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambd
 	# Calcul pour un lambda
 	computeCoefs <- function(lambda)
 	{
-		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
+		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,fast)
 
 		p = dim(phiInit)[1]
 		m = dim(phiInit)[2]

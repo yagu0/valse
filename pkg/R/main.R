@@ -14,6 +14,11 @@
 #' @param kmax integer, maximum number of clusters, by default = 10
 #' @param rang.min integer, minimum rank in the low rank procedure, by default = 1
 #' @param rang.max integer, maximum rank in the
+#' @param ncores_outer Number of cores for the outer loop on k
+#' @param ncores_inner Number of cores for the inner loop on lambda
+#' @param size_coll_mod (Maximum) size of a collection of models
+#' @param fast TRUE to use compiled C code, FALSE for R code only
+#' @param verbose TRUE to show some execution traces
 #'
 #' @return a list with estimators of parameters
 #'
@@ -21,8 +26,8 @@
 #' #TODO: a few examples
 #' @export
 valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
-	eps=1e-4, kmin=2, kmax=4, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=1, size_coll_mod = 50,
-	verbose=FALSE)
+	eps=1e-4, kmin=2, kmax=4, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=1,
+	size_coll_mod=50, fast=TRUE, verbose=FALSE)
 {
   p = dim(X)[2]
   m = dim(Y)[2]
@@ -52,7 +57,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     #iterations of the EM algorithm.
     P = initSmallEM(k, X, Y)
     grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit, X, Y,
-			gamma, mini, maxi, eps)
+			gamma, mini, maxi, eps, fast)
     if (length(grid_lambda)>size_coll_mod)
       grid_lambda = grid_lambda[seq(1, length(grid_lambda), length.out = size_coll_mod)]
 
@@ -61,7 +66,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     #select variables according to each regularization parameter
     #from the grid: S$selected corresponding to selected variables
     S = selectVariables(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini, maxi, gamma,
-			grid_lambda, X, Y, 1e-8, eps, ncores_inner) #TODO: 1e-8 as arg?! eps?
+			grid_lambda, X, Y, 1e-8, eps, ncores_inner, fast) #TODO: 1e-8 as arg?! eps?
     
     if (procedure == 'LassoMLE')
 		{
@@ -70,7 +75,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
       models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit,
-				mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact = 1e3, verbose)
+				mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact=1e3, fast, verbose)
     }
 		else
 		{
@@ -79,7 +84,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
       #compute parameter estimations, with the Low Rank
       #Estimator, restricted on selected variables.
       models <- constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, A1,
-				rank.min, rank.max, ncores_inner, verbose)
+				rank.min, rank.max, ncores_inner, fast, verbose)
     }
 		#attention certains modeles sont NULL après selectVariables
 		models = models[sapply(models, function(cell) !is.null(cell))]

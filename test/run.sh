@@ -24,12 +24,10 @@ if [ "$2" == 'r' ] || [ "$2" == 'c' ]; then
 fi
 
 #1) Generate data using R versions of EMGLLF/EMGrank (slow, but trusted)
-cd generate_test_data/
 echo -e "source('generateRunSaveTest_$algo.R');\n \
 		# I'm happy with default values - feel free to give args\n \
 		generateRunSaveTest_$algo() " \
 	| R --slave
-cd ..
 
 #2) Compile test C code into an executable named "test.$algo"
 make test.$algo

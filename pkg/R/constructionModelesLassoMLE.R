@@ -8,7 +8,7 @@
 #'
 #' export
 constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, maxi,
-	gamma, X, Y, thresh, tau, S, ncores=3, artefact = 1e3, verbose=FALSE)
+	gamma, X, Y, thresh, tau, S, ncores=3, artefact = 1e3, fast=TRUE, verbose=FALSE)
 {
 	if (ncores > 1)
 	{
@@ -41,7 +41,7 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 
 		# lambda == 0 because we compute the EMV: no penalization here
 		res = EMGLLF(phiInit[col.sel,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0,
-			X[,col.sel],Y,tau)
+			X[,col.sel], Y, tau, fast)
 		
 		# Eval dimension from the result + selected
 		phiLambda2 = res$phi

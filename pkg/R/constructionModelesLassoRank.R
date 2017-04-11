@@ -8,7 +8,7 @@
 #'
 #' export
 constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rangmin,
-	rangmax, ncores, verbose=FALSE)
+	rangmax, ncores, fast=TRUE, verbose=FALSE)
 {
   n = dim(X)[1]
   p = dim(X)[2]
@@ -57,7 +57,7 @@ constructionModelesLassoRank = function(pi, rho, mini, maxi, X, Y, tau, A1, rang
       for (j in 1:Size)
 			{
         res = EMGrank(Pi[,lambdaIndex], Rho[,,,lambdaIndex], mini, maxi,
-					X[,active], Y, tau, Rank[j,])
+					X[,active], Y, tau, Rank[j,], fast)
         llh = rbind(llh,
 					c( res$LLF, sum(Rank[j,] * (length(active)- Rank[j,] + m)) ) )
         phi[active,,,] = rbind(phi[active,,,], res$phi)

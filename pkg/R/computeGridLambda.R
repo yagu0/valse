@@ -17,7 +17,7 @@
 #'
 #' @export
 computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y,
-	gamma, mini, maxi, tau)
+	gamma, mini, maxi, tau, fast=TRUE)
 {
 	n = nrow(X)
 	p = dim(phiInit)[1]
@@ -25,7 +25,7 @@ computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y,
 	k = dim(phiInit)[3]
 
 	list_EMG = EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi,
-		gamma, lambda=0, X, Y, tau)
+		gamma, lambda=0, X, Y, tau, fast)
 	grid = array(0, dim=c(p,m,k))
 	for (i in 1:p)
 	{
