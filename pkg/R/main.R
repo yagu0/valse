@@ -123,7 +123,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 		data.frame(model=paste(i,".",seq_along(models),sep=""),
 			pen=sumPen/n, complexity=sumPen, contrast=LLH)
 	} ) )
-print(tableauRecap)
+
   modSel = capushe::capushe(tableauRecap, n)
   indModSel <-
 		if (selecMod == 'DDSE')

@@ -57,7 +57,6 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 		for (r in 1:k)
 		{
 			delta = (Y%*%rhoLambda[,,r] - (X[, col.sel]%*%phiLambda[col.sel,,r]))/artefact
-			print(max(delta))
 			densite = densite + piLambda[r] *
 				det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)
 		}
