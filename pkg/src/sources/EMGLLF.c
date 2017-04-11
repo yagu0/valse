@@ -4,7 +4,7 @@
 #include <gsl/gsl_linalg.h>
 
 // TODO: don't recompute indexes ai(...) and mi(...) when possible
-void EMGLLH_core(
+void EMGLLF_core(
 	// IN parameters
 	const Real* phiInit, // parametre initial de moyenne renormalisé
 	const Real* rhoInit, // parametre initial de variance renormalisé
@@ -261,6 +261,7 @@ void EMGLLH_core(
 		/////////////
 
 		// Precompute det(rho[,,r]) for r in 1...k
+		int signum;
 		for (int r=0; r<k; r++)
 		{
 			for (int u=0; u<m; u++)
@@ -272,7 +273,6 @@ void EMGLLH_core(
 			detRho[r] = gsl_linalg_LU_det(matrix, signum);
 		}
 
-		int signum;
 		Real sumLogLLH = 0.;
 		for (int i=0; i<n; i++)
 		{

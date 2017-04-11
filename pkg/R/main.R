@@ -102,20 +102,19 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 	}
 
 	# Get summary "tableauRecap" from models
-	tableauRecap = do.call( rbind, lapply( models_list, function(models) {
+	tableauRecap = do.call( rbind, lapply( seq_along(models_list), function(i) {
+		models <- models_list[[i]]
 		#Pour un groupe de modeles (même k, différents lambda):
-		llh = matrix(ncol = 2)
-		for (l in seq_along(models))
-			llh = rbind(llh, models[[l]]$llh) #TODO: LLF? harmonize between EMGLLF and EMGrank?
-		LLH = llh[-1,1]
-		D = llh[-1,2]
-		k = length(models[[1]]$pi)
-		cbind(LLH, D, rep(k, length(models)), 1:length(models))
+		LLH <- sapply( models, function(model) model$llh )
+		k == length(models[[1]]$pi)
+		# TODO: chuis pas sûr du tout des lignes suivantes...
+		#       J'ai l'impression qu'il manque des infos
+		sumPen = sapply( models, function(model)
+			sum( model$pi^gamma * sapply(1:k, function(r) sum(abs(model$phi[,,r]))) ) )
+		data.frame(model=paste(i,".",seq_along(models),sep=""),
+			pen=sumPen/1000, complexity=sumPen, contrast=LLH)
 	} ) )
-	tableauRecap = tableauRecap[rowSums(tableauRecap[, 2:4])!=0,]
-  tableauRecap = tableauRecap[(tableauRecap[,1])!=Inf,]
-  data = cbind(1:dim(tableauRecap)[1], tableauRecap[,2], tableauRecap[,2], tableauRecap[,1])
-browser()
+
   modSel = capushe::capushe(data, n)
   indModSel <-
 		if (selecMod == 'DDSE')
@@ -126,5 +125,6 @@ browser()
 			modSel@BIC_capushe$model
 		else if (selecMod == 'AIC')
 			modSel@AIC_capushe$model
+	
   models_list[[tableauRecap[indModSel,3]]][[tableauRecap[indModSel,4]]]
 }
