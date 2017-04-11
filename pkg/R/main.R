@@ -110,17 +110,21 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 	tableauRecap = do.call( rbind, lapply( seq_along(models_list), function(i) {
 		models <- models_list[[i]]
 		#Pour un groupe de modeles (même k, différents lambda):
-		LLH <- sapply( models, function(model) model$llh )
-		k == length(models[[1]]$pi)
+		LLH <- sapply( models, function(model) model$llh[1] )
+		k = length(models[[1]]$pi)
 		# TODO: chuis pas sûr du tout des lignes suivantes...
-		#       J'ai l'impression qu'il manque des infos
-		sumPen = sapply( models, function(model)
-			sum( model$pi^gamma * sapply(1:k, function(r) sum(abs(model$phi[,,r]))) ) )
+		#       J'ai l'impression qu'il manque des infos 
+		## C'est surtout que la pénalité est la mauvaise, la c'est celle du Lasso, nous on veut ici
+		##celle de l'heuristique de pentes
+		#sumPen = sapply( models, function(model)
+		#	sum( model$pi^gamma * sapply(1:k, function(r) sum(abs(model$phi[,,r]))) ) )
+		sumPen = sapply(models, function(model)
+		  k*(dim(model$rho)[1]+sum(model$phi[,,1]!=0)+1)-1)
 		data.frame(model=paste(i,".",seq_along(models),sep=""),
-			pen=sumPen/1000, complexity=sumPen, contrast=LLH)
+			pen=sumPen/n, complexity=sumPen, contrast=LLH)
 	} ) )
-
-  modSel = capushe::capushe(data, n)
+print(tableauRecap)
+  modSel = capushe::capushe(tableauRecap, n)
   indModSel <-
 		if (selecMod == 'DDSE')
 			as.numeric(modSel@DDSE@model)
@@ -130,6 +134,9 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 			modSel@BIC_capushe$model
 		else if (selecMod == 'AIC')
 			modSel@AIC_capushe$model
-	
-  models_list[[tableauRecap[indModSel,3]]][[tableauRecap[indModSel,4]]]
+
+  mod = as.character(tableauRecap[indModSel,1])
+  listMod = as.integer(unlist(strsplit(mod, "[.]")))
+  models_list[[listMod[1]]][[listMod[2]]]
+  models_list
 }
