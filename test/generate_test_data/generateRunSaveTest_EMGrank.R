@@ -10,7 +10,7 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
   for(i in 1:k)
     rho[,,i] = diag(1,m)
 	require(valse)
-  xy = valse:::generateXYdefault(n, p, m, k)
+  xy = generateXYdefault(n, p, m, k)
 
   testFolder = "../data/"
   dir.create(testFolder, showWarnings=FALSE, mode="0755")

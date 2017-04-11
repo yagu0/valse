@@ -1,10 +1,12 @@
 #' Generate a sample of (X,Y) of size n with default values
+#'
 #' @param n sample size
 #' @param p number of covariates
 #' @param m size of the response
 #' @param k number of clusters
+#'
 #' @return list with X and Y
-#' @export
+#'
 generateXYdefault = function(n, p, m, k)
 {
 	meanX = rep(0, p)
@@ -12,27 +14,30 @@ generateXYdefault = function(n, p, m, k)
 	covY = array(dim=c(m,m,k))
 	for(r in 1:k)
 		covY[,,r] = diag(m)
-	pi = rep(1./k,k)
+	π = rep(1./k,k)
 	#initialize beta to a random number of non-zero random value
-	beta = array(0, dim=c(p,m,k))
+	β = array(0, dim=c(p,m,k))
 	for (j in 1:p)
 	{
 		nonZeroCount = sample(1:m, 1)
-		beta[j,1:nonZeroCount,] = matrix(runif(nonZeroCount*k), ncol=k)
+		β[j,1:nonZeroCount,] = matrix(runif(nonZeroCount*k), ncol=k)
 	}
 
-	sample_IO = generateXY(meanX, covX, covY, pi, beta, n)
+	sample_IO = generateXY(n, π, meanX, β, covX, covY)
 	return (list(X=sample_IO$X,Y=sample_IO$Y))
 }
 
-#' Initialize the parameters in a basic way (zero for the conditional mean, uniform for weights,
-#' identity for covariance matrices, and uniformly distributed for the clustering)
+#' Initialize the parameters in a basic way (zero for the conditional mean, uniform for
+#' weights, identity for covariance matrices, and uniformly distributed for the
+#' clustering)
+#'
 #' @param n sample size
 #' @param p number of covariates
 #' @param m size of the response
 #' @param k number of clusters
+#'
 #' @return list with phiInit, rhoInit,piInit,gamInit
-#' @export
+#'
 basicInitParameters = function(n,p,m,k)
 {
 	phiInit = array(0, dim=c(p,m,k))
@@ -49,5 +54,5 @@ basicInitParameters = function(n,p,m,k)
 		gamInit[i,R[i]] = 0.9
 	gamInit = gamInit/sum(gamInit[1,])
 
-	return (list("phiInit" = phiInit, "rhoInit" = rhoInit, "piInit" = piInit, "gamInit" = gamInit))
+	return (list("phiInit"=phiInit, "rhoInit"=rhoInit, "piInit"=piInit, "gamInit"=gamInit))
 }

@@ -8,8 +8,8 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
 
 	require(valse)
-	params = valse:::basicInitParameters(n, p, m, k)
-	xy = valse:::generateXYdefault(n, p, m, k)
+	params = basicInitParameters(n, p, m, k)
+	xy = generateXYdefault(n, p, m, k)
 
 	#save inputs
 	write.table(as.double(params$phiInit), paste(testFolder,"phiInit",sep=""),
@@ -44,7 +44,7 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	write.table(as.double(res$phi), paste(testFolder,"phi",sep=""), row.names=F, col.names=F)
 	write.table(as.double(res$rho), paste(testFolder,"rho",sep=""), row.names=F, col.names=F)
 	write.table(as.double(res$pi), paste(testFolder,"pi",sep=""), row.names=F, col.names=F)
-	write.table(as.double(res$LLF), paste(testFolder,"LLF",sep=""), row.names=F, col.names=F)
+	write.table(as.double(res$llh), paste(testFolder,"llh",sep=""), row.names=F, col.names=F)
 	write.table(as.double(res$S), paste(testFolder,"S",sep=""), row.names=F, col.names=F)
 	write.table(as.integer(res$affec), paste(testFolder,"affec",sep=""), row.names=F, col.names=F)
 }
