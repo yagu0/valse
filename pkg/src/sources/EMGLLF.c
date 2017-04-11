@@ -1,9 +1,10 @@
 #include "utils.h"
 #include <stdlib.h>
+#include <math.h>
 #include <gsl/gsl_linalg.h>
 
 // TODO: don't recompute indexes ai(...) and mi(...) when possible
-void EMGLLF_core(
+void EMGLLH_core(
 	// IN parameters
 	const Real* phiInit, // parametre initial de moyenne renormalisé
 	const Real* rhoInit, // parametre initial de variance renormalisé
@@ -20,7 +21,8 @@ void EMGLLF_core(
 	Real* phi, // parametre de moyenne renormalisé, calculé par l'EM
 	Real* rho, // parametre de variance renormalisé, calculé par l'EM
 	Real* pi, // parametre des proportions renormalisé, calculé par l'EM
-	Real* LLF, // log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
+	Real* llh, // (derniere) log vraisemblance associée à cet échantillon,
+	           // pour les valeurs estimées des paramètres
 	Real* S,
 	int* affec,
 	// additional size parameters
@@ -33,7 +35,6 @@ void EMGLLF_core(
 	copyArray(phiInit, phi, p*m*k);
 	copyArray(rhoInit, rho, m*m*k);
 	copyArray(piInit, pi, k);
-	zeroArray(LLF, maxi);
 	//S is already allocated, and doesn't need to be 'zeroed'
 
 	//Other local variables: same as in R
@@ -44,18 +45,13 @@ void EMGLLF_core(
 	Real* b = (Real*)malloc(k*sizeof(Real));
 	Real* X2 = (Real*)malloc(n*p*k*sizeof(Real));
 	Real* Y2 = (Real*)malloc(n*m*k*sizeof(Real));
-	Real dist = 0.;
-	Real dist2 = 0.;
-	int ite = 0;
+	*llh = -INFINITY;
 	Real* pi2 = (Real*)malloc(k*sizeof(Real));
-	Real* ps = (Real*)malloc(m*k*sizeof(Real));
-	Real* nY2 = (Real*)malloc(m*k*sizeof(Real));
-	Real* ps1 = (Real*)malloc(n*m*k*sizeof(Real));
-	Real* Gam = (Real*)malloc(n*k*sizeof(Real));
 	const Real EPS = 1e-15;
 	// Additional (not at this place, in R file)
 	Real* gam2 = (Real*)malloc(k*sizeof(Real));
 	Real* sqNorm2 = (Real*)malloc(k*sizeof(Real));
+	Real* detRho = (Real*)malloc(k*sizeof(Real));
 	gsl_matrix* matrix = gsl_matrix_alloc(m, m);
 	gsl_permutation* permutation = gsl_permutation_alloc(m);
 	Real* YiRhoR = (Real*)malloc(m*sizeof(Real));
@@ -65,7 +61,7 @@ void EMGLLF_core(
 	Real* Rho = (Real*)malloc(m*m*k*sizeof(Real));
 	Real* Pi = (Real*)malloc(k*sizeof(Real));
 
-	while (ite < mini || (ite < maxi && (dist >= tau || dist2 >= sqrt(tau))))
+	for (int ite=0; ite<maxi; ite++)
 	{
 		copyArray(phi, Phi, p*m*k);
 		copyArray(rho, Rho, m*m*k);
@@ -143,8 +139,8 @@ void EMGLLF_core(
 		}
 
 		//tant que les proportions sont negatives
-		int kk = 0;
-		int pi2AllPositive = 0;
+		int kk = 0,
+			pi2AllPositive = 0;
 		Real invN = 1./n;
 		while (!pi2AllPositive)
 		{
@@ -209,28 +205,21 @@ void EMGLLF_core(
 		{
 			for (int mm=0; mm<m; mm++)
 			{
+				Real ps = 0.,
+					nY2 = 0.;
+				// Compute ps, and nY2 = sum(Y2[,mm,r]^2)
 				for (int i=0; i<n; i++)
 				{
 					//< X2[i,,r] , phi[,mm,r] >
 					Real dotProduct = 0.;
 					for (int u=0; u<p; u++)
 						dotProduct += X2[ai(i,u,r,n,p,k)] * phi[ai(u,mm,r,p,m,k)];
-					//ps1[i,mm,r] = Y2[i,mm,r] * sum(X2[i,,r] * phi[,mm,r])
-					ps1[ai(i,mm,r,n,m,k)] = Y2[ai(i,mm,r,n,m,k)] * dotProduct;
+					//ps = ps + Y2[i,mm,r] * sum(X2[i,,r] * phi[,mm,r])
+					ps += Y2[ai(i,mm,r,n,m,k)] * dotProduct;
+					nY2 += Y2[ai(i,mm,r,n,m,k)] * Y2[ai(i,mm,r,n,m,k)];
 				}
-				//ps[mm,r] = sum(ps1[,mm,r])
-				Real sumPs1 = 0.;
-				for (int u=0; u<n; u++)
-					sumPs1 += ps1[ai(u,mm,r,n,m,k)];
-				ps[mi(mm,r,m,k)] = sumPs1;
-				//nY2[mm,r] = sum(Y2[,mm,r]^2)
-				Real sumY2 = 0.;
-				for (int u=0; u<n; u++)
-					sumY2 += Y2[ai(u,mm,r,n,m,k)] * Y2[ai(u,mm,r,n,m,k)];
-				nY2[mi(mm,r,m,k)] = sumY2;
-				//rho[mm,mm,r] = (ps[mm,r]+sqrt(ps[mm,r]^2+4*nY2[mm,r]*(gam2[r]))) / (2*nY2[mm,r])
-				rho[ai(mm,mm,r,m,m,k)] = ( ps[mi(mm,r,m,k)] + sqrt( ps[mi(mm,r,m,k)]*ps[mi(mm,r,m,k)]
-					+ 4*nY2[mi(mm,r,m,k)] * gam2[r] ) ) / (2*nY2[mi(mm,r,m,k)]);
+				//rho[mm,mm,r] = (ps+sqrt(ps^2+4*nY2*gam2[r])) / (2*nY2)
+				rho[ai(mm,mm,r,m,m,k)] = (ps + sqrt(ps*ps + 4*nY2 * gam2[r])) / (2*nY2);
 			}
 		}
 
@@ -240,7 +229,7 @@ void EMGLLF_core(
 			{
 				for (int mm=0; mm<m; mm++)
 				{
-					//sum(phi[-j,mm,r] * Gram2[j, setdiff(1:p,j),r])
+					//sum(phi[-j,mm,r] * Gram2[j,-j,r])
 					Real phiDotGram2 = 0.;
 					for (int u=0; u<p; u++)
 					{
@@ -248,7 +237,8 @@ void EMGLLF_core(
 							phiDotGram2 += phi[ai(u,mm,r,p,m,k)] * Gram2[ai(j,u,r,p,p,k)];
 					}
 					//S[j,mm,r] = -rho[mm,mm,r]*ps2[j,mm,r] + sum(phi[-j,mm,r] * Gram2[j,-j,r])
-					S[ai(j,mm,r,p,m,k)] = -rho[ai(mm,mm,r,m,m,k)] * ps2[ai(j,mm,r,p,m,k)] + phiDotGram2;
+					S[ai(j,mm,r,p,m,k)] = -rho[ai(mm,mm,r,m,m,k)] * ps2[ai(j,mm,r,p,m,k)]
+						+ phiDotGram2;
 					Real pirPowGamma = pow(pi[r],gamma);
 					if (fabs(S[ai(j,mm,r,p,m,k)]) <= n*lambda*pirPowGamma)
 						phi[ai(j,mm,r,p,m,k)] = 0.;
@@ -270,8 +260,20 @@ void EMGLLF_core(
 		// Etape E //
 		/////////////
 
+		// Precompute det(rho[,,r]) for r in 1...k
+		for (int r=0; r<k; r++)
+		{
+			for (int u=0; u<m; u++)
+			{
+				for (int v=0; v<m; v++)
+					matrix->data[u*m+v] = rho[ai(u,v,r,m,m,k)];
+			}
+			gsl_linalg_LU_decomp(matrix, permutation, &signum);
+			detRho[r] = gsl_linalg_LU_det(matrix, signum);
+		}
+
 		int signum;
-		Real sumLogLLF2 = 0.;
+		Real sumLogLLH = 0.;
 		for (int i=0; i<n; i++)
 		{
 			for (int r=0; r<k; r++)
@@ -298,28 +300,18 @@ void EMGLLF_core(
 					sqNorm2[r] += (YiRhoR[u]-XiPhiR[u]) * (YiRhoR[u]-XiPhiR[u]);
 			}
 
-			Real sumLLF1 = 0.;
 			Real sumGamI = 0.;
 			for (int r=0; r<k; r++)
 			{
-				//compute det(rho[,,r]) [TODO: avoid re-computations]
-				for (int u=0; u<m; u++)
-				{
-					for (int v=0; v<m; v++)
-						matrix->data[u*m+v] = rho[ai(u,v,r,m,m,k)];
-				}
-				gsl_linalg_LU_decomp(matrix, permutation, &signum);
-				Real detRhoR = gsl_linalg_LU_det(matrix, signum);
-				Gam[mi(i,r,n,k)] = pi[r] * exp(-.5*sqNorm2[r]) * detRhoR;
-				sumLLF1 += Gam[mi(i,r,n,k)] / gaussConstM;
-				sumGamI += Gam[mi(i,r,n,k)];
+				gam[mi(i,r,n,k)] = pi[r] * exp(-.5*sqNorm2[r]) * detRho[r];
+				sumGamI += gam[mi(i,r,n,k)];
 			}
 
-			sumLogLLF2 += log(sumLLF1);
-			for (int r=0; r<k; r++)
+			sumLogLLH += log(sumGamI) - log(gaussConstM);
+			if (sumGamI > EPS) //else: gam[i,] is already ~=0
 			{
-				//gam[i,] = Gam[i,] / sumGamI
-				gam[mi(i,r,n,k)] = sumGamI > EPS ? Gam[mi(i,r,n,k)] / sumGamI : 0.;
+				for (int r=0; r<k; r++)
+					gam[mi(i,r,n,k)] /= sumGamI;
 			}
 		}
 
@@ -327,9 +319,10 @@ void EMGLLF_core(
 		Real sumPen = 0.;
 		for (int r=0; r<k; r++)
 			sumPen += pow(pi[r],gamma) * b[r];
-		//LLF[ite] = -sumLogLLF2/n + lambda*sumPen
-		LLF[ite] = -invN * sumLogLLF2 + lambda * sumPen;
-		dist = ite==0 ? LLF[ite] : (LLF[ite] - LLF[ite-1]) / (1. + fabs(LLF[ite]));
+		Real last_llh = *llh;
+		//llh = -sumLogLLH/n + lambda*sumPen
+		*llh = -invN * sumLogLLH + lambda * sumPen;
+		Real dist = ite==0 ? *llh : (*llh - last_llh) / (1. + fabs(*llh));
 
 		//Dist1 = max( abs(phi-Phi) / (1+abs(phi)) )
 		Real Dist1 = 0.;
@@ -373,13 +366,14 @@ void EMGLLF_core(
 			}
 		}
 		//dist2=max([max(Dist1),max(Dist2),max(Dist3)]);
-		dist2 = Dist1;
+		Real dist2 = Dist1;
 		if (Dist2 > dist2)
 			dist2 = Dist2;
 		if (Dist3 > dist2)
 			dist2 = Dist3;
 
-		ite++;
+		if (ite >= mini && (dist >= tau || dist2 >= sqrt(tau)))
+			break;
 	}
 
 	//affec = apply(gam, 1, which.max)
@@ -400,13 +394,9 @@ void EMGLLF_core(
 	//free memory
 	free(b);
 	free(gam);
-	free(Gam);
 	free(Phi);
 	free(Rho);
 	free(Pi);
-	free(ps);
-	free(nY2);
-	free(ps1);
 	free(Gram2);
 	free(ps2);
 	gsl_matrix_free(matrix);
