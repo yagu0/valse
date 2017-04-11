@@ -1,4 +1,5 @@
 source("helper.R")
+library(valse)
 
 generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	gamma=1., lambda=0.5, tau=1e-6)
@@ -6,7 +7,6 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	testFolder = "../data/"
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
 
-	require(valse)
 	params = basicInitParameters(n, p, m, k)
 	xy = generateXYdefault(n, p, m, k)
 
@@ -36,14 +36,14 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 	write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
-	res = EMGLLF_R(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,maxi,
-		gamma,lambda,xy$X,xy$Y,tau)
+	res = valse::EMGLLF(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,
+		maxi,gamma,lambda,xy$X,xy$Y,tau,fast=FALSE)
 
 	#save outputs
-	write.table(as.double(res$phi), paste(testFolder,"phi",sep=""), row.names=F, col.names=F)
-	write.table(as.double(res$rho), paste(testFolder,"rho",sep=""), row.names=F, col.names=F)
-	write.table(as.double(res$pi), paste(testFolder,"pi",sep=""), row.names=F, col.names=F)
-	write.table(as.double(res$llh), paste(testFolder,"llh",sep=""), row.names=F, col.names=F)
-	write.table(as.double(res$S), paste(testFolder,"S",sep=""), row.names=F, col.names=F)
-	write.table(as.integer(res$affec), paste(testFolder,"affec",sep=""), row.names=F, col.names=F)
+	write.table(as.double(res$phi),paste(testFolder,"phi",sep=""),row.names=F,col.names=F)
+	write.table(as.double(res$rho),paste(testFolder,"rho",sep=""),row.names=F,col.names=F)
+	write.table(as.double(res$pi),paste(testFolder,"pi",sep=""),row.names=F,col.names=F)
+	write.table(as.double(res$llh),paste(testFolder,"llh",sep=""),row.names=F,col.names=F)
+	write.table(as.double(res$S),paste(testFolder,"S",sep=""),row.names=F,col.names=F)
+	write.table(as.integer(res$affec),paste(testFolder,"affec",sep=""),row.names=F,col.names=F)
 }

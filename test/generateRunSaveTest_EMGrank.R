@@ -1,4 +1,5 @@
 source("helper.R")
+library(valse)
 
 generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, gamma=1.0,
 	rank = c(1,2,4))
@@ -8,7 +9,6 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
   rho = array(dim=c(m,m,k))
   for(i in 1:k)
     rho[,,i] = diag(1,m)
-	require(valse)
   xy = generateXYdefault(n, p, m, k)
 
   testFolder = "../data/"
@@ -33,9 +33,9 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
   write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
-  res = EMGrank_R(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank)
+  res = valse::EMGrank(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank,fast=FALSE)
 
   #save output
-  write.table(as.double(res$phi), paste(testFolder,"phi",sep=""), row.names=F,col.names=F)
-  write.table(as.double(res$LLF), paste(testFolder,"LLF",sep=""), row.names=F,col.names=F)
+  write.table(as.double(res$phi),paste(testFolder,"phi",sep=""),row.names=F,col.names=F)
+  write.table(as.double(res$LLF),paste(testFolder,"LLF",sep=""),row.names=F,col.names=F)
 }

@@ -37,7 +37,5 @@ Collate:
     'initSmallEM.R'
     'EMGrank.R'
     'EMGLLF.R'
-    'EMGrank_R.R'
-    'EMGLLF_R.R'
     'generateXY.R'
     'A_NAMESPACE.R'

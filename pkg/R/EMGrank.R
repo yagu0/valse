@@ -22,7 +22,7 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, tau, rank, fast=TRUE)
 	if (!fast)
 	{
 		# Function in R
-		return (EMGrank_R(Pi, Rho, mini, maxi, X, Y, tau, rank))
+		return (.EMGrank_R(Pi, Rho, mini, maxi, X, Y, tau, rank))
 	}
 
 	# Function in C
@@ -47,7 +47,7 @@ matricize <- function(X)
 }
 
 # R version - slow but easy to read
-EMGrank_R = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
+.EMGrank_R = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
   #matrix dimensions
   n = dim(X)[1]

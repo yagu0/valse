@@ -28,7 +28,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
 	if (!fast)
 	{
 		# Function in R
-		return (EMGLLF_R(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau))
+		return (.EMGLLF_R(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau))
 	}
 
 	# Function in C
@@ -45,7 +45,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
 }
 
 # R version - slow but easy to read
-EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
+.EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau)
 {
 	# Matrix dimensions
 	n = dim(X)[1]
