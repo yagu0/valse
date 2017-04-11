@@ -61,7 +61,7 @@ void EMGLLF_core(
 	Real* Rho = (Real*)malloc(m*m*k*sizeof(Real));
 	Real* Pi = (Real*)malloc(k*sizeof(Real));
 
-	for (int ite=0; ite<maxi; ite++)
+	for (int ite=1; ite<=maxi; ite++)
 	{
 		copyArray(phi, Phi, p*m*k);
 		copyArray(rho, Rho, m*m*k);
@@ -322,7 +322,7 @@ void EMGLLF_core(
 		Real last_llh = *llh;
 		//llh = -sumLogLLH/n + lambda*sumPen
 		*llh = -invN * sumLogLLH + lambda * sumPen;
-		Real dist = ite==0 ? *llh : (*llh - last_llh) / (1. + fabs(*llh));
+		Real dist = ite==1 ? *llh : (*llh - last_llh) / (1. + fabs(*llh));
 
 		//Dist1 = max( abs(phi-Phi) / (1+abs(phi)) )
 		Real Dist1 = 0.;
@@ -399,6 +399,7 @@ void EMGLLF_core(
 	free(Pi);
 	free(Gram2);
 	free(ps2);
+	free(detRho);
 	gsl_matrix_free(matrix);
 	gsl_permutation_free(permutation);
 	free(XiPhiR);
