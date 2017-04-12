@@ -2,18 +2,21 @@
 #'
 #' It is a function which plots relevant parameters
 #'
-#'
+#' @param model the model constructed by valse procedure
+#' @param n sample size
 #' @return several plots
 #'
 #' @examples TODO
 #'
 #' @export
 #'
-plot_valse = function(){
+plot_valse = function(model,n){
   require("gridExtra")
   require("ggplot2")
   require("reshape2")
+  require("cowplot")
   
+  K = length(model$pi)
   ## regression matrices
   gReg = list()
   for (r in 1:K){
@@ -60,8 +63,8 @@ plot_valse = function(){
     gam2[i, ] = c(gam[i, affec[i]], affec[i])
   }
   bp <- ggplot(data.frame(gam2), aes(x=X2, y=X1, color=X2, group = X2)) +
-    geom_boxplot() + theme(legend.position = "none")
-  print(bp + background_grid(major = "xy", minor = "none"))
+    geom_boxplot() + theme(legend.position = "none")+ background_grid(major = "xy", minor = "none")
+  print(bp )
   
   ### Mean in each cluster
   XY = cbind(X,Y)

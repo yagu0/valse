@@ -138,7 +138,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
   mod = as.character(tableauRecap[indModSel,1])
   listMod = as.integer(unlist(strsplit(mod, "[.]")))
   if (plot){
-    print(plot_valse())
+    print(plot_valse(models_list[[listMod[1]]][[listMod[2]]],n))
   }
   models_list[[listMod[1]]][[listMod[2]]]
   
