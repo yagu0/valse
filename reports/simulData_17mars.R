@@ -5,10 +5,10 @@ simulData_17mars = function(ite){
   ## Modele
   ###########
   K = 2
-  p = 20
+  p = 48
   T = seq(0,1.5,length.out = p)
   T2 = seq(0,3, length.out = 2*p)
-  n = 30
+  n = 100
   x1 = cos(2*base::pi*T) + 0.2*cos(4*2*base::pi*T) + 0.3*c(rep(0,round(length(T)/7)),rep(1,round(length(T)*(1-1/7))))+1
   sigmaX = 0.12
   sigmaY = 0.12
@@ -24,8 +24,6 @@ simulData_17mars = function(ite){
   ###########
   require(wavelets)
   XY = array(0, dim = c(2*p,n))
-  Xproj = array(0, dim=c(48,n))
-  Yproj = array(0, dim=c(48,n))
   XYproj = array(0, dim=c(96,n))
   x = x1 + matrix(rnorm(n*p, 0, sigmaX), ncol = n)
   affec = sample(c(1,2), n, replace = TRUE)
@@ -47,14 +45,12 @@ simulData_17mars = function(ite){
     Ay = dwt(y[,i], filter='haar')@V
     Ay = rev(unlist(Ay))
     Ay = Ay[2:(1+3)]
-    Xproj[,i] = c(Ax,Dx)
-    Yproj[,i] = c(Ay,Dy)
     XYproj[,i] = c(Ax,Dx,Ay,Dy)
   }
   
-  res_valse = valse(x,y)
-  res_valse_proj = valse(Xproj, Yproj)
+  res_valse = valse(x,y, kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 200)
+  res_valse_proj = valse(XYproj[1:p,],XYproj[(p+1):(2*p),], kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 200)
   
-  save(res_valse,file=paste("./Out/Res_",ite, ".RData",sep=""))
-  save(res_valse_proj,file=paste("./Out/ResProj_",ite, ".RData",sep=""))
+  save(res_valse,file=paste("Res_",ite, ".RData",sep=""))
+  save(res_valse_proj,file=paste("ResProj_",ite, ".RData",sep=""))
 }

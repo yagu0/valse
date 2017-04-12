@@ -23,46 +23,53 @@
 #' @export
 #'
 selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,
-	X,Y,thresh,tau, ncores=3, fast=TRUE)
+                           X,Y,thresh,tau, ncores=3, fast=TRUE)
 {
-	if (ncores > 1)
-	{
-		cl = parallel::makeCluster(ncores, outfile='')
-		parallel::clusterExport(cl=cl,
-			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","tau"),
-			envir=environment())
-	}
-
-	# Calcul pour un lambda
-	computeCoefs <- function(lambda)
-	{
-		params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,fast)
-
-		p = dim(phiInit)[1]
-		m = dim(phiInit)[2]
-
-		#selectedVariables: list where element j contains vector of selected variables in [1,m]
-		selectedVariables = lapply(1:p, function(j) {
-			#from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
-			#and finally return the corresponding indices
-		  seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
-		})
-
-		list("selected"=selectedVariables,"Rho"=params$rho,"Pi"=params$pi)
-	}
-
-	# Pour chaque lambda de la grille, on calcule les coefficients
-	out <-
-		if (ncores > 1)
-			parLapply(cl, glambda, computeCoefs)
-		else
-			lapply(glambda, computeCoefs)
-	if (ncores > 1)
-		parallel::stopCluster(cl)
-
-	# Suppression doublons
-	sha1_array <- lapply(out, digest::sha1)
-	out[ !duplicated(sha1_array) ]
-
-	out
+  if (ncores > 1)
+  {
+    cl = parallel::makeCluster(ncores, outfile='')
+    parallel::clusterExport(cl=cl,
+                            varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","tau"),
+                            envir=environment())
+  }
+  
+  # Computation for a fixed lambda
+  computeCoefs <- function(lambda)
+  {
+    params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,fast)
+    
+    p = dim(phiInit)[1]
+    m = dim(phiInit)[2]
+    
+    #selectedVariables: list where element j contains vector of selected variables in [1,m]
+    selectedVariables = lapply(1:p, function(j) {
+      #from boolean matrix mxk of selected variables obtain the corresponding boolean m-vector,
+      #and finally return the corresponding indices
+      seq_len(m)[ apply( abs(params$phi[j,,]) > thresh, 1, any ) ]
+    })
+    
+    list("selected"=selectedVariables,"Rho"=params$rho,"Pi"=params$pi)
+  }
+  
+  # For each lambda in the grid, we compute the coefficients
+  out <-
+    if (ncores > 1)
+      parLapply(cl, glambda, computeCoefs)
+  else
+    lapply(glambda, computeCoefs)
+  if (ncores > 1)
+    parallel::stopCluster(cl)
+  # Suppress models which are computed twice
+  #En fait, ca ca fait la comparaison de tous les parametres
+  #On veut juste supprimer ceux qui ont les memes variables sélectionnées
+  #sha1_array <- lapply(out, digest::sha1)
+  #out[ duplicated(sha1_array) ]
+  selec = lapply(out, function(model) model$selected)
+  ind_dup = duplicated(selec)
+  ind_uniq = which(!ind_dup)
+  out2 = list()
+  for (l in 1:length(ind_uniq)){
+    out2[[l]] = out[[ind_uniq[l]]]
+  }
+  out2
 }
