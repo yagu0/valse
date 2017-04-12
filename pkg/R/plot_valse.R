@@ -48,20 +48,11 @@ plot_valse = function(model,n){
   print(gCov )
   
   ### proportions
-  Gam = matrix(0, ncol = K, nrow = n)
-  gam  = Gam
-  for (i in 1:n){
-    for (r in 1:K){
-      sqNorm2 = sum( (Y[i,]%*%model$rho[,,r]-X[i,]%*%model$phi[,,r])^2 )
-      Gam[i,r] = model$pi[r] * exp(-0.5*sqNorm2)* det(model$rho[,,r])
-    }
-    gam[i,] = Gam[i,] / sum(Gam[i,])
-  }
-  affec = apply(gam, 1,which.max)
   gam2 = matrix(NA, ncol = K, nrow = n)
   for (i in 1:n){
-    gam2[i, ] = c(gam[i, affec[i]], affec[i])
+    gam2[i, ] = c(model$Gam[i, model$affec[i]], model$affec[i])
   }
+  
   bp <- ggplot(data.frame(gam2), aes(x=X2, y=X1, color=X2, group = X2)) +
     geom_boxplot() + theme(legend.position = "none")+ background_grid(major = "xy", minor = "none")
   print(bp )
