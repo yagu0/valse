@@ -26,7 +26,7 @@
 #' #TODO: a few examples
 #' @export
 valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
-	eps=1e-4, kmin=2, kmax=4, rang.min=1, rang.max=10, ncores_outer=1, ncores_inner=1,
+	eps=1e-4, kmin=2, kmax=4, rank.min=1, rank.max=10, ncores_outer=1, ncores_inner=1,
 	size_coll_mod=50, fast=TRUE, verbose=FALSE, plot = TRUE)
 {
   p = dim(X)[2]
@@ -75,7 +75,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
       models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit,
-				mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, artefact=1e3, fast, verbose)
+				mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, fast, verbose)
     }
 		else
 		{
@@ -83,7 +83,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 				print('run the procedure Lasso-Rank')
       #compute parameter estimations, with the Low Rank
       #Estimator, restricted on selected variables.
-      models <- constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, A1,
+      models <- constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, S,
 				rank.min, rank.max, ncores_inner, fast, verbose)
     }
 		#attention certains modeles sont NULL après selectVariables
@@ -112,18 +112,12 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
 		#Pour un groupe de modeles (même k, différents lambda):
 		LLH <- sapply( models, function(model) model$llh[1] )
 		k = length(models[[1]]$pi)
-		# TODO: chuis pas sûr du tout des lignes suivantes...
-		#       J'ai l'impression qu'il manque des infos 
-		## C'est surtout que la pénalité est la mauvaise, la c'est celle du Lasso, nous on veut ici
-		##celle de l'heuristique de pentes
-		#sumPen = sapply( models, function(model)
-		#	sum( model$pi^gamma * sapply(1:k, function(r) sum(abs(model$phi[,,r]))) ) )
 		sumPen = sapply(models, function(model)
 		  k*(dim(model$rho)[1]+sum(model$phi[,,1]!=0)+1)-1)
 		data.frame(model=paste(i,".",seq_along(models),sep=""),
-			pen=sumPen/n, complexity=sumPen, contrast=LLH)
+			pen=sumPen/n, complexity=sumPen, contrast=-LLH)
 	} ) )
-
+print(tableauRecap)
   modSel = capushe::capushe(tableauRecap, n)
   indModSel <-
 		if (selecMod == 'DDSE')

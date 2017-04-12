@@ -8,7 +8,7 @@
 #'
 #' export
 constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, maxi,
-	gamma, X, Y, thresh, tau, S, ncores=3, artefact = 1e3, fast=TRUE, verbose=FALSE)
+	gamma, X, Y, thresh, tau, S, ncores=3, fast=TRUE, verbose=FALSE)
 {
 	if (ncores > 1)
 	{
@@ -56,11 +56,11 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 		densite = vector("double",n)
 		for (r in 1:k)
 		{
-			delta = (Y%*%rhoLambda[,,r] - (X[, col.sel]%*%phiLambda[col.sel,,r]))/artefact
+			delta = (Y%*%rhoLambda[,,r] - (X[, col.sel]%*%phiLambda[col.sel,,r]))
 			densite = densite + piLambda[r] *
-				det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-tcrossprod(delta)/2.0)
+				det(rhoLambda[,,r])/(sqrt(2*base::pi))^m * exp(-diag(tcrossprod(delta))/2.0)
 		}
-		llhLambda = c( sum(artefact^2 * log(densite)), (dimension+m+1)*k-1 )
+		llhLambda = c( sum(log(densite)), (dimension+m+1)*k-1 )
 		list("phi"= phiLambda, "rho"= rhoLambda, "pi"= piLambda, "llh" = llhLambda)
 	}
 
