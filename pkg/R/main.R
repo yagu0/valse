@@ -148,7 +148,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
   modelSel$proba = Gam
   
   if (plot){
-    print(plot_valse(modelSel,n))
+    print(plot_valse(X,Y,modelSel,n))
   }
   
   return(modelSel)

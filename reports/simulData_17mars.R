@@ -15,7 +15,7 @@ simulData_17mars = function(ite){
   beta = list()
   p1= 0.5
   beta[[1]] =diag(c(rep(p1,5),rep(1,5), rep(p1,5), rep(1, p-15)))
-  p2 = 1
+  p2 = 2
   beta[[2]] = diag(c(rep(p2,5),rep(1,5), rep(p2,5), rep(1, p-15)))
   ARI1 = ARI2 = ARI3 = 0
   
@@ -48,8 +48,8 @@ simulData_17mars = function(ite){
     XYproj[,i] = c(Ax,Dx,Ay,Dy)
   }
   
-  res_valse = valse(x,y, kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 200)
-  res_valse_proj = valse(XYproj[1:p,],XYproj[(p+1):(2*p),], kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 200)
+  res_valse = valse(t(x),t(y), kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 1000)
+  res_valse_proj = valse(t(XYproj[1:p,]),t(XYproj[(p+1):(2*p),]), kmax=2, verbose=TRUE, plot=FALSE, size_coll_mod = 1000)
   
   save(res_valse,file=paste("Res_",ite, ".RData",sep=""))
   save(res_valse_proj,file=paste("ResProj_",ite, ".RData",sep=""))

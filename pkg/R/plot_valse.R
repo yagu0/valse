@@ -2,6 +2,8 @@
 #'
 #' It is a function which plots relevant parameters
 #'
+#' @param X matrix of covariates (of size n*p)
+#' @param Y matrix of responses (of size n*m)
 #' @param model the model constructed by valse procedure
 #' @param n sample size
 #' @return several plots
@@ -10,7 +12,7 @@
 #'
 #' @export
 #'
-plot_valse = function(model,n, comp = FALSE, k1 = NA, k2 = NA){
+plot_valse = function(X,Y,model,n, comp = FALSE, k1 = NA, k2 = NA){
   require("gridExtra")
   require("ggplot2")
   require("reshape2")

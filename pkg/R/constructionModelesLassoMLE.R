@@ -1,6 +1,7 @@
 #' constructionModelesLassoMLE
 #'
-#' TODO: description
+#' Construct a collection of models with the Lasso-MLE procedure.
+#' 
 #'
 #' @param ...
 #'
