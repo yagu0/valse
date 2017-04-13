@@ -63,7 +63,7 @@ initSmallEM = function(k,X,Y, fast=TRUE)
 		maxiInit = 11
 		
 		new_EMG = EMGLLF(phiInit1[,,,repet], rhoInit1[,,,repet], piInit1[repet,],
-			gamInit1[,,repet], miniInit, maxiInit, gamma=1, lambda=0, X, Y, tau=1e-4, fast)
+			gamInit1[,,repet], miniInit, maxiInit, gamma=1, lambda=0, X, Y, eps=1e-4, fast)
 		LLFEessai = new_EMG$LLF
 		LLFinit1[repet] = LLFEessai[length(LLFEessai)]
 	}

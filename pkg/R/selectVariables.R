@@ -12,8 +12,8 @@
 #' @param glambda grid of regularization parameters
 #' @param X			 matrix of regressors
 #' @param Y			 matrix of responses
-#' @param thres	 threshold to consider a coefficient to be equal to 0
-#' @param tau		 threshold to say that EM algorithm has converged
+#' @param thresh real, threshold to say a variable is relevant, by default = 1e-8
+#' @param eps		 threshold to say that EM algorithm has converged
 #' @param ncores Number or cores for parallel execution (1 to disable)
 #'
 #' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
@@ -23,20 +23,20 @@
 #' @export
 #'
 selectVariables = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,glambda,
-                           X,Y,thresh,tau, ncores=3, fast=TRUE)
+                           X,Y,thresh=1e-8,eps, ncores=3, fast=TRUE)
 {
   if (ncores > 1)
   {
     cl = parallel::makeCluster(ncores, outfile='')
     parallel::clusterExport(cl=cl,
-                            varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","tau"),
+                            varlist=c("phiInit","rhoInit","gamInit","mini","maxi","glambda","X","Y","thresh","eps"),
                             envir=environment())
   }
   
   # Computation for a fixed lambda
   computeCoefs <- function(lambda)
   {
-    params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,fast)
+    params = EMGLLF(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,eps,fast)
     
     p = dim(phiInit)[1]
     m = dim(phiInit)[2]

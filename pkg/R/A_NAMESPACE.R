@@ -7,7 +7,7 @@
 #' @include constructionModelesLassoRank.R
 #' @include selectVariables.R
 #' @include main.R
-#' @include plot.R
+#' @include plot_valse.R
 #'
 #' @useDynLib valse
 #'

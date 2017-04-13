@@ -2,21 +2,33 @@
 #'
 #' Construct a collection of models with the Lasso-MLE procedure.
 #' 
+#' @param phiInit an initialization for phi, get by initSmallEM.R
+#' @param rhoInit an initialization for rho, get by initSmallEM.R
+#' @param piInit an initialization for pi, get by initSmallEM.R
+#' @param gamInit an initialization for gam, get by initSmallEM.R
+#' @param mini integer, minimum number of iterations in the EM algorithm, by default = 10
+#' @param maxi integer, maximum number of iterations in the EM algorithm, by default = 100
+#' @param gamma integer for the power in the penaly, by default = 1
+#' @param X matrix of covariates (of size n*p)
+#' @param Y matrix of responses (of size n*m)
+#' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
+#' @param S output of selectVariables.R
+#' @param ncores Number of cores, by default = 3
+#' @param fast TRUE to use compiled C code, FALSE for R code only
+#' @param verbose TRUE to show some execution traces
+#' 
+#' @return a list with several models, defined by phi, rho, pi, llh
 #'
-#' @param ...
-#'
-#' @return ...
-#'
-#' export
-constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, maxi,
-	gamma, X, Y, thresh, tau, S, ncores=3, fast=TRUE, verbose=FALSE)
+#' @export
+constructionModelesLassoMLE = function( phiInit, rhoInit, piInit, gamInit, mini, maxi,gamma, X, Y,
+	 eps, S, ncores=3, fast=TRUE, verbose=FALSE)
 {
 	if (ncores > 1)
 	{
 		cl = parallel::makeCluster(ncores, outfile='')
 		parallel::clusterExport( cl, envir=environment(),
-			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","gamma","X","Y","thresh",
-			"tau","S","ncores","verbose") )
+			varlist=c("phiInit","rhoInit","gamInit","mini","maxi","gamma","X","Y","eps",
+			"S","ncores","fast","verbose") )
 	}
 
 	# Individual model computation
@@ -40,7 +52,7 @@ constructionModelesLassoMLE = function(phiInit, rhoInit, piInit, gamInit, mini, 
 
 		# lambda == 0 because we compute the EMV: no penalization here
 		res = EMGLLF(phiInit[col.sel,,],rhoInit,piInit,gamInit,mini,maxi,gamma,0,
-			X[,col.sel], Y, tau, fast)
+			X[,col.sel], Y, eps, fast)
 		
 		# Eval dimension from the result + selected
 		phiLambda2 = res$phi

@@ -2,17 +2,17 @@
 #'
 #' Description de EMGLLF
 #'
-#' @param phiInit Parametre initial de moyenne renormalisé
-#' @param rhoInit Parametre initial de variance renormalisé
-#' @param piInit Parametre initial des proportions
-#' @param gamInit Paramètre initial des probabilités a posteriori de chaque échantillon
-#' @param mini Nombre minimal d'itérations dans l'algorithme EM
-#' @param maxi Nombre maximal d'itérations dans l'algorithme EM
-#' @param gamma Puissance des proportions dans la pénalisation pour un Lasso adaptatif
-#' @param lambda Valeur du paramètre de régularisation du Lasso
-#' @param X Régresseurs
-#' @param Y Réponse
-#' @param tau Seuil pour accepter la convergence
+#' @param phiInit an initialization for phi
+#' @param rhoInit an initialization for rho
+#' @param piInit an initialization for pi
+#' @param gamInit initialization for the a posteriori probabilities
+#' @param mini integer, minimum number of iterations in the EM algorithm, by default = 10
+#' @param maxi integer, maximum number of iterations in the EM algorithm, by default = 100
+#' @param gamma integer for the power in the penaly, by default = 1
+#' @param lambda regularization parameter in the Lasso estimation
+#' @param X matrix of covariates (of size n*p)
+#' @param Y matrix of responses (of size n*m)
+#' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
 #'
 #' @return A list ... phi,rho,pi,LLF,S,affec:
 #'   phi : parametre de moyenne renormalisé, calculé par l'EM
@@ -23,7 +23,7 @@
 #'
 #' @export
 EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
-                   mini, maxi, gamma, lambda, X, Y, tau, fast=TRUE)
+                   mini, maxi, gamma, lambda, X, Y, eps, fast=TRUE)
 {
   if (!fast)
   {

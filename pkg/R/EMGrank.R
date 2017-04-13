@@ -2,7 +2,6 @@
 #'
 #' Description de EMGrank
 #'
-#' @param phiInit ...
 #' @param Pi Parametre de proportion
 #' @param Rho Parametre initial de variance renormalisé
 #' @param mini Nombre minimal d'itérations dans l'algorithme EM
@@ -49,6 +48,7 @@ matricize <- function(X)
 # R version - slow but easy to read
 .EMGrank_R = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
+  require(MASS)
   #matrix dimensions
   n = dim(X)[1]
   p = dim(X)[2]
@@ -70,10 +70,10 @@ matricize <- function(X)
   ite = 1
   while (ite<=mini || (ite<=maxi && sumDeltaPhi>tau))
 	{
-    #M step: Mise à jour de Beta (et donc phi)
+    #M step: update for Beta ( and then phi)
     for(r in 1:k)
 		{
-      Z_indice = seq_len(n)[Z==r] #indices où Z == r
+      Z_indice = seq_len(n)[Z==r] #indices where Z == r
       if (length(Z_indice) == 0)
         next
       #U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
@@ -87,7 +87,7 @@ matricize <- function(X)
       phi[,,r] = s$u %*% diag(S) %*% t(s$v) %*% Rho[,,r]
     }
 
-		#Etape E et calcul de LLF
+		#Step E and computation of the loglikelihood
 		sumLogLLF2 = 0
 		for(i in seq_len(n))
 		{

@@ -28,7 +28,7 @@ URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
 RoxygenNote: 5.0.1
 Collate:
-    'plot.R'
+    'plot_valse.R'
     'main.R'
     'selectVariables.R'
     'constructionModelesLassoRank.R'
@@ -39,4 +39,3 @@ Collate:
     'EMGLLF.R'
     'generateXY.R'
     'A_NAMESPACE.R'
-    'plot_valse.R'

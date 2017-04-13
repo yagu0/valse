@@ -12,10 +12,11 @@
 #' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
 #' @param kmin integer, minimum number of clusters, by default = 2
 #' @param kmax integer, maximum number of clusters, by default = 10
-#' @param rang.min integer, minimum rank in the low rank procedure, by default = 1
-#' @param rang.max integer, maximum rank in the
+#' @param rank.min integer, minimum rank in the low rank procedure, by default = 1
+#' @param rank.max integer, maximum rank in the low rank procedure, by default = 5
 #' @param ncores_outer Number of cores for the outer loop on k
 #' @param ncores_inner Number of cores for the inner loop on lambda
+#' @param thresh real, threshold to say a variable is relevant, by default = 1e-8
 #' @param size_coll_mod (Maximum) size of a collection of models
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
@@ -26,7 +27,8 @@
 #' #TODO: a few examples
 #' @export
 valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, maxi=50,
-                 eps=1e-4, kmin=2, kmax=2, rank.min=1, rank.max=10, ncores_outer=1, ncores_inner=1,
+                 eps=1e-4, kmin=2, kmax=3, rank.min=1, rank.max=5, ncores_outer=1, ncores_inner=1,
+                 thresh=1e-8,
                  size_coll_mod=10, fast=TRUE, verbose=FALSE, plot = TRUE)
 {
   p = dim(X)[2]
@@ -40,8 +42,8 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
   {
     cl = parallel::makeCluster(ncores_outer, outfile='')
     parallel::clusterExport( cl=cl, envir=environment(), varlist=c("X","Y","procedure",
-                                                                   "selecMod","gamma","mini","maxi","eps","kmin","kmax","rang.min","rang.max",
-                                                                   "ncores_outer","ncores_inner","verbose","p","m") )
+                                                                   "selecMod","gamma","mini","maxi","eps","kmin","kmax","rank.min","rank.max",
+                                                                   "ncores_outer","ncores_inner","thresh","size_coll_mod","verbose","p","m") )
   }
   
   # Compute models with k components
@@ -66,7 +68,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
     #select variables according to each regularization parameter
     #from the grid: S$selected corresponding to selected variables
     S = selectVariables(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini, maxi, gamma,
-                        grid_lambda, X, Y, 1e-8, eps, ncores_inner, fast) #TODO: 1e-8 as arg?! eps?
+                        grid_lambda, X, Y, thresh, eps, ncores_inner, fast) 
     
     if (procedure == 'LassoMLE')
     {
@@ -74,8 +76,9 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
         print('run the procedure Lasso-MLE')
       #compute parameter estimations, with the Maximum Likelihood
       #Estimator, restricted on selected variables.
-      models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, P$gamInit,
-                                            mini, maxi, gamma, X, Y, thresh, eps, S, ncores_inner, fast, verbose)
+      models <- constructionModelesLassoMLE( P$phiInit, P$rhoInit, P$piInit, P$gamInit, 
+                                            mini, maxi, gamma, X, Y, eps, S, ncores_inner, fast, verbose)
+      
     }
     else
     {
@@ -83,7 +86,7 @@ valse = function(X, Y, procedure='LassoMLE', selecMod='DDSE', gamma=1, mini=10, 
         print('run the procedure Lasso-Rank')
       #compute parameter estimations, with the Low Rank
       #Estimator, restricted on selected variables.
-      models <- constructionModelesLassoRank(S$Pi, S$Rho, mini, maxi, X, Y, eps, S,
+      models <- constructionModelesLassoRank(S, k, mini, maxi, X, Y, eps,
                                              rank.min, rank.max, ncores_inner, fast, verbose)
     }
     #warning! Some models are NULL after running selectVariables
