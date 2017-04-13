@@ -13,21 +13,21 @@ initSmallEM = function(k,X,Y, fast=TRUE)
 	n = nrow(Y)
 	m = ncol(Y)
 	p = ncol(X)
-  
-	Zinit1 = array(0, dim=c(n,20))
-	betaInit1 = array(0, dim=c(p,m,k,20))
-	sigmaInit1 = array(0, dim = c(m,m,k,20))
-	phiInit1 = array(0, dim = c(p,m,k,20))
-	rhoInit1 = array(0, dim = c(m,m,k,20))
+  nIte = 20
+	Zinit1 = array(0, dim=c(n,nIte))
+	betaInit1 = array(0, dim=c(p,m,k,nIte))
+	sigmaInit1 = array(0, dim = c(m,m,k,nIte))
+	phiInit1 = array(0, dim = c(p,m,k,nIte))
+	rhoInit1 = array(0, dim = c(m,m,k,nIte))
 	Gam = matrix(0, n, k)
-	piInit1 = matrix(0,20,k)
-	gamInit1 = array(0, dim=c(n,k,20))
+	piInit1 = matrix(0,nIte,k)
+	gamInit1 = array(0, dim=c(n,k,nIte))
 	LLFinit1 = list()
 
 	#require(MASS) #Moore-Penrose generalized inverse of matrix
-	for(repet in 1:20)
+	for(repet in 1:nIte)
 	{
-	  distance_clus = dist(X)
+	  distance_clus = dist(cbind(X,Y))
 	  tree_hier = hclust(distance_clus)
 	  Zinit1[,repet] = cutree(tree_hier, k)
 
@@ -62,13 +62,12 @@ initSmallEM = function(k,X,Y, fast=TRUE)
 		miniInit = 10
 		maxiInit = 11
 		
-		new_EMG = EMGLLF(phiInit1[,,,repet], rhoInit1[,,,repet], piInit1[repet,],
+		init_EMG = EMGLLF(phiInit1[,,,repet], rhoInit1[,,,repet], piInit1[repet,],
 			gamInit1[,,repet], miniInit, maxiInit, gamma=1, lambda=0, X, Y, eps=1e-4, fast)
-		LLFEessai = new_EMG$LLF
+		LLFEessai = init_EMG$LLF
 		LLFinit1[repet] = LLFEessai[length(LLFEessai)]
 	}
-
-	b = which.max(LLFinit1)
+	b = which.min(LLFinit1)
 	phiInit = phiInit1[,,,b]
 	rhoInit = rhoInit1[,,,b]
 	piInit = piInit1[b,]

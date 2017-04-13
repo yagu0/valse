@@ -33,5 +33,5 @@ computeGridLambda = function(phiInit, rhoInit, piInit, gamInit, X, Y,
 			grid[i,j,] = abs(list_EMG$S[i,j,]) / (n*list_EMG$pi^gamma)
 	}
 	grid = unique(grid)
-	grid
+	sort(grid)
 }
