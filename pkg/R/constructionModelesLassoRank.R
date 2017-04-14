@@ -20,12 +20,12 @@
 #' @export
 constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, 
   ncores, fast = TRUE, verbose = FALSE)
-{
+  {
   n <- dim(X)[1]
   p <- dim(X)[2]
   m <- dim(Y)[2]
   L <- length(S)
-
+  
   # Possible interesting ranks
   deltaRank <- rank.max - rank.min + 1
   Size <- deltaRank^k
@@ -42,7 +42,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       each = deltaRank^(k - r)), each = L)
   }
   RankLambda[, k + 1] <- rep(1:L, times = Size)
-
+  
   if (ncores > 1)
   {
     cl <- parallel::makeCluster(ncores, outfile = "")
@@ -50,14 +50,14 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       "Pi", "Rho", "mini", "maxi", "X", "Y", "eps", "Rank", "m", "phi", "ncores", 
       "verbose"))
   }
-
+  
   computeAtLambda <- function(index)
   {
     lambdaIndex <- RankLambda[index, k + 1]
     rankIndex <- RankLambda[index, 1:k]
     if (ncores > 1) 
       require("valse")  #workers start with an empty environment
-
+    
     # 'relevant' will be the set of relevant columns
     selected <- S[[lambdaIndex]]$selected
     relevant <- c()
@@ -83,14 +83,18 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       
     }
   }
-
+  
   # For each lambda in the grid we compute the estimators
-  out <- if (ncores > 1) {
-    parLapply(cl, seq_len(length(S) * Size), computeAtLambda) } else {
-		lapply(seq_len(length(S) * Size), computeAtLambda)
-
+  out <- if (ncores > 1)
+  {
+    parLapply(cl, seq_len(length(S) * Size), computeAtLambda)
+  } else
+  {
+    lapply(seq_len(length(S) * Size), computeAtLambda)
+  }
+  
   if (ncores > 1) 
     parallel::stopCluster(cl)
-
+  
   out
 }
