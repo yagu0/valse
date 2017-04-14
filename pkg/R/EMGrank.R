@@ -48,7 +48,6 @@ matricize <- function(X)
 # R version - slow but easy to read
 .EMGrank_R = function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
-  require(MASS)
   #matrix dimensions
   n = dim(X)[1]
   p = dim(X)[2]
@@ -77,7 +76,7 @@ matricize <- function(X)
       if (length(Z_indice) == 0)
         next
       #U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
-      s = svd( ginv(crossprod(matricize(X[Z_indice,]))) %*%
+      s = svd( MASS::ginv(crossprod(matricize(X[Z_indice,]))) %*%
 				crossprod(matricize(X[Z_indice,]),matricize(Y[Z_indice,])) )
       S = s$d
       #Set m-rank(r) singular values to zero, and recompose
@@ -107,7 +106,7 @@ matricize <- function(X)
 			}
 			sumLogLLF2 = sumLogLLF2 + log(sumLLF1)
 		}
-  
+
 		LLF = -1/n * sumLogLLF2
 
 		#update distance parameter to check algorithm convergence (delta(phi, Phi))

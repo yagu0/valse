@@ -13,7 +13,7 @@ initSmallEM = function(k,X,Y, fast=TRUE)
 	n = nrow(Y)
 	m = ncol(Y)
 	p = ncol(X)
-  nIte = 20
+	nIte = 20
 	Zinit1 = array(0, dim=c(n,nIte))
 	betaInit1 = array(0, dim=c(p,m,k,nIte))
 	sigmaInit1 = array(0, dim = c(m,m,k,nIte))
