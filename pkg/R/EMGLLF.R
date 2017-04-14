@@ -28,7 +28,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
   if (!fast)
   {
     # Function in R
-    return (.EMGLLF_R(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau))
+    return (.EMGLLF_R(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,eps))
   }
   
   # Function in C
@@ -37,7 +37,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
   m = ncol(Y) #taille de Y (multivarié)
   k = length(piInit) #nombre de composantes dans le mélange
   .Call("EMGLLF",
-        phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, X, Y, tau,
+        phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, X, Y, eps,
         phi=double(p*m*k), rho=double(m*m*k), pi=double(k), LLF=double(maxi),
         S=double(p*m*k), affec=integer(n),
         n, p, m, k,
@@ -45,7 +45,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
 }
 
 # R version - slow but easy to read
-.EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X2,Y,tau)
+.EMGLLF_R = function(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X2,Y,eps)
 {
   # Matrix dimensions
   n = dim(Y)[1]
@@ -184,7 +184,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit,
     Dist3 = max( (abs(pi-Pi)) / (1+abs(Pi)) )
     dist2 = max(Dist1,Dist2,Dist3)
     
-    if (ite >= mini && (dist >= tau || dist2 >= sqrt(tau)))
+    if (ite >= mini && (dist >= eps || dist2 >= sqrt(eps)))
       break
   }
   
