@@ -80,7 +80,6 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
         phi[relevant, , ] <- res$phi
       }
       list(llh = llh, phi = phi, pi = S[[lambdaIndex]]$Pi, rho = S[[lambdaIndex]]$Rho)
-      
     }
   }
   
