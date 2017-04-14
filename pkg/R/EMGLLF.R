@@ -145,11 +145,18 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
         {
           S[j, mm, r] <- -rho[mm, mm, r] * ps2[j, mm, r] + sum(phi[-j, mm, 
           r] * Gram2[j, -j, r])
-          if (abs(S[j, mm, r]) <= n * lambda * (pi[r]^gamma)) 
-          phi[j, mm, r] <- 0 else if (S[j, mm, r] > n * lambda * (pi[r]^gamma)) 
+          if (abs(S[j, mm, r]) <= n * lambda * (pi[r]^gamma))
+          {
+          phi[j, mm, r] <- 0
+          } else if (S[j, mm, r] > n * lambda * (pi[r]^gamma))
+          {
           phi[j, mm, r] <- (n * lambda * (pi[r]^gamma) - S[j, mm, r])/Gram2[j, 
-            j, r] else phi[j, mm, r] <- -(n * lambda * (pi[r]^gamma) + S[j, mm, r])/Gram2[j, 
-          j, r]
+            j, r]
+          } else
+          {
+          phi[j, mm, r] <- -(n * lambda * (pi[r]^gamma) + S[j, mm, r])/Gram2[j, 
+            j, r]
+          }
         }
       }
     }
@@ -162,11 +169,8 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
     for (i in 1:n)
     {
       # Update gam[,]
-      for (r in 1:k)
-      {
-        gam1[i, r] <- pi[r] * exp(-0.5 * sum((Y[i, ] %*% rho[, , r] - X[i, 
-          ] %*% phi[, , r])^2)) * detRho[r]
-      }
+      for (r in 1:k) gam1[i, r] <- pi[r] * exp(-0.5 * sum((Y[i, ] %*% rho[, 
+        , r] - X[i, ] %*% phi[, , r])^2)) * detRho[r]
     }
     gam <- gam1/rowSums(gam1)
     sumLogLLH <- sum(log(rowSums(gam)) - log((2 * base::pi)^(m/2)))
