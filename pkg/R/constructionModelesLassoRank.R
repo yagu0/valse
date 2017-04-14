@@ -18,8 +18,8 @@
 #' @return a list with several models, defined by phi, rho, pi, llh
 #'
 #' @export
-constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, ncores, 
-  fast = TRUE, verbose = FALSE)
+constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, 
+  ncores, fast = TRUE, verbose = FALSE)
   {
   n <- dim(X)[1]
   p <- dim(X)[2]
@@ -32,21 +32,23 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
   RankLambda <- matrix(0, nrow = Size * L, ncol = k + 1)
   for (r in 1:k)
   {
-    # On veut le tableau de toutes les combinaisons de rangs possibles, et des lambdas Dans la
-    # première colonne : on répète (rank.max-rank.min)^(k-1) chaque chiffre : ça remplit la
-    # colonne Dans la deuxieme : on répète (rank.max-rank.min)^(k-2) chaque chiffre, et on fait
-    # ça (rank.max-rank.min)^2 fois ...  Dans la dernière, on répète chaque chiffre une fois,
-    # et on fait ça (rank.min-rank.max)^(k-1) fois.
-    RankLambda[, r] <- rep(rank.min + rep(0:(deltaRank - 1), deltaRank^(r - 1), each = deltaRank^(k - 
-      r)), each = L)
+    # On veut le tableau de toutes les combinaisons de rangs possibles, et des
+    # lambdas Dans la première colonne : on répète (rank.max-rank.min)^(k-1) chaque
+    # chiffre : ça remplit la colonne Dans la deuxieme : on répète
+    # (rank.max-rank.min)^(k-2) chaque chiffre, et on fait ça (rank.max-rank.min)^2
+    # fois ...  Dans la dernière, on répète chaque chiffre une fois, et on fait ça
+    # (rank.min-rank.max)^(k-1) fois.
+    RankLambda[, r] <- rep(rank.min + rep(0:(deltaRank - 1), deltaRank^(r - 1), 
+      each = deltaRank^(k - r)), each = L)
   }
   RankLambda[, k + 1] <- rep(1:L, times = Size)
   
   if (ncores > 1)
   {
     cl <- parallel::makeCluster(ncores, outfile = "")
-    parallel::clusterExport(cl, envir = environment(), varlist = c("A1", "Size", "Pi", 
-      "Rho", "mini", "maxi", "X", "Y", "eps", "Rank", "m", "phi", "ncores", "verbose"))
+    parallel::clusterExport(cl, envir = environment(), varlist = c("A1", "Size", 
+      "Pi", "Rho", "mini", "maxi", "X", "Y", "eps", "Rank", "m", "phi", "ncores", 
+      "verbose"))
   }
   
   computeAtLambda <- function(index)
@@ -71,9 +73,10 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       phi <- array(0, dim = c(p, m, k))
       if (length(relevant) > 0)
       {
-        res <- EMGrank(S[[lambdaIndex]]$Pi, S[[lambdaIndex]]$Rho, mini, maxi, X[, relevant], 
-          Y, eps, rankIndex, fast)
-        llh <- c(res$LLF, sum(rankIndex * (length(relevant) - rankIndex + m)))
+        res <- EMGrank(S[[lambdaIndex]]$Pi, S[[lambdaIndex]]$Rho, mini, maxi, 
+          X[, relevant], Y, eps, rankIndex, fast)
+        llh <- c(res$LLF, sum(rankIndex * (length(relevant) - rankIndex + 
+          m)))
         phi[relevant, , ] <- res$phi
       }
       list(llh = llh, phi = phi, pi = S[[lambdaIndex]]$Pi, rho = S[[lambdaIndex]]$Rho)

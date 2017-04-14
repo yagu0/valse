@@ -35,7 +35,7 @@ __indent_R() {
 
 	echo "Indenting " $file
 	echo "library(formatR);formatR::tidy_source('$file',comment=TRUE,blank=TRUE,
-		arrow=TRUE,brace.newline=TRUE,indent=2,width.cutoff=90,file='$file')" | R --slave
+		arrow=TRUE,brace.newline=TRUE,indent=2,width.cutoff=80,file='$file')" | R --slave
 	git add "$file"
 }
 
