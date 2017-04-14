@@ -14,7 +14,7 @@
 #' @param ncores Number of cores, by default = 3
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
-#' 
+#'
 #' @return a list with several models, defined by phi, rho, pi, llh
 #'
 #' @export
