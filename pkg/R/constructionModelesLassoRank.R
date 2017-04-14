@@ -1,7 +1,7 @@
 #' constructionModelesLassoRank
 #'
 #' Construct a collection of models with the Lasso-Rank procedure.
-#' 
+#'
 #' @param S output of selectVariables.R
 #' @param k number of components
 #' @param mini integer, minimum number of iterations in the EM algorithm, by default = 10
