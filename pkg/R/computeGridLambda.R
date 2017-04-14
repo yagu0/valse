@@ -18,18 +18,19 @@
 #' @export
 computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, 
   maxi, tau, fast = TRUE)
-  {
+{
   n <- nrow(X)
   p <- dim(phiInit)[1]
   m <- dim(phiInit)[2]
   k <- dim(phiInit)[3]
-  
+
   list_EMG <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda = 0, 
     X, Y, tau, fast)
   grid <- array(0, dim = c(p, m, k))
   for (i in 1:p)
   {
-    for (j in 1:m) grid[i, j, ] <- abs(list_EMG$S[i, j, ])/(n * list_EMG$pi^gamma)
+    for (j in 1:m)
+      grid[i, j, ] <- abs(list_EMG$S[i, j, ])/(n * list_EMG$pi^gamma)
   }
   sort(unique(grid))
 }

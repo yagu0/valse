@@ -30,29 +30,28 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
   maxi = 50, eps = 1e-04, kmin = 2, kmax = 3, rank.min = 1, rank.max = 5, ncores_outer = 1, 
   ncores_inner = 1, thresh = 1e-08, size_coll_mod = 10, fast = TRUE, verbose = FALSE, 
   plot = TRUE)
-  {
+{
   p <- dim(X)[2]
   m <- dim(Y)[2]
   n <- dim(X)[1]
-  
+
   if (verbose) 
     print("main loop: over all k and all lambda")
-  
-  if (ncores_outer > 1)
-  {
+
+  if (ncores_outer > 1) {
     cl <- parallel::makeCluster(ncores_outer, outfile = "")
     parallel::clusterExport(cl = cl, envir = environment(), varlist = c("X", 
       "Y", "procedure", "selecMod", "gamma", "mini", "maxi", "eps", "kmin", 
       "kmax", "rank.min", "rank.max", "ncores_outer", "ncores_inner", "thresh", 
       "size_coll_mod", "verbose", "p", "m"))
   }
-  
+
   # Compute models with k components
   computeModels <- function(k)
   {
     if (ncores_outer > 1) 
       require("valse")  #nodes start with an empty environment
-    
+
     if (verbose) 
       print(paste("Parameters initialization for k =", k))
     # smallEM initializes parameters by k-means and regression model in each
@@ -63,25 +62,22 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
       X, Y, gamma, mini, maxi, eps, fast)
     if (length(grid_lambda) > size_coll_mod) 
       grid_lambda <- grid_lambda[seq(1, length(grid_lambda), length.out = size_coll_mod)]
-    
+
     if (verbose) 
       print("Compute relevant parameters")
     # select variables according to each regularization parameter from the grid:
     # S$selected corresponding to selected variables
     S <- selectVariables(P$phiInit, P$rhoInit, P$piInit, P$gamInit, mini, maxi, 
       gamma, grid_lambda, X, Y, thresh, eps, ncores_inner, fast)
-    
-    if (procedure == "LassoMLE")
-    {
+
+    if (procedure == "LassoMLE") {
       if (verbose) 
         print("run the procedure Lasso-MLE")
       # compute parameter estimations, with the Maximum Likelihood Estimator,
       # restricted on selected variables.
       models <- constructionModelesLassoMLE(P$phiInit, P$rhoInit, P$piInit, 
         P$gamInit, mini, maxi, gamma, X, Y, eps, S, ncores_inner, fast, verbose)
-      
-    } else
-    {
+    } else {
       if (verbose) 
         print("run the procedure Lasso-Rank")
       # compute parameter estimations, with the Low Rank Estimator, restricted on
@@ -93,19 +89,23 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     models <- models[sapply(models, function(cell) !is.null(cell))]
     models
   }
-  
+
   # List (index k) of lists (index lambda) of models
-  models_list <- if (ncores_outer > 1) 
-    parLapply(cl, kmin:kmax, computeModels) else lapply(kmin:kmax, computeModels)
+  models_list <-
+    if (ncores_outer > 1) {
+      parLapply(cl, kmin:kmax, computeModels)
+    } else {
+      lapply(kmin:kmax, computeModels)
+    }
   if (ncores_outer > 1) 
     parallel::stopCluster(cl)
-  
+
   if (!requireNamespace("capushe", quietly = TRUE))
   {
     warning("'capushe' not available: returning all models")
     return(models_list)
   }
-  
+
   # Get summary 'tableauRecap' from models
   tableauRecap <- do.call(rbind, lapply(seq_along(models_list), function(i)
   {
@@ -118,41 +118,35 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     data.frame(model = paste(i, ".", seq_along(models), sep = ""), pen = sumPen/n, 
       complexity = sumPen, contrast = -LLH)
   }))
-  
-  print(tableauRecap)
   tableauRecap <- tableauRecap[which(tableauRecap[, 4] != Inf), ]
-  
+
   modSel <- capushe::capushe(tableauRecap, n)
   indModSel <- if (selecMod == "DDSE") 
     as.numeric(modSel@DDSE@model) else if (selecMod == "Djump") 
     as.numeric(modSel@Djump@model) else if (selecMod == "BIC") 
     modSel@BIC_capushe$model else if (selecMod == "AIC") 
     modSel@AIC_capushe$model
-  
+
   mod <- as.character(tableauRecap[indModSel, 1])
   listMod <- as.integer(unlist(strsplit(mod, "[.]")))
   modelSel <- models_list[[listMod[1]]][[listMod[2]]]
-  
+
   ## Affectations
   Gam <- matrix(0, ncol = length(modelSel$pi), nrow = n)
   for (i in 1:n)
   {
     for (r in 1:length(modelSel$pi))
     {
-      sqNorm2 <- sum((Y[i, ] %*% modelSel$rho[, , r] - X[i, ] %*% modelSel$phi[, 
-        , r])^2)
-      Gam[i, r] <- modelSel$pi[r] * exp(-0.5 * sqNorm2) * det(modelSel$rho[, 
-        , r])
+      sqNorm2 <- sum((Y[i, ] %*% modelSel$rho[, , r] - X[i, ] %*% modelSel$phi[, , r])^2)
+      Gam[i, r] <- modelSel$pi[r] * exp(-0.5 * sqNorm2) * det(modelSel$rho[, , r])
     }
   }
   Gam <- Gam/rowSums(Gam)
   modelSel$affec <- apply(Gam, 1, which.max)
   modelSel$proba <- Gam
-  
+
   if (plot)
-  {
     print(plot_valse(X, Y, modelSel, n))
-  }
-  
+
   return(modelSel)
 }

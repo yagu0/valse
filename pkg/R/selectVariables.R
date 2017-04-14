@@ -24,35 +24,33 @@
 #'
 selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, 
   glambda, X, Y, thresh = 1e-08, eps, ncores = 3, fast = TRUE)
-  {
-  if (ncores > 1)
-  {
+{
+  if (ncores > 1) {
     cl <- parallel::makeCluster(ncores, outfile = "")
     parallel::clusterExport(cl = cl, varlist = c("phiInit", "rhoInit", "gamInit", 
       "mini", "maxi", "glambda", "X", "Y", "thresh", "eps"), envir = environment())
   }
-  
+
   # Computation for a fixed lambda
   computeCoefs <- function(lambda)
   {
     params <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
       X, Y, eps, fast)
-    
+
     p <- dim(phiInit)[1]
     m <- dim(phiInit)[2]
-    
+
     # selectedVariables: list where element j contains vector of selected variables
     # in [1,m]
-    selectedVariables <- lapply(1:p, function(j)
-    {
+    selectedVariables <- lapply(1:p, function(j) {
       # from boolean matrix mxk of selected variables obtain the corresponding boolean
       # m-vector, and finally return the corresponding indices
       seq_len(m)[apply(abs(params$phi[j, , ]) > thresh, 1, any)]
     })
-    
+
     list(selected = selectedVariables, Rho = params$rho, Pi = params$pi)
   }
-  
+
   # For each lambda in the grid, we compute the coefficients
   out <- if (ncores > 1) 
     parLapply(cl, glambda, computeCoefs) else lapply(glambda, computeCoefs)
@@ -67,8 +65,6 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
   ind_uniq <- which(!ind_dup)
   out2 <- list()
   for (l in 1:length(ind_uniq))
-  {
     out2[[l]] <- out[[ind_uniq[l]]]
-  }
   out2
 }
