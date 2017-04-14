@@ -3,21 +3,32 @@
 #initialize submodules, set-up .git/config and .gitattributes, and pre-push hook
 git submodule init && git submodule update --merge
 
+#filter for git-fat
+printf \
+'*.pdf filter=fat
+*.tar.xz filter=fat
+*.png filter=fat
+*.jpg filter=fat
+*.ps filter=fat\n' > .gitattributes
+
 #filter for Jupyter
 python .nbstripout/nbstripout.py --install --attributes .gitattributes
 
-#filter for git-fat [TODO: idempotent...]
-printf '*.pdf filter=fat\n*.tar.xz filter=fat\n*.png filter=fat\n*.jpg filter=fat\n*.ps filter=fat\n'  >> .gitattributes
+#pre-commit and pre-push hooks: indentation, git fat push, submodules update
+cp hooks/* .git/hooks/
 
-#pre-push hook: git fat push, submodules update
-printf '#!/bin/sh\n./.git-fat/git-fat pull\n./.git-fat/git-fat push\ngit submodule update --merge\n' > .git/hooks/pre-push
-chmod 755 .git/hooks/pre-push
+#install formatR
+echo 'if (! "formatR" %in% rownames(installed.packages()))
+	install.packages("formatR",repos="https://cloud.r-project.org")' | R --slave
 
 #.gitfat file with remote on gitfat@auder.net
 printf '[rsync]\nremote = gitfat@auder.net:~/files/valse\n' > .gitfat
 
 #manual git-fat init: with relative path to binary
-#1] remove filter if exists http://stackoverflow.com/questions/12179437/replace-3-lines-with-another-line-sed-syntax
+#1] remove filter if exists http://stackoverflow.com/a/12179641/4640434
 sed -i '1N;$!N;s/\[filter "fat"\]\n.*\n.*//;P;D' .git/config
 #2] place new filter
-printf '[filter "fat"]\n\tclean = ./.git-fat/git-fat filter-clean\n\tsmudge = ./.git-fat/git-fat filter-smudge\n' >> .git/config
+printf \
+'[filter "fat"]
+	clean = ./.git-fat/git-fat filter-clean
+	smudge = ./.git-fat/git-fat filter-smudge\n' >> .git/config
