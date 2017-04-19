@@ -71,8 +71,8 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       {
         delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% t(phiLambda[col.sel, , r])))
       } else delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% phiLambda[col.sel, , r]))
-      densite <- densite + piLambda[r] * det(rhoLambda[, , r])/(sqrt(2 * base::pi))^m
-        * exp(-diag(tcrossprod(delta))/2)
+      densite <- densite + piLambda[r] * det(rhoLambda[, , r])/(sqrt(2 * base::pi))^m * 
+        exp(-diag(tcrossprod(delta))/2)
     }
     llhLambda <- c(sum(log(densite)), (dimension + m + 1) * k - 1)
     list(phi = phiLambda, rho = rhoLambda, pi = piLambda, llh = llhLambda)

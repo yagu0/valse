@@ -73,8 +73,8 @@ matricize <- function(X)
       if (length(Z_indice) == 0) 
         next
       # U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
-      s <- svd(MASS::ginv(crossprod(matricize(X[Z_indice, ])))
-        %*% crossprod(matricize(X[Z_indice, ]), matricize(Y[Z_indice, ])))
+      s <- svd(MASS::ginv(crossprod(matricize(X[Z_indice, ]))) %*% 
+                 crossprod(matricize(X[Z_indice, ]), matricize(Y[Z_indice, ])))
       S <- s$d
       # Set m-rank(r) singular values to zero, and recompose best rank(r) approximation
       # of the initial product

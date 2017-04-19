@@ -54,8 +54,8 @@ initSmallEM <- function(k, X, Y, fast = TRUE)
       {
         dotProduct <- tcrossprod(Y[i, ] %*% rhoInit1[, , r, repet]
           - X[i, ] %*% phiInit1[, , r, repet])
-        Gam[i, r] <- piInit1[repet, r]
-          * det(rhoInit1[, , r, repet]) * exp(-0.5 * dotProduct)
+        Gam[i, r] <- piInit1[repet, r] * 
+          det(rhoInit1[, , r, repet]) * exp(-0.5 * dotProduct)
       }
       sumGamI <- sum(Gam[i, ])
       gamInit1[i, , repet] <- Gam[i, ]/sumGamI
