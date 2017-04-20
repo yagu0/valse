@@ -57,7 +57,7 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     # smallEM initializes parameters by k-means and regression model in each
     # component, doing this 20 times, and keeping the values maximizing the
     # likelihood after 10 iterations of the EM algorithm.
-    P <- initSmallEM(k, X, Y)
+    P <- initSmallEM(k, X, Y, fast)
     grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit, 
       X, Y, gamma, mini, maxi, eps, fast)
     if (length(grid_lambda) > size_coll_mod) 

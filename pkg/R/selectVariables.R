@@ -23,7 +23,7 @@
 #' @export
 #'
 selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, 
-  glambda, X, Y, thresh = 1e-08, eps, ncores = 3, fast = TRUE)
+  glambda, X, Y, thresh = 1e-08, eps, ncores = 3, fast)
 {
   if (ncores > 1) {
     cl <- parallel::makeCluster(ncores, outfile = "")
@@ -52,14 +52,18 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
   }
 
   # For each lambda in the grid, we compute the coefficients
-  out <- if (ncores > 1) 
-    parLapply(cl, glambda, computeCoefs) else lapply(glambda, computeCoefs)
+  out <-
+    if (ncores > 1) {
+      parLapply(cl, glambda, computeCoefs)
+    } else {
+      lapply(glambda, computeCoefs)
+    }
   if (ncores > 1) 
     parallel::stopCluster(cl)
   # Suppress models which are computed twice En fait, ca ca fait la comparaison de
   # tous les parametres On veut juste supprimer ceux qui ont les memes variables
-  # sélectionnées sha1_array <- lapply(out, digest::sha1) out[
-  # duplicated(sha1_array) ]
+  # sélectionnées
+  # sha1_array <- lapply(out, digest::sha1) out[ duplicated(sha1_array) ]
   selec <- lapply(out, function(model) model$selected)
   ind_dup <- duplicated(selec)
   ind_uniq <- which(!ind_dup)

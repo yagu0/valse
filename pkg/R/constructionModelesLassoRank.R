@@ -19,7 +19,7 @@
 #'
 #' @export
 constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, 
-  ncores, fast = TRUE, verbose = FALSE)
+  ncores, fast, verbose)
 {
   n <- dim(X)[1]
   p <- dim(X)[2]

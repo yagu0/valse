@@ -17,7 +17,7 @@
 #'
 #' @export
 computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, 
-  maxi, tau, fast = TRUE)
+  maxi, tau, fast)
 {
   n <- nrow(X)
   p <- dim(phiInit)[1]

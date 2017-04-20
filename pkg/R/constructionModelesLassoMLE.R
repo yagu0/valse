@@ -21,7 +21,7 @@
 #'
 #' @export
 constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini, 
-  maxi, gamma, X, Y, eps, S, ncores = 3, fast = TRUE, verbose = FALSE)
+  maxi, gamma, X, Y, eps, S, ncores = 3, fast, verbose)
 {
   if (ncores > 1)
   {
@@ -51,8 +51,8 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       return(NULL)
 
     # lambda == 0 because we compute the EMV: no penalization here
-    res <- EMGLLF(phiInit[col.sel, , ], rhoInit, piInit, gamInit, mini, maxi, 
-      gamma, 0, X[, col.sel], Y, eps, fast)
+    res <- EMGLLF(array(phiInit[col.sel, , ],dim=c(length(col.sel),m,k)), rhoInit,
+      piInit, gamInit, mini, maxi, gamma, 0, as.matrix(X[, col.sel]), Y, eps, fast)
 
     # Eval dimension from the result + selected
     phiLambda2 <- res$phi

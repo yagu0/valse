@@ -23,7 +23,7 @@
 #'
 #' @export
 EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
-  X, Y, eps, fast = TRUE)
+  X, Y, eps, fast)
 {
   if (!fast)
   {
@@ -111,7 +111,8 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 
     # t(m) is the largest value in the grid O.1^k such that it is nonincreasing
     while (kk < 1000 && -a/n + lambda * sum(pi^gamma * b) <
-      -sum(gam2 * log(pi2))/n + lambda * sum(pi2^gamma * b))
+      # na.rm=TRUE to handle 0*log(0)
+      -sum(gam2 * log(pi2), na.rm=TRUE)/n + lambda * sum(pi2^gamma * b))
     {
       pi2 <- pi + 0.1^kk * (1/n * gam2 - pi)
       kk <- kk + 1
@@ -138,8 +139,8 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
       {
         for (mm in 1:m)
         {
-          S[j, mm, r] <- -rho[mm, mm, r] * ps2[j, mm, r]
-            + sum(phi[-j, mm, r] * Gram2[j, -j, r])
+          S[j, mm, r] <- -rho[mm, mm, r] * ps2[j, mm, r] +
+            sum(phi[-j, mm, r] * Gram2[j, -j, r])
           if (abs(S[j, mm, r]) <= n * lambda * (pi[r]^gamma)) {
             phi[j, mm, r] <- 0
           } else if (S[j, mm, r] > n * lambda * (pi[r]^gamma)) {
@@ -155,18 +156,22 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 
     # Precompute det(rho[,,r]) for r in 1...k
     detRho <- sapply(1:k, function(r) det(rho[, , r]))
+    sumLogLLH <- 0
     for (i in 1:n)
     {
-      # Update gam[,]
-      for (r in 1:k)
-      {
-        gam[i, r] <- pi[r] * exp(-0.5
-          * sum((Y[i, ] %*% rho[, , r] - X[i, ] %*% phi[, , r])^2)) * detRho[r]
-      }
+      # Update gam[,]; use log to avoid numerical problems
+      logGam <- sapply(1:k, function(r) {
+        log(pi[r]) + log(detRho[r]) - 0.5 *
+          sum((Y[i, ] %*% rho[, , r] - X[i, ] %*% phi[, , r])^2)
+      })
+
+      logGam <- logGam - max(logGam) #adjust without changing proportions
+      gam[i, ] <- exp(logGam)
+      norm_fact <- sum(gam[i, ])
+      gam[i, ] <- gam[i, ] / norm_fact
+      sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))
     }
-    norm_fact <- rowSums(gam)
-    gam <- gam / norm_fact
-    sumLogLLH <- sum(log(norm_fact) - log((2 * base::pi)^(m/2)))
+
     sumPen <- sum(pi^gamma * b)
     last_llh <- llh
     llh <- -sumLogLLH/n + lambda * sumPen

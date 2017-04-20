@@ -8,7 +8,7 @@
 #' @export
 #' @importFrom methods new
 #' @importFrom stats cutree dist hclust runif
-initSmallEM <- function(k, X, Y, fast = TRUE)
+initSmallEM <- function(k, X, Y, fast)
 {
   n <- nrow(Y)
   m <- ncol(Y)
@@ -67,8 +67,7 @@ initSmallEM <- function(k, X, Y, fast = TRUE)
     init_EMG <- EMGLLF(phiInit1[, , , repet], rhoInit1[, , , repet], piInit1[repet, ],
       gamInit1[, , repet], miniInit, maxiInit, gamma = 1, lambda = 0, X, Y,
       eps = 1e-04, fast)
-    LLFEessai <- init_EMG$LLF
-    LLFinit1[repet] <- LLFEessai[length(LLFEessai)]
+    LLFinit1[[repet]] <- init_EMG$llh
   }
   b <- which.min(LLFinit1)
   phiInit <- phiInit1[, , , b]
