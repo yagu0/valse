@@ -80,7 +80,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       norm_fact <- sum(gam)
       sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))
     }
-    llhLambda <- c(sumLogLLH/n, (dimension + m + 1) * k - 1)
+    llhLambda <- c(-sumLogLLH/n, (dimension + m + 1) * k - 1)
     # densite <- vector("double", n)
     # for (r in 1:k)
     # {
