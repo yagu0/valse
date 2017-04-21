@@ -31,9 +31,9 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
   ncores_inner = 1, thresh = 1e-08, size_coll_mod = 10, fast = TRUE, verbose = FALSE, 
   plot = TRUE)
 {
-  p <- dim(X)[2]
-  m <- dim(Y)[2]
-  n <- dim(X)[1]
+  n <- nrow(X)
+  p <- ncol(X)
+  m <- ncol(Y)
 
   if (verbose) 
     print("main loop: over all k and all lambda")
@@ -138,7 +138,7 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     for (r in 1:length(modelSel$pi))
     {
       sqNorm2 <- sum((Y[i, ] %*% modelSel$rho[, , r] - X[i, ] %*% modelSel$phi[, , r])^2)
-      Gam[i, r] <- modelSel$pi[r] * exp(-0.5 * sqNorm2) * det(modelSel$rho[, , r])
+      Gam[i, r] <- modelSel$pi[r] * exp(-0.5 * sqNorm2) * gdet(modelSel$rho[, , r])
     }
   }
   Gam <- Gam/rowSums(Gam)

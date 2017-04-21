@@ -37,15 +37,22 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
     params <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
       X, Y, eps, fast)
 
-    p <- dim(phiInit)[1]
-    m <- dim(phiInit)[2]
+    p <- ncol(X)
+    m <- ncol(Y)
 
     # selectedVariables: list where element j contains vector of selected variables
     # in [1,m]
     selectedVariables <- lapply(1:p, function(j) {
       # from boolean matrix mxk of selected variables obtain the corresponding boolean
       # m-vector, and finally return the corresponding indices
-      seq_len(m)[apply(abs(params$phi[j, , ]) > thresh, 1, any)]
+      if (m>1) {
+        seq_len(m)[apply(abs(params$phi[j, , ]) > thresh, 1, any)]
+      } else {
+        if (any(params$phi[j, , ] > thresh))
+          1
+        else
+          numeric(0)
+      }
     })
 
     list(selected = selectedVariables, Rho = params$rho, Pi = params$pi)

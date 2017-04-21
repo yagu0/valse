@@ -40,10 +40,10 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
     if (verbose) 
       print(paste("Computations for lambda=", lambda))
 
-    n <- dim(X)[1]
-    p <- dim(phiInit)[1]
-    m <- dim(phiInit)[2]
-    k <- dim(phiInit)[3]
+    n <- nrow(X)
+    p <- ncol(X)
+    m <- ncol(Y)
+    k <- length(piInit)
     sel.lambda <- S[[lambda]]$selected
     # col.sel = which(colSums(sel.lambda)!=0) #if boolean matrix
     col.sel <- which(sapply(sel.lambda, length) > 0)  #if list of selected vars
@@ -51,8 +51,8 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       return(NULL)
 
     # lambda == 0 because we compute the EMV: no penalization here
-    res <- EMGLLF(array(phiInit[col.sel, , ],dim=c(length(col.sel),m,k)), rhoInit,
-      piInit, gamInit, mini, maxi, gamma, 0, as.matrix(X[, col.sel]), Y, eps, fast)
+    res <- EMGLLF(array(phiInit,dim=c(p,m,k))[col.sel, , ], rhoInit, piInit, gamInit,
+      mini, maxi, gamma, 0, as.matrix(X[, col.sel]), Y, eps, fast)
 
     # Eval dimension from the result + selected
     phiLambda2 <- res$phi
@@ -71,7 +71,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       {
         delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% t(phiLambda[col.sel, , r])))
       } else delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% phiLambda[col.sel, , r]))
-      densite <- densite + piLambda[r] * det(rhoLambda[, , r])/(sqrt(2 * base::pi))^m * 
+      densite <- densite + piLambda[r] * gdet(rhoLambda[, , r])/(sqrt(2 * base::pi))^m * 
         exp(-diag(tcrossprod(delta))/2)
     }
     llhLambda <- c(sum(log(densite)), (dimension + m + 1) * k - 1)

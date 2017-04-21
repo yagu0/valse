@@ -21,9 +21,9 @@
 constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, 
   ncores, fast, verbose)
 {
-  n <- dim(X)[1]
-  p <- dim(X)[2]
-  m <- dim(Y)[2]
+  n <- nrow(X)
+  p <- ncol(X)
+  m <- ncol(Y)
   L <- length(S)
 
   # Possible interesting ranks

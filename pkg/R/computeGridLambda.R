@@ -20,9 +20,9 @@ computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mi
   maxi, tau, fast)
 {
   n <- nrow(X)
-  p <- dim(phiInit)[1]
-  m <- dim(phiInit)[2]
-  k <- dim(phiInit)[3]
+  p <- ncol(X)
+  m <- ncol(Y)
+  k <- length(piInit)
 
   list_EMG <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda = 0, 
     X, Y, tau, fast)

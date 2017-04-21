@@ -10,9 +10,9 @@
 #' @importFrom stats cutree dist hclust runif
 initSmallEM <- function(k, X, Y, fast)
 {
-  n <- nrow(Y)
-  m <- ncol(Y)
+  n <- nrow(X)
   p <- ncol(X)
+  m <- ncol(Y)
   nIte <- 20
   Zinit1 <- array(0, dim = c(n, nIte))
   betaInit1 <- array(0, dim = c(p, m, k, nIte))
@@ -55,7 +55,7 @@ initSmallEM <- function(k, X, Y, fast)
         dotProduct <- tcrossprod(Y[i, ] %*% rhoInit1[, , r, repet]
           - X[i, ] %*% phiInit1[, , r, repet])
         Gam[i, r] <- piInit1[repet, r] * 
-          det(rhoInit1[, , r, repet]) * exp(-0.5 * dotProduct)
+          gdet(rhoInit1[, , r, repet]) * exp(-0.5 * dotProduct)
       }
       sumGamI <- sum(Gam[i, ])
       gamInit1[i, , repet] <- Gam[i, ]/sumGamI

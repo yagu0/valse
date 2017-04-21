@@ -47,15 +47,20 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 .EMGLLF_R <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
   X, Y, eps)
 {
-  # Matrix dimensions: NOTE: phiInit *must* be an array (even if p==1)
-  n <- dim(Y)[1]
-  p <- dim(phiInit)[1]
-  m <- dim(phiInit)[2]
-  k <- dim(phiInit)[3]
+  # Matrix dimensions
+  n <- nrow(X)
+  p <- ncol(X)
+  m <- ncol(Y)
+  k <- length(piInit)
+
+  # Adjustments required when p==1 or m==1 (var.sel. or output dim 1)
+  if (p==1 || m==1)
+    phiInit <- array(phiInit, dim=c(p,m,k))
+  if (m==1)
+    rhoInit <- array(rhoInit, dim=c(m,m,k))
 
   # Outputs
-  phi <- array(NA, dim = c(p, m, k))
-  phi[1:p, , ] <- phiInit
+  phi <- phiInit
   rho <- rhoInit
   pi <- piInit
   llh <- -Inf
@@ -155,7 +160,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
     ## E step
 
     # Precompute det(rho[,,r]) for r in 1...k
-    detRho <- sapply(1:k, function(r) det(rho[, , r]))
+    detRho <- sapply(1:k, function(r) gdet(rho[, , r]))
     sumLogLLH <- 0
     for (i in 1:n)
     {

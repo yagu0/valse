@@ -46,10 +46,10 @@ matricize <- function(X)
 .EMGrank_R <- function(Pi, Rho, mini, maxi, X, Y, tau, rank)
 {
   # matrix dimensions
-  n <- dim(X)[1]
-  p <- dim(X)[2]
-  m <- dim(Rho)[2]
-  k <- dim(Rho)[3]
+  n <- nrow(X)
+  p <- ncol(X)
+  m <- ncol(Y)
+  k <- length(Pi)
 
   # init outputs
   phi <- array(0, dim = c(p, m, k))
@@ -92,7 +92,7 @@ matricize <- function(X)
       for (r in seq_len(k))
       {
         dotProduct <- tcrossprod(Y[i, ] %*% Rho[, , r] - X[i, ] %*% phi[, , r])
-        logGamIR <- log(Pi[r]) + log(det(Rho[, , r])) - 0.5 * dotProduct
+        logGamIR <- log(Pi[r]) + log(gdet(Rho[, , r])) - 0.5 * dotProduct
         # Z[i] = index of max (gam[i,])
         if (logGamIR > maxLogGamIR)
         {
