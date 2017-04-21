@@ -77,7 +77,6 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       
       logGam <- logGam - max(logGam) #adjust without changing proportions
       gam <- exp(logGam)
-      print(gam)
       norm_fact <- sum(gam)
       sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))
     }
