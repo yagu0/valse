@@ -174,7 +174,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
 
     sumPen <- sum(pi^gamma * b)
     last_llh <- llh
-    llh <- -sumLogLLH/n + lambda * sumPen
+    llh <- -sumLogLLH/n #+ lambda * sumPen
     dist <- ifelse(ite == 1, llh, (llh - last_llh)/(1 + abs(llh)))
     Dist1 <- max((abs(phi - Phi))/(1 + abs(phi)))
     Dist2 <- max((abs(rho - Rho))/(1 + abs(rho)))

@@ -63,18 +63,36 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       phiLambda[col.sel[j], sel.lambda[[j]], ] <- phiLambda2[j, sel.lambda[[j]], ]
     dimension <- length(unlist(sel.lambda))
 
-    # Computation of the loglikelihood
-    densite <- vector("double", n)
-    for (r in 1:k)
+    ## Computation of the loglikelihood
+    # Precompute det(rhoLambda[,,r]) for r in 1...k
+    detRho <- sapply(1:k, function(r) det(rhoLambda[, , r]))
+    sumLogLLH <- 0
+    for (i in 1:n)
     {
-      if (length(col.sel) == 1)
-      {
-        delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% t(phiLambda[col.sel, , r])))
-      } else delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% phiLambda[col.sel, , r]))
-      densite <- densite + piLambda[r] * det(rhoLambda[, , r])/(sqrt(2 * base::pi))^m * 
-        exp(-diag(tcrossprod(delta))/2)
+      # Update gam[,]; use log to avoid numerical problems
+      logGam <- sapply(1:k, function(r) {
+        log(piLambda[r]) + log(detRho[r]) - 0.5 *
+          sum((Y[i, ] %*% rhoLambda[, , r] - X[i, ] %*% phiLambda[, , r])^2)
+      })
+      
+      logGam <- logGam - max(logGam) #adjust without changing proportions
+      gam[i, ] <- exp(logGam)
+      norm_fact <- sum(gam[i, ])
+      gam[i, ] <- gam[i, ] / norm_fact
+      sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))
     }
-    llhLambda <- c(sum(log(densite)), (dimension + m + 1) * k - 1)
+    llhLambda <- c(sumLogLLH/n, (dimension + m + 1) * k - 1)
+    # densite <- vector("double", n)
+    # for (r in 1:k)
+    # {
+    #   if (length(col.sel) == 1)
+    #   {
+    #     delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% t(phiLambda[col.sel, , r])))
+    #   } else delta <- (Y %*% rhoLambda[, , r] - (X[, col.sel] %*% phiLambda[col.sel, , r]))
+    #   densite <- densite + piLambda[r] * det(rhoLambda[, , r])/(sqrt(2 * base::pi))^m * 
+    #     exp(-rowSums(delta^2)/2)
+    # }
+    # llhLambda <- c(mean(log(densite)), (dimension + m + 1) * k - 1)
     list(phi = phiLambda, rho = rhoLambda, pi = piLambda, llh = llhLambda)
   }
 

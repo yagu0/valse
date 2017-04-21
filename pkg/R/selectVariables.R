@@ -4,16 +4,16 @@
 #'
 #' @param phiInit an initial estimator for phi (size: p*m*k)
 #' @param rhoInit an initial estimator for rho (size: m*m*k)
-#' @param piInit\tan initial estimator for pi (size : k)
+#' @param piInit an initial estimator for pi (size : k)
 #' @param gamInit an initial estimator for gamma
-#' @param mini\t\tminimum number of iterations in EM algorithm
-#' @param maxi\t\tmaximum number of iterations in EM algorithm
-#' @param gamma\t power in the penalty
+#' @param mini  minimum number of iterations in EM algorithm
+#' @param maxi  maximum number of iterations in EM algorithm
+#' @param gamma  power in the penalty
 #' @param glambda grid of regularization parameters
-#' @param X\t\t\t matrix of regressors
-#' @param Y\t\t\t matrix of responses
+#' @param X    matrix of regressors
+#' @param Y    matrix of responses
 #' @param thresh real, threshold to say a variable is relevant, by default = 1e-8
-#' @param eps\t\t threshold to say that EM algorithm has converged
+#' @param eps   threshold to say that EM algorithm has converged
 #' @param ncores Number or cores for parallel execution (1 to disable)
 #'
 #' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
