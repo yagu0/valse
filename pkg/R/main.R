@@ -127,10 +127,19 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     print(tableauRecap)
   modSel <- capushe::capushe(tableauRecap, n)
   indModSel <- if (selecMod == "DDSE") 
-    as.numeric(modSel@DDSE@model) else if (selecMod == "Djump") 
-    as.numeric(modSel@Djump@model) else if (selecMod == "BIC") 
-    modSel@BIC_capushe$model else if (selecMod == "AIC") 
+  {
+    as.numeric(modSel@DDSE@model)
+  } else if (selecMod == "Djump") 
+  {
+    as.numeric(modSel@Djump@model)
+  } else if (selecMod == "BIC") 
+  {
+    modSel@BIC_capushe$model
+  } else if (selecMod == "AIC") 
+  {
     modSel@AIC_capushe$model
+  }
+    
 
   mod <- as.character(tableauRecap[indModSel, 1])
   listMod <- as.integer(unlist(strsplit(mod, "[.]")))

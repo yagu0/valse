@@ -11,5 +11,5 @@ Beta[1:4,1:4,2] = -2*diag(4)
 
 #Data = generateXY(100, c(0.5,0.5), rep(0,p), Beta, diag(p), covY)
 
-#Res = valse(Data$X,Data$Y, fast=FALSE, plot=FALSE, verbose = TRUE, kmax=2, compute_grid_lambda = FALSE, 
-#            grid_lambda = seq(0.2,2,length = 50), size_coll_mod = 50)
+#Res = valse(Data$X,Data$Y, fast=FALSE, plot=FALSE, verbose = TRUE, kmax=2, size_coll_mod = 100,
+#            selecMod = "BIC")
