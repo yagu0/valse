@@ -67,6 +67,8 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
     }
   if (ncores > 1) 
     parallel::stopCluster(cl)
+ 
+  print(out)
   # Suppress models which are computed twice En fait, ca ca fait la comparaison de
   # tous les parametres On veut juste supprimer ceux qui ont les memes variables
   # sélectionnées

@@ -22,8 +22,9 @@ Imports:
     parallel
 Suggests:
     capushe,
+    methods,
     roxygen2,
-    testhat
+    testthat
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
 RoxygenNote: 5.0.1

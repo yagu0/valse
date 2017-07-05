@@ -63,25 +63,39 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       phiLambda[col.sel[j], sel.lambda[[j]], ] <- phiLambda2[j, sel.lambda[[j]], ]
     dimension <- length(unlist(sel.lambda))
 
-    ## Computation of the loglikelihood
-    # Precompute det(rhoLambda[,,r]) for r in 1...k
-    detRho <- sapply(1:k, function(r) gdet(rhoLambda[, , r]))
-    sumLogLLH <- 0
+    ## Affectations
+    Gam <- matrix(0, ncol = length(piLambda), nrow = n)
     for (i in 1:n)
     {
-      # Update gam[,]; use log to avoid numerical problems
-      logGam <- sapply(1:k, function(r) {
-        log(piLambda[r]) + log(detRho[r]) - 0.5 *
-          sum((Y[i, ] %*% rhoLambda[, , r] - X[i, ] %*% phiLambda[, , r])^2)
-      })
-      
-      logGam <- logGam - max(logGam) #adjust without changing proportions
-      gam <- exp(logGam)
-      norm_fact <- sum(gam)
-      sumLogLLH <- sumLogLLH + log(norm_fact) - log((2 * base::pi)^(m/2))
+      for (r in 1:length(piLambda))
+      {
+        sqNorm2 <- sum((Y[i, ] %*% rhoLambda[, , r] - X[i, ] %*% phiLambda[, , r])^2)
+        Gam[i, r] <- piLambda[r] * exp(-0.5 * sqNorm2) * det(rhoLambda[, , r])
+      }
     }
-    llhLambda <- c(-sumLogLLH/n, (dimension + m + 1) * k - 1)
-    list(phi = phiLambda, rho = rhoLambda, pi = piLambda, llh = llhLambda)
+    Gam2 <- Gam/rowSums(Gam)
+    affec <- apply(Gam2, 1, which.max)
+    proba <- Gam2
+    LLH <- c(sum(log(apply(Gam,1,sum))), (dimension + m + 1) * k - 1)
+    # ## Computation of the loglikelihood
+    # # Precompute det(rhoLambda[,,r]) for r in 1...k
+    # detRho <- sapply(1:k, function(r) gdet(rhoLambda[, , r]))
+    # sumLogLLH <- 0
+    # for (i in 1:n)
+    # {
+    #   # Update gam[,]; use log to avoid numerical problems
+    #   logGam <- sapply(1:k, function(r) {
+    #     log(piLambda[r]) + log(detRho[r]) - 0.5 *
+    #       sum((Y[i, ] %*% rhoLambda[, , r] - X[i, ] %*% phiLambda[, , r])^2)
+    #   })
+    #   
+    #   #logGam <- logGam - max(logGam) #adjust without changing proportions -> change the LLH
+    #   gam <- exp(logGam)
+    #   norm_fact <- sum(gam)
+    #   sumLogLLH <- sumLogLLH + log(norm_fact) - m/2* log(2 * base::pi)
+    # }
+    #llhLambda <- c(-sumLogLLH/n, (dimension + m + 1) * k - 1)
+    list(phi = phiLambda, rho = rhoLambda, pi = piLambda, llh = LLH, affec = affec, proba = proba)
   }
 
   # For each lambda, computation of the parameters

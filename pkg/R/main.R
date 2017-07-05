@@ -123,6 +123,8 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
       complexity = sumPen, contrast = -LLH)
   }))
   tableauRecap <- tableauRecap[which(tableauRecap[, 4] != Inf), ]
+  
+  
   if (verbose == TRUE)
     print(tableauRecap)
   modSel <- capushe::capushe(tableauRecap, n)
@@ -140,26 +142,10 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
     modSel@AIC_capushe$model
   }
     
-
-  mod <- as.character(tableauRecap[indModSel, 1])
-  listMod <- as.integer(unlist(strsplit(mod, "[.]")))
+  listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
   modelSel <- models_list[[listMod[1]]][[listMod[2]]]
-
-  ## Affectations
-  Gam <- matrix(0, ncol = length(modelSel$pi), nrow = n)
-  for (i in 1:n)
-  {
-    for (r in 1:length(modelSel$pi))
-    {
-      sqNorm2 <- sum((Y[i, ] %*% modelSel$rho[, , r] - X[i, ] %*% modelSel$phi[, , r])^2)
-      Gam[i, r] <- modelSel$pi[r] * exp(-0.5 * sqNorm2) * gdet(modelSel$rho[, , r])
-    }
-  }
-  Gam <- Gam/rowSums(Gam)
-  modelSel$affec <- apply(Gam, 1, which.max)
-  modelSel$proba <- Gam
   modelSel$tableau <- tableauRecap
-
+  
   if (plot)
     print(plot_valse(X, Y, modelSel, n))
 
