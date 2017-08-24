@@ -19,7 +19,8 @@
 #'   rho : parametre de variance renormalisé, calculé par l'EM
 #'   pi : parametre des proportions renormalisé, calculé par l'EM
 #'   LLF : log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
-#'   S : ... affec : ...
+#'   S : ...
+#'   affec : ...
 #'
 #' @export
 EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
@@ -41,6 +42,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
     X, Y, eps, phi = double(p * m * k), rho = double(m * m * k), pi = double(k), 
     LLF = double(maxi), S = double(p * m * k), affec = integer(n), n, p, m, k, 
     PACKAGE = "valse")
+	list(phi = phi, rho = rho, pi = pi, llh = llh, S = S, affec=affec)
 }
 
 # R version - slow but easy to read
@@ -190,5 +192,6 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
       break
   }
 
-  list(phi = phi, rho = rho, pi = pi, llh = llh, S = S)
+	affec = apply(gam, 1, which.max)
+  list(phi = phi, rho = rho, pi = pi, llh = llh, S = S, affec=affec)
 }
