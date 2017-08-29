@@ -74,7 +74,6 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   ps2 <- array(0, dim = c(p, m, k))
   X2 <- array(0, dim = c(n, p, k))
   Y2 <- array(0, dim = c(n, m, k))
-  EPS <- 1e-15
 
   for (ite in 1:maxi)
   {
