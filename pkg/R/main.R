@@ -51,7 +51,7 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
   computeModels <- function(k)
   {
     if (ncores_outer > 1) 
-      require("valse")  #nodes start with an empty environment
+      require("valse") #nodes start with an empty environment
 
     if (verbose) 
       print(paste("Parameters initialization for k =", k))

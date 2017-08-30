@@ -11,5 +11,5 @@ Beta[1:4,1:4,2] = -2*diag(4)
 
 Data = generateXY(200, c(0.5,0.5), rep(0,p), Beta, diag(p), covY)
 #  
-Res = valse(Data$X,Data$Y, fast=FALSE, plot=FALSE, verbose = TRUE, kmax=3, size_coll_mod = 50, selecMod = "DDSE", mini = 50, maxi=100)
+Res = valse(Data$X,Data$Y, fast=TRUE, plot=FALSE, verbose = TRUE, kmax=3, size_coll_mod = 50, selecMod = "DDSE", mini = 50, maxi=100)
 plot(Res$tableau[,3], -Res$tableau[,4])
