@@ -1,1 +1,7 @@
 Apply git-fat patch
+
+Continue debug: (message "cannot allocate vector 40gb" ?!
+  X = matrix(runif(n*p, -10, 10), nrow=n)
+  Y = matrix(runif(n*m, -5, 15), nrow=n)
+  V1 = valse::valse(X, Y, fast=FALSE) #OK
+  V2 = valse::valse(X, Y, fast=FALSE) #not OK... almost
