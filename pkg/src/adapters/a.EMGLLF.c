@@ -56,7 +56,7 @@ SEXP EMGLLF(
 	PROTECT(phi = allocArray(REALSXP, dimPhiS));
 	PROTECT(rho = allocArray(REALSXP, dimRho));
 	PROTECT(pi = allocVector(REALSXP, k));
-	PROTECT(LLF = allocVector(REALSXP, maxi-mini+1));
+	PROTECT(LLF = allocVector(REALSXP, maxi));
 	PROTECT(S = allocArray(REALSXP, dimPhiS));
 	PROTECT(affec = allocVector(INTSXP, n));
 	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLLF=REAL(LLF), *pS=REAL(S);
