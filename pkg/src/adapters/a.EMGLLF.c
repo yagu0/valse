@@ -46,7 +46,7 @@ SEXP EMGLLF(
 	// OUTPUTS //
 	/////////////
 
-	SEXP phi, rho, pi, LLF, S, affec, dimPhiS, dimRho;
+	SEXP phi, rho, pi, llh, S, affec, dimPhiS, dimRho;
 	PROTECT(dimPhiS = allocVector(INTSXP, 3));
 	int* pDimPhiS = INTEGER(dimPhiS);
 	pDimPhiS[0] = p; pDimPhiS[1] = m; pDimPhiS[2] = k;
@@ -56,10 +56,10 @@ SEXP EMGLLF(
 	PROTECT(phi = allocArray(REALSXP, dimPhiS));
 	PROTECT(rho = allocArray(REALSXP, dimRho));
 	PROTECT(pi = allocVector(REALSXP, k));
-	PROTECT(LLF = allocVector(REALSXP, maxi));
+	PROTECT(llh = allocVector(REALSXP, 1));
 	PROTECT(S = allocArray(REALSXP, dimPhiS));
 	PROTECT(affec = allocVector(INTSXP, n));
-	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLLF=REAL(LLF), *pS=REAL(S);
+	double *pPhi=REAL(phi), *pRho=REAL(rho), *pPi=REAL(pi), *pLlh=REAL(llh), *pS=REAL(S);
 	int *pAffec=INTEGER(affec);
 
 	////////////////////
@@ -67,14 +67,14 @@ SEXP EMGLLF(
 	////////////////////
 
 	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,eps,
-		pPhi,pRho,pPi,pLLF,pS,pAffec,
+		pPhi,pRho,pPi,pLlh,pS,pAffec,
 		n,p,m,k);
 
 	// Build list from OUT params and return it
 	SEXP listParams, listNames;
 	int nouts = 6;
 	PROTECT(listParams = allocVector(VECSXP, nouts));
-	char* lnames[6] = {"phi", "rho", "pi", "LLF", "S", "affec"}; //lists labels
+	char* lnames[6] = {"phi", "rho", "pi", "llh", "S", "affec"}; //lists labels
 	PROTECT(listNames = allocVector(STRSXP,nouts));
 	for (int i=0; i<nouts; i++)
 		SET_STRING_ELT(listNames,i,mkChar(lnames[i]));
@@ -82,7 +82,7 @@ SEXP EMGLLF(
 	SET_VECTOR_ELT(listParams, 0, phi);
 	SET_VECTOR_ELT(listParams, 1, rho);
 	SET_VECTOR_ELT(listParams, 2, pi);
-	SET_VECTOR_ELT(listParams, 3, LLF);
+	SET_VECTOR_ELT(listParams, 3, llh);
 	SET_VECTOR_ELT(listParams, 4, S);
 	SET_VECTOR_ELT(listParams, 5, affec);
 

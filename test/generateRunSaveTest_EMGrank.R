@@ -4,7 +4,7 @@ library(valse)
 generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, gamma=1.0,
 	rank = c(1,2,4))
 {
-  tau = 1e-6
+  eps = 1e-6
   pi = rep(1.0/k, k)
   rho = array(dim=c(m,m,k))
   for(i in 1:k)
@@ -26,14 +26,14 @@ generateRunSaveTest_EMGrank = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, 
 		row.names=F, col.names=F)
   write.table(as.double(xy$Y), paste(testFolder,"Y",sep=""),
 		row.names=F, col.names=F)
-  write.table(as.double(tau), paste(testFolder,"tau",sep=""),
+  write.table(as.double(eps), paste(testFolder,"eps",sep=""),
 		row.names=F, col.names=F)
   write.table(as.integer(rank), paste(testFolder,"rank",sep=""),
 		row.names=F, col.names=F)
   write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
-  res = valse::EMGrank(pi,rho,mini,maxi,xy$X,xy$Y,tau,rank,fast=FALSE)
+  res = valse::EMGrank(pi,rho,mini,maxi,xy$X,xy$Y,eps,rank,fast=FALSE)
 
   #save output
   write.table(as.double(res$phi),paste(testFolder,"phi",sep=""),row.names=F,col.names=F)

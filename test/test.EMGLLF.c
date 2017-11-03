@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	Real lambda = read_real("lambda");
 	Real* X = readArray_real("X");
 	Real* Y = readArray_real("Y");
-	Real tau = read_real("tau");
+	Real eps = read_real("eps");
 	////////////
 
 	/////////////
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
 	////////////////////
 	// Call to EMGLLF //
-	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
+	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,eps,
 		phi,rho,pi,&llh,S,affec,
 		n,p,m,k);
 	////////////////////

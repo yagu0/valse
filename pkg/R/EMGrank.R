@@ -8,7 +8,7 @@
 #' @param maxi Nombre maximal d'itérations dans l'algorithme EM
 #' @param X Régresseurs
 #' @param Y Réponse
-#' @param tau Seuil pour accepter la convergence
+#' @param eps Seuil pour accepter la convergence
 #' @param rank Vecteur des rangs possibles
 #'
 #' @return A list ...
@@ -16,12 +16,12 @@
 #'   LLF : log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
 #'
 #' @export
-EMGrank <- function(Pi, Rho, mini, maxi, X, Y, tau, rank, fast = TRUE)
+EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
 {
   if (!fast)
   {
     # Function in R
-    return(.EMGrank_R(Pi, Rho, mini, maxi, X, Y, tau, rank))
+    return(.EMGrank_R(Pi, Rho, mini, maxi, X, Y, eps, rank))
   }
 
   # Function in C
@@ -29,7 +29,7 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, tau, rank, fast = TRUE)
   p <- ncol(X)  #nombre de covariables
   m <- ncol(Y)  #taille de Y (multivarié)
   k <- length(Pi)  #nombre de composantes dans le mélange
-  .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, tau, rank, phi = double(p * m * k), 
+  .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, eps, rank, phi = double(p * m * k), 
     LLF = double(1), n, p, m, k, PACKAGE = "valse")
 }
 
@@ -43,7 +43,7 @@ matricize <- function(X)
 }
 
 # R version - slow but easy to read
-.EMGrank_R <- function(Pi, Rho, mini, maxi, X, Y, tau, rank)
+.EMGrank_R <- function(Pi, Rho, mini, maxi, X, Y, eps, rank)
 {
   # matrix dimensions
   n <- nrow(X)
@@ -64,7 +64,7 @@ matricize <- function(X)
   
   # main loop
   ite <- 1
-  while (ite <= mini || (ite <= maxi && sumDeltaPhi > tau))
+  while (ite <= mini || (ite <= maxi && sumDeltaPhi > eps))
   {
     # M step: update for Beta ( and then phi)
     for (r in 1:k)

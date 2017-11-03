@@ -2,7 +2,7 @@ source("helper.R")
 library(valse)
 
 generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
-	gamma=1., lambda=0.5, tau=1e-6)
+	gamma=1., lambda=0.5, eps=1e-6)
 {
 	testFolder = "data/"
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
@@ -31,13 +31,13 @@ generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
 		row.names=F, col.names=F)
 	write.table(as.double(xy$Y), paste(testFolder,"Y",sep=""),
 		row.names=F, col.names=F)
-	write.table(as.double(tau), paste(testFolder,"tau",sep=""),
+	write.table(as.double(eps), paste(testFolder,"eps",sep=""),
 		row.names=F, col.names=F)
 	write.table(as.integer(c(n,p,m,k)), paste(testFolder,"dimensions",sep=""),
 		row.names=F, col.names=F)
 
 	res = valse::EMGLLF(params$phiInit,params$rhoInit,params$piInit,params$gamInit,mini,
-		maxi,gamma,lambda,xy$X,xy$Y,tau,fast=FALSE)
+		maxi,gamma,lambda,xy$X,xy$Y,eps,fast=FALSE)
 
 	#save outputs
 	write.table(as.double(res$phi),paste(testFolder,"phi",sep=""),row.names=F,col.names=F)

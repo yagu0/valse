@@ -123,8 +123,7 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
       complexity = sumPen, contrast = -LLH)
   }))
   tableauRecap <- tableauRecap[which(tableauRecap[, 4] != Inf), ]
-  
-  
+
   if (verbose == TRUE)
     print(tableauRecap)
   modSel <- capushe::capushe(tableauRecap, n)
@@ -141,11 +140,11 @@ valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mi
   {
     modSel@AIC_capushe$model
   }
-    
+
   listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
   modelSel <- models_list[[listMod[1]]][[listMod[2]]]
   modelSel$tableau <- tableauRecap
-  
+
   if (plot)
     print(plot_valse(X, Y, modelSel, n))
 

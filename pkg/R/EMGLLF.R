@@ -40,7 +40,7 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   k <- length(piInit)  #nombre de composantes dans le mélange
   .Call("EMGLLF", phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
     X, Y, eps, phi = double(p * m * k), rho = double(m * m * k), pi = double(k), 
-    LLF = double(maxi), S = double(p * m * k), affec = integer(n), n, p, m, k, 
+    llh = double(1), S = double(p * m * k), affec = integer(n), n, p, m, k, 
     PACKAGE = "valse")
 }
 
