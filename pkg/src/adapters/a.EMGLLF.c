@@ -14,7 +14,7 @@ SEXP EMGLLF(
 	SEXP lambda_,
 	SEXP X_,
 	SEXP Y_,
-	SEXP tau_
+	SEXP eps_
 ) {
 	// Get matrices dimensions
 	int n = INTEGER(getAttrib(X_, R_DimSymbol))[0];
@@ -32,7 +32,7 @@ SEXP EMGLLF(
 	int maxi = INTEGER_VALUE(maxi_);
 	double gamma = NUMERIC_VALUE(gamma_);
 	double lambda = NUMERIC_VALUE(lambda_);
-	double tau = NUMERIC_VALUE(tau_);
+	double eps = NUMERIC_VALUE(eps_);
 
 	// Get pointers from SEXP arrays ; WARNING: by columns !
 	double* phiInit = REAL(phiInit_);
@@ -66,7 +66,7 @@ SEXP EMGLLF(
 	// Call to EMGLLF //
 	////////////////////
 
-	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,tau,
+	EMGLLF_core(phiInit,rhoInit,piInit,gamInit,mini,maxi,gamma,lambda,X,Y,eps,
 		pPhi,pRho,pPi,pLLF,pS,pAffec,
 		n,p,m,k);
 
