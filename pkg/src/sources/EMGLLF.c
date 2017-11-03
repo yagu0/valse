@@ -16,7 +16,7 @@ void EMGLLF_core(
 	Real lambda, // valeur du paramètre de régularisation du Lasso
 	const Real* X, // régresseurs
 	const Real* Y, // réponse
-	Real tau, // seuil pour accepter la convergence
+	Real eps, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
 	Real* phi, // parametre de moyenne renormalisé, calculé par l'EM
 	Real* rho, // parametre de variance renormalisé, calculé par l'EM
@@ -379,7 +379,7 @@ void EMGLLF_core(
 		if (Dist3 > dist2)
 			dist2 = Dist3;
 
-		if (ite >= mini && (dist >= tau || dist2 >= sqrt(tau)))
+		if (ite >= mini && (dist >= eps || dist2 >= sqrt(eps)))
 			break;
 	}
 
