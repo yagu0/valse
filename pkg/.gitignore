@@ -1,0 +1,4 @@
+#ignore roxygen2 generated files
+/NAMESPACE
+/man/*.Rd
+!/man/*-package.Rd

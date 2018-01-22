@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Hook used to indent all source files before commiting
+#
+
+# indent / format file by type
+indent() {
+	# getting against as the current commit
+	if git rev-parse --verify HEAD >/dev/null 2>&1
+	then
+		local against=HEAD
+	else
+		# Initial commit: diff against an empty tree object
+		local against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+	fi
+
+	# loop on modified files
+	git diff --cached --name-only $against | while read file;
+	do
+		local ext=$(expr "$file" : ".*\(\..*\)")
+		case $ext in
+		.R|.r)
+			__indent_R;
+		;;
+		esac
+	done
+}
+
+# Indent the file with `indent' if this is a R file
+__indent_R() {
+	if test ! -f $file
+	then
+		return;
+	fi
+
+	echo "Indenting " $file
+	echo "library(formatR);formatR::tidy_source('$file',comment=TRUE,blank=TRUE,
+		arrow=TRUE,brace.newline=TRUE,indent=2,width.cutoff=80,file='$file')" | R --slave
+	git add "$file"
+}
+
+indent
