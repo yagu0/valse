@@ -1,11 +1,11 @@
 # VAriable seLection with mixtureS of modEls
 
-Code co-authors: [Emilie Devijver](http://ama.liglab.fr/~devijver/), [Benjamin Gohehry](https://fr.linkedin.com/in/benjamin-goehry-275276124).
+With [Emilie Devijver](http://ama.liglab.fr/~devijver/) and [Benjamin Gohehry](https://fr.linkedin.com/in/benjamin-goehry-275276124).
 
-This code is a re-writing from [a similar project](https://github.com/yagu0/select) in MATLAB, and
+Re-writing from [a similar project](https://github.com/yagu0/select) in MATLAB, which
 corresponds to applied parts of the PhD thesis of both co-authors.
 
-It uses git-fat to store binary objects. "git fat init && git fat pull" will get them.
+This git repo uses [git-fat](https://github.com/jedbrown/git-fat) to store binary objects. "git fat init && git fat pull" will get them.
 
 ## Description
 
