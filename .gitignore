@@ -9,6 +9,7 @@
 *.Rproj*
 .Rprofile
 .Rbuildignore
+Rprof.out
 
 #ignore R CMD build/check genrated files
 /*.Rcheck/
@@ -18,7 +19,3 @@
 *.o
 *.so
 *.exe
-
-#misc
-Rprof.out
-*.zip

@@ -1,5 +1,4 @@
 *.pdf filter=fat
 *.zip filter=fat
 *.tar.xz filter=fat
-*.data filter=fat
 *.png filter=fat
