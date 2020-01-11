@@ -18,7 +18,7 @@
 #' @return a list with several models, defined by phi, rho, pi, llh
 #'
 #' @export
-constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max, 
+constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, rank.max,
   ncores, fast, verbose)
 {
   n <- nrow(X)
@@ -38,7 +38,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
     # (rank.max-rank.min)^(k-2) chaque chiffre, et on fait ça (rank.max-rank.min)^2
     # fois ...  Dans la dernière, on répète chaque chiffre une fois, et on fait ça
     # (rank.min-rank.max)^(k-1) fois.
-    RankLambda[, r] <- rep(rank.min + rep(0:(deltaRank - 1), deltaRank^(r - 1), 
+    RankLambda[, r] <- rep(rank.min + rep(0:(deltaRank - 1), deltaRank^(r - 1),
       each = deltaRank^(k - r)), each = L)
   }
   RankLambda[, k + 1] <- rep(1:L, times = Size)
@@ -46,8 +46,8 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
   if (ncores > 1)
   {
     cl <- parallel::makeCluster(ncores, outfile = "")
-    parallel::clusterExport(cl, envir = environment(), varlist = c("A1", "Size", 
-      "Pi", "Rho", "mini", "maxi", "X", "Y", "eps", "Rank", "m", "phi", "ncores", 
+    parallel::clusterExport(cl, envir = environment(), varlist = c("A1", "Size",
+      "Pi", "Rho", "mini", "maxi", "X", "Y", "eps", "Rank", "m", "phi", "ncores",
       "verbose"))
   }
 
@@ -55,7 +55,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
   {
     lambdaIndex <- RankLambda[index, k + 1]
     rankIndex <- RankLambda[index, 1:k]
-    if (ncores > 1) 
+    if (ncores > 1)
       require("valse")  #workers start with an empty environment
 
     # 'relevant' will be the set of relevant columns
@@ -71,7 +71,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       phi <- array(0, dim = c(p, m, k))
       if (length(relevant) > 0)
       {
-        res <- EMGrank(S[[lambdaIndex]]$Pi, S[[lambdaIndex]]$Rho, mini, maxi, 
+        res <- EMGrank(S[[lambdaIndex]]$Pi, S[[lambdaIndex]]$Rho, mini, maxi,
           X[, relevant], Y, eps, rankIndex, fast)
         llh <- c(res$LLF, sum(rankIndex * (length(relevant) - rankIndex + m)))
         phi[relevant, , ] <- res$phi
@@ -88,7 +88,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
       lapply(seq_len(length(S) * Size), computeAtLambda)
     }
 
-  if (ncores > 1) 
+  if (ncores > 1)
     parallel::stopCluster(cl)
 
   out

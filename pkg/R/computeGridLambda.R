@@ -1,4 +1,4 @@
-#' computeGridLambda 
+#' computeGridLambda
 #'
 #' Construct the data-driven grid for the regularization parameters used for the Lasso estimator
 #'
@@ -16,7 +16,7 @@
 #' @return the grid of regularization parameters
 #'
 #' @export
-computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini, 
+computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini,
   maxi, eps, fast)
 {
   n <- nrow(X)
@@ -24,7 +24,7 @@ computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mi
   m <- ncol(Y)
   k <- length(piInit)
 
-  list_EMG <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda = 0, 
+  list_EMG <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda = 0,
     X, Y, eps, fast)
 
   grid <- array(0, dim = c(p, m, k))

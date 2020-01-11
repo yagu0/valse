@@ -1,4 +1,4 @@
-#' initialization of the EM algorithm 
+#' initialization of the EM algorithm
 #'
 #' @param k number of components
 #' @param X matrix of covariates (of size n*p)
@@ -36,10 +36,10 @@ initSmallEM <- function(k, X, Y, fast)
       Z <- Zinit1[, repet]
       Z_indice <- seq_len(n)[Z == r]  #renvoit les indices où Z==r
       if (length(Z_indice) == 1) {
-        betaInit1[, , r, repet] <- MASS::ginv(crossprod(t(X[Z_indice, ]))) %*% 
+        betaInit1[, , r, repet] <- MASS::ginv(crossprod(t(X[Z_indice, ]))) %*%
           crossprod(t(X[Z_indice, ]), Y[Z_indice, ])
       } else {
-        betaInit1[, , r, repet] <- MASS::ginv(crossprod(X[Z_indice, ])) %*% 
+        betaInit1[, , r, repet] <- MASS::ginv(crossprod(X[Z_indice, ])) %*%
           crossprod(X[Z_indice, ], Y[Z_indice, ])
       }
       sigmaInit1[, , r, repet] <- diag(m)
@@ -54,7 +54,7 @@ initSmallEM <- function(k, X, Y, fast)
       {
         dotProduct <- tcrossprod(Y[i, ] %*% rhoInit1[, , r, repet]
           - X[i, ] %*% phiInit1[, , r, repet])
-        Gam[i, r] <- piInit1[repet, r] * 
+        Gam[i, r] <- piInit1[repet, r] *
           det(rhoInit1[, , r, repet]) * exp(-0.5 * dotProduct)
       }
       sumGamI <- sum(Gam[i, ])

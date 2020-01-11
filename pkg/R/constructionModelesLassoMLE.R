@@ -1,7 +1,7 @@
-#' constructionModelesLassoMLE 
+#' constructionModelesLassoMLE
 #'
 #' Construct a collection of models with the Lasso-MLE procedure.
-#' 
+#'
 #' @param phiInit an initialization for phi, get by initSmallEM.R
 #' @param rhoInit an initialization for rho, get by initSmallEM.R
 #' @param piInit an initialization for pi, get by initSmallEM.R
@@ -16,28 +16,28 @@
 #' @param ncores Number of cores, by default = 3
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
-#' 
+#'
 #' @return a list with several models, defined by phi, rho, pi, llh
 #'
 #' @export
-constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini, 
+constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
   maxi, gamma, X, Y, eps, S, ncores = 3, fast, verbose)
 {
   if (ncores > 1)
   {
     cl <- parallel::makeCluster(ncores, outfile = "")
-    parallel::clusterExport(cl, envir = environment(), varlist = c("phiInit", 
-      "rhoInit", "gamInit", "mini", "maxi", "gamma", "X", "Y", "eps", "S", 
+    parallel::clusterExport(cl, envir = environment(), varlist = c("phiInit",
+      "rhoInit", "gamInit", "mini", "maxi", "gamma", "X", "Y", "eps", "S",
       "ncores", "fast", "verbose"))
   }
 
   # Individual model computation
   computeAtLambda <- function(lambda)
   {
-    if (ncores > 1) 
+    if (ncores > 1)
       require("valse")  #nodes start with an empty environment
 
-    if (verbose) 
+    if (verbose)
       print(paste("Computations for lambda=", lambda))
 
     n <- nrow(X)
@@ -47,7 +47,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
     sel.lambda <- S[[lambda]]$selected
     # col.sel = which(colSums(sel.lambda)!=0) #if boolean matrix
     col.sel <- which(sapply(sel.lambda, length) > 0)  #if list of selected vars
-    if (length(col.sel) == 0) 
+    if (length(col.sel) == 0)
       return(NULL)
 
     # lambda == 0 because we compute the EMV: no penalization here
@@ -88,7 +88,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
     #     log(piLambda[r]) + log(detRho[r]) - 0.5 *
     #       sum((Y[i, ] %*% rhoLambda[, , r] - X[i, ] %*% phiLambda[, , r])^2)
     #   })
-    #   
+    #
     #   #logGam <- logGam - max(logGam) #adjust without changing proportions -> change the LLH
     #   gam <- exp(logGam)
     #   norm_fact <- sum(gam)
@@ -106,7 +106,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
       lapply(1:length(S), computeAtLambda)
     }
 
-  if (ncores > 1) 
+  if (ncores > 1)
     parallel::stopCluster(cl)
 
   out

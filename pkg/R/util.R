@@ -1,7 +1,5 @@
-# ...
+# Compute the determinant of a matrix, which can be 1x1 (scalar)
 gdet <- function(M)
 {
-	if (is.matrix(M))
-		return (det(M))
-	return (M[1]) #numeric, double
+	ifelse(is.matrix(M), det(M), M[1])
 }

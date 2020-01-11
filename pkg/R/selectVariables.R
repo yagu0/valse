@@ -1,4 +1,4 @@
-#' selectVariables 
+#' selectVariables
 #'
 #' It is a function which construct, for a given lambda, the sets of relevant variables.
 #'
@@ -22,19 +22,19 @@
 #'
 #' @export
 #'
-selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, 
+selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma,
   glambda, X, Y, thresh = 1e-08, eps, ncores = 3, fast)
 {
   if (ncores > 1) {
     cl <- parallel::makeCluster(ncores, outfile = "")
-    parallel::clusterExport(cl = cl, varlist = c("phiInit", "rhoInit", "gamInit", 
+    parallel::clusterExport(cl = cl, varlist = c("phiInit", "rhoInit", "gamInit",
       "mini", "maxi", "glambda", "X", "Y", "thresh", "eps"), envir = environment())
   }
 
   # Computation for a fixed lambda
   computeCoefs <- function(lambda)
   {
-    params <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
+    params <- EMGLLF(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
       X, Y, eps, fast)
 
     p <- ncol(X)
@@ -65,9 +65,9 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
     } else {
       lapply(glambda, computeCoefs)
     }
-  if (ncores > 1) 
+  if (ncores > 1)
     parallel::stopCluster(cl)
- 
+
   print(out)
   # Suppress models which are computed twice En fait, ca ca fait la comparaison de
   # tous les parametres On veut juste supprimer ceux qui ont les memes variables
