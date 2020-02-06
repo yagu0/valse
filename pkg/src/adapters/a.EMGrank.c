@@ -10,7 +10,7 @@ SEXP EMGrank(
 	SEXP maxi_,
 	SEXP X_,
 	SEXP Y_,
-	SEXP tau_,
+	SEXP eps_,
 	SEXP rank_
 ) {
 	// Get matrices dimensions
@@ -28,7 +28,7 @@ SEXP EMGrank(
 	// get scalar parameters
 	int mini = INTEGER_VALUE(mini_);
 	int maxi = INTEGER_VALUE(maxi_);
-	double tau = NUMERIC_VALUE(tau_);
+	double eps = NUMERIC_VALUE(eps_);
 
 	// Get pointers from SEXP arrays ; WARNING: by columns !
 	double* Pi = REAL(Pi_);
@@ -53,7 +53,7 @@ SEXP EMGrank(
 	// Call to EMGrank //
 	/////////////////////
 
-	EMGrank_core(Pi, Rho, mini, maxi, X, Y, tau, rank,
+	EMGrank_core(Pi, Rho, mini, maxi, X, Y, eps, rank,
 		pPhi,pLLF,
 		n,p,m,k);
 

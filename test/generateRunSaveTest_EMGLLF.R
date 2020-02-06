@@ -1,10 +1,9 @@
 source("helper.R")
 library(valse)
 
-generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10,
-	gamma=1., lambda=0.5, eps=1e-6)
+generateRunSaveTest_EMGLLF = function(n=200, p=15, m=10, k=3, mini=5, maxi=10, gamma=1., lambda=0.5, eps=1e-6)
 {
-	testFolder = "data/"
+	testFolder = "./data/"
 	dir.create(testFolder, showWarnings=FALSE, mode="0755")
 
 	params = basicInitParameters(n, p, m, k)

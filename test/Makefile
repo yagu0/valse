@@ -26,6 +26,6 @@ clean:
 	rm -f *.o ../pkg/src/sources/*.o
 
 cclean: clean
-	rm -f *.so $(TESTS)
+	rm -f *.so ../pkg/src/*.so $(TESTS)
 
 .PHONY: all clean cclean

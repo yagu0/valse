@@ -1,4 +1,4 @@
-#' generateXY 
+#' generateXY
 #'
 #' Generate a sample of (X,Y) of size n
 #'
@@ -30,7 +30,7 @@ generateXY <- function(n, π, meanX, β, covX, covY)
     class <- c(class, rep(i, sizePop[i]))
     newBlockX <- MASS::mvrnorm(sizePop[i], meanX, covX)
     X <- rbind(X, newBlockX)
-    Y <- rbind(Y, t(apply(newBlockX, 1, function(row) MASS::mvrnorm(1, row %*% 
+    Y <- rbind(Y, t(apply(newBlockX, 1, function(row) MASS::mvrnorm(1, row %*%
       β[, , i], covY[, , i]))))
   }
 

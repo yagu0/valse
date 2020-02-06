@@ -1,7 +1,15 @@
-Apply git-fat patch
+n = 100; m = 70; p = 5
+X = matrix(runif(n*p, -10, 10), nrow=n)
+Y = matrix(runif(n*m, -5, 15), nrow=n)
 
-Continue debug: (message "cannot allocate vector 40gb" ?!
-  X = matrix(runif(n*p, -10, 10), nrow=n)
-  Y = matrix(runif(n*m, -5, 15), nrow=n)
-  V1 = valse::valse(X, Y, fast=FALSE) #OK
-  V2 = valse::valse(X, Y, fast=FALSE) #not OK... almost
+V1 = valse::valse(X, Y, fast=FALSE)
+Error in while (!pi2AllPositive) { : 
+  missing value where TRUE/FALSE needed
+
+V2 = valse::valse(X, Y, fast=TRUE)
+list()
+Error in out[[ind_uniq[l]]] : 
+  attempt to select less than one element in get1index
+
+==> Error identified: line 61 in initSmallEM.R, division by 0
+It occurs also for smallers values of n and m, e.g.: n = 20; m = 20; p = 3

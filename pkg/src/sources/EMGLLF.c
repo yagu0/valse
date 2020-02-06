@@ -417,4 +417,4 @@ void EMGLLF_core(
 	free(X2);
 	free(Y2);
 	free(sqNorm2);
-}
+}

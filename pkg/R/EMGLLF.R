@@ -1,4 +1,4 @@
-#' EMGLLF 
+#' EMGLLF
 #'
 #' Description de EMGLLF
 #'
@@ -23,13 +23,13 @@
 #'   affec : ...
 #'
 #' @export
-EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
+EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   X, Y, eps, fast)
 {
   if (!fast)
   {
     # Function in R
-    return(.EMGLLF_R(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
+    return(.EMGLLF_R(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
       X, Y, eps))
   }
 
@@ -38,14 +38,14 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   p <- ncol(X)  #nombre de covariables
   m <- ncol(Y)  #taille de Y (multivarié)
   k <- length(piInit)  #nombre de composantes dans le mélange
-  .Call("EMGLLF", phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
-    X, Y, eps, phi = double(p * m * k), rho = double(m * m * k), pi = double(k), 
-    llh = double(1), S = double(p * m * k), affec = integer(n), n, p, m, k, 
+  .Call("EMGLLF", phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
+    X, Y, eps, phi = double(p * m * k), rho = double(m * m * k), pi = double(k),
+    llh = double(1), S = double(p * m * k), affec = integer(n), n, p, m, k,
     PACKAGE = "valse")
 }
 
 # R version - slow but easy to read
-.EMGLLF_R <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda, 
+.EMGLLF_R <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   X, Y, eps)
 {
   # Matrix dimensions

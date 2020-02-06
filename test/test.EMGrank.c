@@ -13,13 +13,13 @@ int main(int argc, char** argv)
 
 	////////////
 	// INPUTS //
-	Real* rho = readArray_real("rho");
-	Real* pi = readArray_real("pi");
+	Real* Rho = readArray_real("Rho");
+	Real* Pi = readArray_real("Pi");
 	int mini = read_int("mini");
 	int maxi = read_int("maxi");
 	Real* X = readArray_real("X");
 	Real* Y = readArray_real("Y");
-	Real tau = read_real("tau");
+	Real eps = read_real("eps");
 	int* rank = readArray_int("rank");
 	////////////
 
@@ -31,13 +31,13 @@ int main(int argc, char** argv)
 
 	//////////////////////////
 	// Main call to EMGrank //
-	EMGrank_core(pi,rho,mini,maxi,X,Y,tau,rank,
+	EMGrank_core(Pi,Rho,mini,maxi,X,Y,eps,rank,
 		phi,LLF,
 		n,p,m,k);
 	//////////////////////////
 
-	free(rho);
-	free(pi);
+	free(Rho);
+	free(Pi);
 	free(X);
 	free(Y);
 	free(rank);

@@ -1,4 +1,4 @@
-#' Plot 
+#' Plot
 #'
 #' It is a function which plots relevant parameters
 #'
@@ -25,8 +25,8 @@ plot_valse <- function(X, Y, model, n, comp = FALSE, k1 = NA, k2 = NA)
   for (r in 1:K)
   {
     Melt <- melt(t((model$phi[, , r])))
-    gReg[[r]] <- ggplot(data = Melt, aes(x = Var1, y = Var2, fill = value)) + 
-      geom_tile() + scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+    gReg[[r]] <- ggplot(data = Melt, aes(x = Var1, y = Var2, fill = value)) +
+      geom_tile() + scale_fill_gradient2(low = "blue", high = "red", mid = "white",
       midpoint = 0, space = "Lab") + ggtitle(paste("Regression matrices in cluster", r))
   }
   print(gReg)
@@ -39,9 +39,9 @@ plot_valse <- function(X, Y, model, n, comp = FALSE, k1 = NA, k2 = NA)
     Melt <- melt(t(model$phi[, , k1] - model$phi[, , k2]))
     gDiff <- ggplot(data = Melt, aes(x = Var1, y = Var2, fill = value))
       + geom_tile()
-      + scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, 
+      + scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,
         space = "Lab")
-      + ggtitle(paste("Difference between regression matrices in cluster", 
+      + ggtitle(paste("Difference between regression matrices in cluster",
         k1, "and", k2))
     print(gDiff)
   }
@@ -52,7 +52,7 @@ plot_valse <- function(X, Y, model, n, comp = FALSE, k1 = NA, k2 = NA)
     matCov[, r] <- diag(model$rho[, , r])
   MeltCov <- melt(matCov)
   gCov <- ggplot(data = MeltCov, aes(x = Var1, y = Var2, fill = value)) + geom_tile()
-    + scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0, 
+    + scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0,
       space = "Lab")
     + ggtitle("Covariance matrices")
   print(gCov)

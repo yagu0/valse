@@ -1,5 +1,3 @@
 #!/bin/sh
 
-./.git-fat/git-fat pull
-./.git-fat/git-fat push
-git submodule update --merge
+git-fat push
