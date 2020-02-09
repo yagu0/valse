@@ -1,6 +1,9 @@
 #' EMGLLF
 #'
-#' Description de EMGLLF
+#' Run a generalized EM algorithm developped for mixture of Gaussian regression 
+#' models with variable selection by an extension of the Lasso estimator (regularization parameter lambda).
+#' Reparametrization is done to ensure invariance by homothetic transformation.
+#' It returns a collection of models, varying the number of clusters and the sparsity in the regression mean.
 #'
 #' @param phiInit an initialization for phi
 #' @param rhoInit an initialization for rho
@@ -14,13 +17,13 @@
 #' @param Y matrix of responses (of size n*m)
 #' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
 #'
-#' @return A list ... phi,rho,pi,LLF,S,affec:
-#'   phi : parametre de moyenne renormalisé, calculé par l'EM
-#'   rho : parametre de variance renormalisé, calculé par l'EM
-#'   pi : parametre des proportions renormalisé, calculé par l'EM
-#'   LLF : log vraisemblance associée à cet échantillon, pour les valeurs estimées des paramètres
-#'   S : ...
-#'   affec : ...
+#' @return A list (corresponding to the model collection) defined by (phi,rho,pi,LLF,S,affec):
+#'   phi : regression mean for each cluster
+#'   rho : variance (homothetic) for each cluster
+#'   pi : proportion for each cluster
+#'   LLF : log likelihood with respect to the training set
+#'   S : selected variables indexes
+#'   affec : cluster affectation for each observation (of the training set)
 #'
 #' @export
 EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,

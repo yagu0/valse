@@ -1,6 +1,6 @@
 #' selectVariables
 #'
-#' It is a function which construct, for a given lambda, the sets of relevant variables.
+#' It is a function which constructs, for a given lambda, the sets for each cluster of relevant variables.
 #'
 #' @param phiInit an initial estimator for phi (size: p*m*k)
 #' @param rhoInit an initial estimator for rho (size: m*m*k)
