@@ -69,9 +69,7 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
     parallel::stopCluster(cl)
 
   print(out)
-  # Suppress models which are computed twice En fait, ca ca fait la comparaison de
-  # tous les parametres On veut juste supprimer ceux qui ont les memes variables
-  # sélectionnées
+  # Suppress models which are computed twice 
   # sha1_array <- lapply(out, digest::sha1) out[ duplicated(sha1_array) ]
   selec <- lapply(out, function(model) model$selected)
   ind_dup <- duplicated(selec)

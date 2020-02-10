@@ -30,8 +30,8 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
   # Function in C
   n <- nrow(X)  #nombre d'echantillons
   p <- ncol(X)  #nombre de covariables
-  m <- ncol(Y)  #taille de Y (multivarié)
-  k <- length(Pi)  #nombre de composantes dans le mélange
+  m <- ncol(Y)  #taille de Y (multivarie)
+  k <- length(Pi)  #nombre de composantes dans le melange
   .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, eps, as.integer(rank), phi = double(p * m * k), 
     LLF = double(1), n, p, m, k, PACKAGE = "valse")
 }

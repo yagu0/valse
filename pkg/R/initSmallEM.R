@@ -34,7 +34,7 @@ initSmallEM <- function(k, X, Y, fast)
     for (r in 1:k)
     {
       Z <- Zinit1[, repet]
-      Z_indice <- seq_len(n)[Z == r]  #renvoit les indices où Z==r
+      Z_indice <- seq_len(n)[Z == r]  #renvoit les indices ou Z==r
       if (length(Z_indice) == 1) {
         betaInit1[, , r, repet] <- MASS::ginv(crossprod(t(X[Z_indice, ]))) %*%
           crossprod(t(X[Z_indice, ]), Y[Z_indice, ])

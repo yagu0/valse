@@ -33,10 +33,10 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
   for (r in 1:k)
   {
     # On veut le tableau de toutes les combinaisons de rangs possibles, et des
-    # lambdas Dans la première colonne : on répète (rank.max-rank.min)^(k-1) chaque
-    # chiffre : ça remplit la colonne Dans la deuxieme : on répète
-    # (rank.max-rank.min)^(k-2) chaque chiffre, et on fait ça (rank.max-rank.min)^2
-    # fois ...  Dans la dernière, on répète chaque chiffre une fois, et on fait ça
+    # lambdas Dans la premiere colonne : on repete (rank.max-rank.min)^(k-1) chaque
+    # chiffre : ca remplit la colonne Dans la deuxieme : on repete
+    # (rank.max-rank.min)^(k-2) chaque chiffre, et on fait ca (rank.max-rank.min)^2
+    # fois ...  Dans la derniere, on repete chaque chiffre une fois, et on fait ca
     # (rank.min-rank.max)^(k-1) fois.
     RankLambda[, r] <- rep(rank.min + rep(0:(deltaRank - 1), deltaRank^(r - 1),
       each = deltaRank^(k - r)), each = L)
