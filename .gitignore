@@ -19,3 +19,4 @@ Rprof.out
 *.o
 *.so
 *.exe
+.Rproj.user

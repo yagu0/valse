@@ -27,7 +27,7 @@ Suggests:
     testthat
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
-RoxygenNote: 6.0.1
+RoxygenNote: 7.0.2
 Collate:
     'plot_valse.R'
     'main.R'

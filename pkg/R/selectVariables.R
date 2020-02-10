@@ -1,6 +1,6 @@
 #' selectVariables
 #'
-#' It is a function which construct, for a given lambda, the sets of relevant variables.
+#' It is a function which constructs, for a given lambda, the sets for each cluster of relevant variables.
 #'
 #' @param phiInit an initial estimator for phi (size: p*m*k)
 #' @param rhoInit an initial estimator for rho (size: m*m*k)
@@ -69,9 +69,7 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
     parallel::stopCluster(cl)
 
   print(out)
-  # Suppress models which are computed twice En fait, ca ca fait la comparaison de
-  # tous les parametres On veut juste supprimer ceux qui ont les memes variables
-  # sélectionnées
+  # Suppress models which are computed twice 
   # sha1_array <- lapply(out, digest::sha1) out[ duplicated(sha1_array) ]
   selec <- lapply(out, function(model) model$selected)
   ind_dup <- duplicated(selec)

@@ -1,19 +1,22 @@
 #' EMGrank
 #'
-#' Description de EMGrank
+#' Run an generalized EM algorithm developped for mixture of Gaussian regression 
+#' models with variable selection by an extension of the low rank estimator.
+#' Reparametrization is done to ensure invariance by homothetic transformation.
+#' It returns a collection of models, varying the number of clusters and the rank of the regression mean.
 #'
-#' @param Pi Parametre de proportion
-#' @param Rho Parametre initial de variance renormalisé
-#' @param mini Nombre minimal d'itérations dans l'algorithme EM
-#' @param maxi Nombre maximal d'itérations dans l'algorithme EM
-#' @param X Régresseurs
-#' @param Y Réponse
-#' @param eps Seuil pour accepter la convergence
-#' @param rank Vecteur des rangs possibles
+#' @param Pi An initialization for pi
+#' @param Rho An initialization for rho, the variance parameter
+#' @param mini integer, minimum number of iterations in the EM algorithm, by default = 10
+#' @param maxi integer, maximum number of iterations in the EM algorithm, by default = 100
+#' @param X matrix of covariates (of size n*p)
+#' @param Y matrix of responses (of size n*m)
+#' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
+#' @param rank vector of possible ranks
 #'
-#' @return A list ...
-#'   phi : parametre de moyenne renormalisé, calculé par l'EM
-#'   LLF : log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
+#' @return A list (corresponding to the model collection) defined by (phi,LLF):
+#'   phi : regression mean for each cluster
+#'   LLF : log likelihood with respect to the training set
 #'
 #' @export
 EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
@@ -27,8 +30,8 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
   # Function in C
   n <- nrow(X)  #nombre d'echantillons
   p <- ncol(X)  #nombre de covariables
-  m <- ncol(Y)  #taille de Y (multivarié)
-  k <- length(Pi)  #nombre de composantes dans le mélange
+  m <- ncol(Y)  #taille de Y (multivarie)
+  k <- length(Pi)  #nombre de composantes dans le melange
   .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, eps, as.integer(rank), phi = double(p * m * k), 
     LLF = double(1), n, p, m, k, PACKAGE = "valse")
 }
