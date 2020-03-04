@@ -5,9 +5,10 @@
 #' @param Y matrix of responses (of size n*m)
 #'
 #' @return a list with phiInit, rhoInit, piInit, gamInit
-#' @export
+#'
 #' @importFrom methods new
 #' @importFrom stats cutree dist hclust runif
+#' @export
 initSmallEM <- function(k, X, Y, fast)
 {
   n <- nrow(X)

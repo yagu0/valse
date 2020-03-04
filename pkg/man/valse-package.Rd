@@ -12,14 +12,12 @@
 }
 
 \details{
-	The package devtools should be useful in development stage, since we rely on testthat for
-	unit tests, and roxygen2 for documentation. knitr is used to generate the package vignette.
-	Concerning the other suggested packages:
-	\itemize{
-		\item{parallel (generally) permits to run the bootstrap method faster.}
-	}
-
-	The three main functions are ...
+  Two methods are implemented to cluster data with finite mixture
+  regression models. Those procedures deal with high-dimensional covariates and
+  responses through a variable selection procedure based on the Lasso estimator.
+  
+  The main function is runValse(), which calls all other functions.
+  See also plot_valse() which plots the relevant parameters after a run.
 }
 
 \author{

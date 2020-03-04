@@ -1,4 +1,4 @@
-#' valse
+#' runValse
 #'
 #' Main function
 #'
@@ -26,8 +26,9 @@
 #'
 #' @examples
 #' #TODO: a few examples
+#'
 #' @export
-valse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mini = 10,
+runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mini = 10,
   maxi = 50, eps = 1e-04, kmin = 2, kmax = 3, rank.min = 1, rank.max = 5, ncores_outer = 1,
   ncores_inner = 1, thresh = 1e-08, grid_lambda = numeric(0), size_coll_mod = 10,
   fast = TRUE, verbose = FALSE, plot = TRUE)

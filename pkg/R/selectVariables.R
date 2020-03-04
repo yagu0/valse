@@ -18,10 +18,7 @@
 #'
 #' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
 #'
-#' @examples TODO
-#'
 #' @export
-#'
 selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma,
   glambda, X, Y, thresh = 1e-08, eps, ncores = 3, fast)
 {

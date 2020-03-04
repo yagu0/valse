@@ -8,10 +8,7 @@
 #' @param n sample size
 #' @return several plots
 #'
-#' @examples TODO
-#'
 #' @export
-#'
 plot_valse <- function(X, Y, model, n, comp = FALSE, k1 = NA, k2 = NA)
 {
   require("gridExtra")

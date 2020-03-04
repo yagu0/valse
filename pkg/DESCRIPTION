@@ -23,8 +23,7 @@ Imports:
 Suggests:
     capushe,
     methods,
-    roxygen2,
-    testthat
+    roxygen2
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
 RoxygenNote: 7.0.2
