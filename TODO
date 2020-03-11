@@ -13,3 +13,11 @@ Error in out[[ind_uniq[l]]] :
 
 ==> Error identified: line 61 in initSmallEM.R, division by 0
 It occurs also for smallers values of n and m, e.g.: n = 20; m = 20; p = 3
+
+=====
+
+Also:
+X <- matrix(runif(100), nrow=50)
+Y <- matrix(runif(100), nrow=50)
+(...)
+Error: cannot allocate vector of size 16.0 Gb
