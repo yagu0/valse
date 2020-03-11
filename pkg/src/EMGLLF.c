@@ -6,30 +6,30 @@
 // TODO: don't recompute indexes ai(...) and mi(...) when possible
 void EMGLLF_core(
 	// IN parameters
-	const Real* phiInit, // parametre initial de moyenne renormalisé
-	const Real* rhoInit, // parametre initial de variance renormalisé
+	const Real* phiInit, // parametre initial de moyenne renormalise
+	const Real* rhoInit, // parametre initial de variance renormalise
 	const Real* piInit,	 // parametre initial des proportions
-	const Real* gamInit, // paramètre initial des probabilités a posteriori de chaque échantillon
-	int mini, // nombre minimal d'itérations dans l'algorithme EM
-	int maxi, // nombre maximal d'itérations dans l'algorithme EM
-	Real gamma, // puissance des proportions dans la pénalisation pour un Lasso adaptatif
-	Real lambda, // valeur du paramètre de régularisation du Lasso
-	const Real* X, // régresseurs
-	const Real* Y, // réponse
+	const Real* gamInit, // parametre initial des probabilites a posteriori de chaque echantillon
+	int mini, // nombre minimal d'iterations dans l'algorithme EM
+	int maxi, // nombre maximal d'iterations dans l'algorithme EM
+	Real gamma, // puissance des proportions dans la penalisation pour un Lasso adaptatif
+	Real lambda, // valeur du parametre de regularisation du Lasso
+	const Real* X, // regresseurs
+	const Real* Y, // reponse
 	Real eps, // seuil pour accepter la convergence
 	// OUT parameters (all pointers, to be modified)
-	Real* phi, // parametre de moyenne renormalisé, calculé par l'EM
-	Real* rho, // parametre de variance renormalisé, calculé par l'EM
-	Real* pi, // parametre des proportions renormalisé, calculé par l'EM
-	Real* llh, // (derniere) log vraisemblance associée à cet échantillon,
-	           // pour les valeurs estimées des paramètres
+	Real* phi, // parametre de moyenne renormalise, calcule par l'EM
+	Real* rho, // parametre de variance renormalise, calcule par l'EM
+	Real* pi, // parametre des proportions renormalise, calcule par l'EM
+	Real* llh, // (derniere) log vraisemblance associee a cet echantillon,
+	           // pour les valeurs estimees des parametres
 	Real* S,
 	int* affec,
 	// additional size parameters
 	int n, // nombre d'echantillons
 	int p, // nombre de covariables
-	int m, // taille de Y (multivarié)
-	int k) // nombre de composantes dans le mélange
+	int m, // taille de Y (multivarie)
+	int k) // nombre de composantes dans le melange
 {
 	//Initialize outputs
 	copyArray(phiInit, phi, p*m*k);
@@ -67,7 +67,7 @@ void EMGLLF_core(
 		copyArray(rho, Rho, m*m*k);
 		copyArray(pi, Pi, k);
 
-		// Calculs associés a Y et X
+		// Calculs associes a Y et X
 		for (int r=0; r<k; r++)
 		{
 			for (int mm=0; mm<m; mm++)
@@ -174,7 +174,7 @@ void EMGLLF_core(
 		for (int v=0; v<k; v++)
 			gam2DotLogPi2 += gam2[v] * log(pi2[v]);
 
-		//t(m) la plus grande valeur dans la grille O.1^k tel que ce soit décroissante ou constante
+		//t(m) la plus grande valeur dans la grille O.1^k tel que ce soit decroissante ou constante
 		while (-invN*a + lambda*piPowGammaDotB < -invN*gam2DotLogPi2 + lambda*pi2PowGammaDotB
 			&& kk<1000)
 		{

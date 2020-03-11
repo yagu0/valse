@@ -3,16 +3,16 @@
 #' Generate a sample of (X,Y) of size n
 #'
 #' @param n sample size
-#' @param π proportion for each cluster
+#' @param p proportion for each cluster
 #' @param meanX matrix of group means for covariates (of size p)
 #' @param covX covariance for covariates (of size p*p)
-#' @param β regression matrix, of size p*m*k
+#' @param beta regression matrix, of size p*m*k
 #' @param covY covariance for the response vector (of size m*m*K)
 #'
 #' @return list with X and Y
 #'
 #' @export
-generateXY <- function(n, π, meanX, β, covX, covY)
+generateXY <- function(n, p, meanX, beta, covX, covY)
 {
   p <- dim(covX)[1]
   m <- dim(covY)[1]
@@ -22,7 +22,7 @@ generateXY <- function(n, π, meanX, β, covX, covY)
   Y <- matrix(nrow = 0, ncol = m)
 
   # random generation of the size of each population in X~Y (unordered)
-  sizePop <- rmultinom(1, n, π)
+  sizePop <- stats::rmultinom(1, n, p)
   class <- c() #map i in 1:n --> index of class in 1:k
 
   for (i in 1:k)
@@ -31,7 +31,7 @@ generateXY <- function(n, π, meanX, β, covX, covY)
     newBlockX <- MASS::mvrnorm(sizePop[i], meanX, covX)
     X <- rbind(X, newBlockX)
     Y <- rbind(Y, t(apply(newBlockX, 1, function(row) MASS::mvrnorm(1, row %*%
-      β[, , i], covY[, , i]))))
+      beta[, , i], covY[, , i]))))
   }
 
   shuffle <- sample(n)

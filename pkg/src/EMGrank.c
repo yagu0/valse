@@ -41,20 +41,20 @@ static Real* pinv(const Real* matrix, int dim)
 void EMGrank_core(
 	// IN parameters
 	const Real* Pi, // parametre de proportion
-	const Real* Rho, // parametre initial de variance renormalisé
-	int mini, // nombre minimal d'itérations dans l'algorithme EM
-	int maxi, // nombre maximal d'itérations dans l'algorithme EM
-	const Real* X, // régresseurs
-	const Real* Y, // réponse
+	const Real* Rho, // parametre initial de variance renormalise
+	int mini, // nombre minimal d'iterations dans l'algorithme EM
+	int maxi, // nombre maximal d'iterations dans l'algorithme EM
+	const Real* X, // regresseurs
+	const Real* Y, // reponse
 	Real tau, // seuil pour accepter la convergence
 	const int* rank, // vecteur des rangs possibles
 	// OUT parameters
-	Real* phi, // parametre de moyenne renormalisé, calculé par l'EM
-	Real* LLF, // log vraisemblance associé à cet échantillon, pour les valeurs estimées des paramètres
+	Real* phi, // parametre de moyenne renormalise, calcule par l'EM
+	Real* LLF, // log vraisemblance associe a cet echantillon, pour les valeurs estimees des parametres
 	// additional size parameters
 	int n, // taille de l'echantillon
 	int p, // nombre de covariables
-	int m, // taille de Y (multivarié)
+	int m, // taille de Y (multivarie)
 	int k) // nombre de composantes
 {
 	// Allocations, initializations
@@ -91,7 +91,7 @@ void EMGrank_core(
 		// Etape M //
 		/////////////
 		
-		//M step: Mise à jour de Beta (et donc phi)
+		//M step: Mise a jour de Beta (et donc phi)
 		for (int r=0; r<k; r++)
 		{
 			//Compute Xr = X(Z==r,:) and Yr = Y(Z==r,:)

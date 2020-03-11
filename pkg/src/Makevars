@@ -1,11 +1,1 @@
-#Debug flags
-PKG_CFLAGS=-g -I./sources
-
-#Prod flags:
-#PKG_CFLAGS=-O2 -I./sources
-
 PKG_LIBS=-lm -lgsl -lcblas
-
-SOURCES = $(wildcard adapters/*.c sources/*.c)
-
-OBJECTS = $(SOURCES:.c=.o)

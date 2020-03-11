@@ -16,6 +16,7 @@
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
 #' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
+#' @param fast boolean to enable or not the C function call
 #'
 #' @return A list (corresponding to the model collection) defined by (phi,rho,pi,LLF,S,affec):
 #'   phi : regression mean for each cluster
@@ -37,14 +38,8 @@ EMGLLF <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
   }
 
   # Function in C
-  n <- nrow(X)  #nombre d'echantillons
-  p <- ncol(X)  #nombre de covariables
-  m <- ncol(Y)  #taille de Y (multivarie)
-  k <- length(piInit)  #nombre de composantes dans le melange
   .Call("EMGLLF", phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma, lambda,
-    X, Y, eps, phi = double(p * m * k), rho = double(m * m * k), pi = double(k),
-    llh = double(1), S = double(p * m * k), affec = integer(n), n, p, m, k,
-    PACKAGE = "valse")
+    X, Y, eps, PACKAGE = "valse")
 }
 
 # R version - slow but easy to read

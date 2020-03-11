@@ -12,6 +12,7 @@
 #' @param mini minimum number of iterations in EM algorithm
 #' @param maxi maximum number of iterations in EM algorithm
 #' @param eps threshold to stop EM algorithm
+#' @param fast boolean to enable or not the C function call
 #'
 #' @return the grid of regularization parameters
 #'

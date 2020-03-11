@@ -13,13 +13,14 @@
 #' @param Y matrix of responses (of size n*m)
 #' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
 #' @param rank vector of possible ranks
+#' @param fast boolean to enable or not the C function call
 #'
 #' @return A list (corresponding to the model collection) defined by (phi,LLF):
 #'   phi : regression mean for each cluster
 #'   LLF : log likelihood with respect to the training set
 #'
 #' @export
-EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
+EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast)
 {
   if (!fast)
   {
@@ -28,12 +29,7 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast = TRUE)
   }
 
   # Function in C
-  n <- nrow(X)  #nombre d'echantillons
-  p <- ncol(X)  #nombre de covariables
-  m <- ncol(Y)  #taille de Y (multivarie)
-  k <- length(Pi)  #nombre de composantes dans le melange
-  .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, eps, as.integer(rank), phi = double(p * m * k), 
-    LLF = double(1), n, p, m, k, PACKAGE = "valse")
+  .Call("EMGrank", Pi, Rho, mini, maxi, X, Y, eps, as.integer(rank), PACKAGE = "valse")
 }
 
 # helper to always have matrices as arg (TODO: put this elsewhere? improve?)  -->

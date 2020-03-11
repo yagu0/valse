@@ -15,6 +15,7 @@
 #' @param thresh real, threshold to say a variable is relevant, by default = 1e-8
 #' @param eps   threshold to say that EM algorithm has converged
 #' @param ncores Number or cores for parallel execution (1 to disable)
+#' @param fast boolean to enable or not the C function call
 #'
 #' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
 #'

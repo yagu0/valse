@@ -3,10 +3,10 @@
 #' @param k number of components
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
+#' @param fast boolean to enable or not the C function call
 #'
 #' @return a list with phiInit, rhoInit, piInit, gamInit
 #'
-#' @importFrom methods new
 #' @importFrom stats cutree dist hclust runif
 #' @export
 initSmallEM <- function(k, X, Y, fast)

@@ -21,6 +21,7 @@
 #' @param size_coll_mod (Maximum) size of a collection of models
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
+#' @param plot TRUE to plot the selected models after run
 #'
 #' @return a list with estimators of parameters
 #'
