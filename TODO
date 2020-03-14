@@ -1,12 +1,18 @@
-n = 100; m = 70; p = 5
+n = 50; m = 10; p = 5
 X = matrix(runif(n*p, -10, 10), nrow=n)
 Y = matrix(runif(n*m, -5, 15), nrow=n)
-
-V1 = valse::valse(X, Y, fast=FALSE)
+beta = array(0, dim=c(p,m,2))
+beta[,,1] = 1
+beta[,,2] = 2
+data = generateXY(n, c(0.4,0.6), rep(0,p), beta, diag(0.5, p), diag(0.5, m))
+X = data$X
+Y = data$Y
+class = data$class
+V1 = runValse(X, Y, fast=FALSE)
 Error in while (!pi2AllPositive) { : 
   missing value where TRUE/FALSE needed
 
-V2 = valse::valse(X, Y, fast=TRUE)
+V2 = runValse(X, Y, fast=TRUE)
 list()
 Error in out[[ind_uniq[l]]] : 
   attempt to select less than one element in get1index
