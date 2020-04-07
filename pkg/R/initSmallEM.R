@@ -77,5 +77,5 @@ initSmallEM <- function(k, X, Y, fast)
   piInit <- piInit1[b, ]
   gamInit <- gamInit1[, , b]
 
-  return(list(phiInit = phiInit, rhoInit = rhoInit, piInit = piInit, gamInit = gamInit))
+  list(phiInit = phiInit, rhoInit = rhoInit, piInit = piInit, gamInit = gamInit)
 }

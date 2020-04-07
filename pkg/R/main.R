@@ -148,7 +148,7 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   modelSel$tableau <- tableauRecap
 
   if (plot)
-    print(plot_valse(X, Y, modelSel, n))
+    print(plot_valse(X, Y, modelSel))
 
   return(modelSel)
 }

@@ -5,7 +5,6 @@
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
 #' @param model the model constructed by valse procedure
-#' @param n sample size
 #' @param comp TRUE to enable pairwise clusters comparison
 #' @param k1 index of the first cluster to be compared
 #' @param k2 index of the second cluster to be compared
@@ -15,8 +14,9 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plot_valse <- function(X, Y, model, n, comp = FALSE, k1 = NA, k2 = NA)
+plot_valse <- function(X, Y, model, comp = FALSE, k1 = NA, k2 = NA)
 {
+  n <- nrow(X)
   K <- length(model$pi)
   ## regression matrices
   gReg <- list()

@@ -1,6 +1,6 @@
 #' EMGLLF
 #'
-#' Run a generalized EM algorithm developped for mixture of Gaussian regression 
+#' Run a generalized EM algorithm developped for mixture of Gaussian regression
 #' models with variable selection by an extension of the Lasso estimator (regularization parameter lambda).
 #' Reparametrization is done to ensure invariance by homothetic transformation.
 #' It returns a collection of models, varying the number of clusters and the sparsity in the regression mean.

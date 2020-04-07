@@ -1,6 +1,6 @@
 #' EMGrank
 #'
-#' Run an generalized EM algorithm developped for mixture of Gaussian regression 
+#' Run an generalized EM algorithm developped for mixture of Gaussian regression
 #' models with variable selection by an extension of the low rank estimator.
 #' Reparametrization is done to ensure invariance by homothetic transformation.
 #' It returns a collection of models, varying the number of clusters and the rank of the regression mean.
@@ -36,9 +36,9 @@ EMGrank <- function(Pi, Rho, mini, maxi, X, Y, eps, rank, fast)
 # Yes, we should use by-columns storage everywhere... [later!]
 matricize <- function(X)
 {
-  if (!is.matrix(X)) 
+  if (!is.matrix(X))
     return(t(as.matrix(X)))
-  return(X)
+  X
 }
 
 # R version - slow but easy to read
@@ -69,15 +69,15 @@ matricize <- function(X)
     for (r in 1:k)
     {
       Z_indice <- seq_len(n)[Z == r] #indices where Z == r
-      if (length(Z_indice) == 0) 
+      if (length(Z_indice) == 0)
         next
       # U,S,V = SVD of (t(Xr)Xr)^{-1} * t(Xr) * Yr
-      s <- svd(MASS::ginv(crossprod(matricize(X[Z_indice, ]))) %*% 
-                 crossprod(matricize(X[Z_indice, ]), matricize(Y[Z_indice, ])))
+      s <- svd(MASS::ginv(crossprod(matricize(X[Z_indice, ]))) %*%
+               crossprod(matricize(X[Z_indice, ]), matricize(Y[Z_indice, ])))
       S <- s$d
       # Set m-rank(r) singular values to zero, and recompose best rank(r) approximation
       # of the initial product
-      if (rank[r] < length(S)) 
+      if (rank[r] < length(S))
         S[(rank[r] + 1):length(S)] <- 0
       phi[, , r] <- s$u %*% diag(S) %*% t(s$v) %*% Rho[, , r]
     }
@@ -107,7 +107,7 @@ matricize <- function(X)
 
     # update distance parameter to check algorithm convergence (delta(phi, Phi))
     deltaPhi <- c(deltaPhi, max((abs(phi - Phi))/(1 + abs(phi)))) #TODO: explain?
-    if (length(deltaPhi) > deltaPhiBufferSize) 
+    if (length(deltaPhi) > deltaPhiBufferSize)
       deltaPhi <- deltaPhi[2:length(deltaPhi)]
     sumDeltaPhi <- sum(abs(deltaPhi))
 
@@ -115,5 +115,5 @@ matricize <- function(X)
     Phi <- phi
     ite <- ite + 1
   }
-  return(list(phi = phi, LLF = LLF))
+  list(phi = phi, LLF = LLF)
 }
