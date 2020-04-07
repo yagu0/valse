@@ -11,19 +11,20 @@ generateXYdefault = function(n, p, m, k)
 {
 	meanX = rep(0, p)
 	covX = diag(p)
-	covY = array(dim=c(m,m,k))
-	for(r in 1:k)
-		covY[,,r] = diag(m)
-	π = rep(1./k,k)
+	covY = diag(m)
+	ω = rep(1./k,k)
 	#initialize beta to a random number of non-zero random value
 	β = array(0, dim=c(p,m,k))
 	for (j in 1:p)
 	{
 		nonZeroCount = sample(1:m, 1)
-		β[j,1:nonZeroCount,] = matrix(runif(nonZeroCount*k), ncol=k)
+		if (nonZeroCount >= 2)
+			β[j,1:nonZeroCount,] = matrix(runif(nonZeroCount*k), ncol=k)
+		else
+			β[j,1,] = runif(k)
 	}
 
-	sample_IO = generateXY(n, π, meanX, β, covX, covY)
+	sample_IO = generateXY(n, ω, meanX, β, covX, covY)
 	return (list(X=sample_IO$X,Y=sample_IO$Y))
 }
 

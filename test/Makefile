@@ -3,9 +3,9 @@ CFLAGS = -g -std=gnu99 -Wno-implicit-function-declaration
 LDFLAGS = -lm -lgsl -lcblas
 TEST_LDFLAGS = -L. libvalse_core.so
 LIB = libvalse_core.so
-LIB_SRC = $(wildcard ../pkg/src/sources/*.c)
+LIB_SRC = ../pkg/src/EMGLLF.c ../pkg/src/EMGrank.c
 LIB_OBJ = $(LIB_SRC:.c=.o)
-INCLUDES = -I../pkg/src/sources
+INCLUDES = -I../pkg/src
 TESTS = test.EMGLLF test.EMGrank
 
 all: $(LIB) $(TESTS)
@@ -23,7 +23,7 @@ test.EMGrank: $(LIB) test.EMGrank.o test_utils.o
 	$(CC) -fPIC -o $@ -c $< $(CFLAGS) $(INCLUDES)
 
 clean:
-	rm -f *.o ../pkg/src/sources/*.o
+	rm -f *.o ../pkg/src/*.o
 
 cclean: clean
 	rm -f *.so ../pkg/src/*.so $(TESTS)

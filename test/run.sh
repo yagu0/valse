@@ -33,5 +33,5 @@ echo -e "source('generateRunSaveTest_$algo.R');\n \
 make test.$algo
 
 #3) Run it with valgrind!
-#valgrind 
+#valgrind
 ./test.$algo
