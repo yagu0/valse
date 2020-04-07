@@ -66,7 +66,6 @@ selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma
   if (ncores > 1)
     parallel::stopCluster(cl)
 
-  print(out) #DEBUG TRACE
   # Suppress models which are computed twice
   # sha1_array <- lapply(out, digest::sha1) out[ duplicated(sha1_array) ]
   selec <- lapply(out, function(model) model$selected)

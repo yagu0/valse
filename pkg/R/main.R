@@ -23,10 +23,22 @@
 #' @param verbose TRUE to show some execution traces
 #' @param plot TRUE to plot the selected models after run
 #'
-#' @return a list with estimators of parameters
+#' @return
+#' The selected model if enough data are available to estimate it,
+#' or a list of models otherwise.
 #'
 #' @examples
-#' #TODO: a few examples
+#' n = 50; m = 10; p = 5
+#' beta = array(0, dim=c(p,m,2))
+#' beta[,,1] = 1
+#' beta[,,2] = 2
+#' data = generateXY(n, c(0.4,0.6), rep(0,p), beta, diag(0.5, p), diag(0.5, m))
+#' X = data$X
+#' Y = data$Y
+#' res = runValse(X, Y)
+#' X <- matrix(runif(100), nrow=50)
+#' Y <- matrix(runif(100), nrow=50)
+#' res = runValse(X, Y)
 #'
 #' @export
 runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mini = 10,
@@ -125,30 +137,31 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
       complexity = sumPen, contrast = -LLH)
   }))
   tableauRecap <- tableauRecap[which(tableauRecap[, 4] != Inf), ]
-
-  if (verbose == TRUE)
+  if (verbose)
     print(tableauRecap)
-  modSel <- capushe::capushe(tableauRecap, n)
-  indModSel <- if (selecMod == "DDSE")
-  {
-    as.numeric(modSel@DDSE@model)
-  } else if (selecMod == "Djump")
-  {
-    as.numeric(modSel@Djump@model)
-  } else if (selecMod == "BIC")
-  {
-    modSel@BIC_capushe$model
-  } else if (selecMod == "AIC")
-  {
-    modSel@AIC_capushe$model
+
+  if (nrow(tableauRecap) > 10) {
+    modSel <- capushe::capushe(tableauRecap, n)
+    indModSel <- if (selecMod == "DDSE")
+    {
+      as.numeric(modSel@DDSE@model)
+    } else if (selecMod == "Djump")
+    {
+      as.numeric(modSel@Djump@model)
+    } else if (selecMod == "BIC")
+    {
+      modSel@BIC_capushe$model
+    } else if (selecMod == "AIC")
+    {
+      modSel@AIC_capushe$model
+    }
+    listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
+    modelSel <- models_list[[listMod[1]]][[listMod[2]]]
+    modelSel$models <- tableauRecap
+
+    if (plot)
+      print(plot_valse(X, Y, modelSel))
+    return(modelSel)
   }
-
-  listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
-  modelSel <- models_list[[listMod[1]]][[listMod[2]]]
-  modelSel$tableau <- tableauRecap
-
-  if (plot)
-    print(plot_valse(X, Y, modelSel))
-
-  return(modelSel)
+  tableauRecap
 }
