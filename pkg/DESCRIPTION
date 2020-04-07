@@ -13,7 +13,7 @@ Description: Two methods are implemented to cluster data with finite mixture
     Emilie Devijver, published in Advances in Data Analysis and Clustering (2016).
 Author: Benjamin Auder <benjamin.auder@universite-paris-saclay.fr> [aut,cre],
     Emilie Devijver <Emilie.Devijver@kuleuven.be> [aut],
-    Benjamin Goehry <Benjamin.Goehry@math.u-psud.fr> [aut]
+    Benjamin Goehry <Benjamin.Goehry@math.u-psud.fr> [ctb]
 Maintainer: Benjamin Auder <benjamin.auder@universite-paris-saclay.fr>
 Depends:
     R (>= 3.5.0)
