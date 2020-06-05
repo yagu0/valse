@@ -24,9 +24,8 @@
 #' @param plot TRUE to plot the selected models after run
 #'
 #' @return
-#' The selected model (except if 'DDSE' or 'DJump' is used to select a model and the collection of models
-#' has less than 11 models, the function returns the collection as it can not select one - in that case, 
-#' it is adviced to use 'AIC' or 'BIC' to select a model)
+#' The selected model (except if the collection of models
+#' has less than 11 models, the function returns the collection as it can not select one using Capushe)
 #'
 #' @examples
 #' n = 50; m = 10; p = 5
@@ -36,7 +35,7 @@
 #' data = generateXY(n, c(0.4,0.6), rep(0,p), beta, diag(0.5, p), diag(0.5, m))
 #' X = data$X
 #' Y = data$Y
-#' res = runValse(X, Y)
+#' res = runValse(X, Y, kmax = 5)
 #' X <- matrix(runif(100), nrow=50)
 #' Y <- matrix(runif(100), nrow=50)
 #' res = runValse(X, Y)
