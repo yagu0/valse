@@ -28,7 +28,7 @@ Suggests:
     roxygen2
 URL: http://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Collate:
     'plot_valse.R'
     'main.R'
