@@ -18,14 +18,15 @@
 #' @param ncores_inner Number of cores for the inner loop on lambda
 #' @param thresh real, threshold to say a variable is relevant, by default = 1e-8
 #' @param grid_lambda, a vector with regularization parameters if known, by default numeric(0)
-#' @param size_coll_mod (Maximum) size of a collection of models
+#' @param size_coll_mod (Maximum) size of a collection of models, by default 50
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
 #' @param plot TRUE to plot the selected models after run
 #'
 #' @return
-#' The selected model if enough data are available to estimate it,
-#' or a list of models otherwise.
+#' The selected model (except if 'DDSE' or 'DJump' is used to select a model and the collection of models
+#' has less than 11 models, the function returns the collection as it can not select one - in that case, 
+#' it is adviced to use 'AIC' or 'BIC' to select a model)
 #'
 #' @examples
 #' n = 50; m = 10; p = 5
@@ -43,7 +44,7 @@
 #' @export
 runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mini = 10,
   maxi = 50, eps = 1e-04, kmin = 2, kmax = 3, rank.min = 1, rank.max = 5, ncores_outer = 1,
-  ncores_inner = 1, thresh = 1e-08, grid_lambda = numeric(0), size_coll_mod = 10,
+  ncores_inner = 1, thresh = 1e-08, grid_lambda = numeric(0), size_coll_mod = 50,
   fast = TRUE, verbose = FALSE, plot = TRUE)
 {
   n <- nrow(X)
