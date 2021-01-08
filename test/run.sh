@@ -9,7 +9,6 @@ algo=$1 #EMGLLF or EMGrank,
 if [ "$2" == 'c' ]; then
 	#0.1) Clean package + C testing code
 	find ../pkg/man/ -type f ! -name 'valse-package.Rd' -delete
-	rm -f ../pkg/NAMESPACE
 	# Erase object and library files
 	rm -f ../pkg/src/*.so
 	rm -f ../pkg/src/adapters/*.o
