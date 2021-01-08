@@ -1,6 +1,3 @@
-[submodule ".git-fat"]
-	path = .git-fat
-	url = https://github.com/yagu0/git-fat.git
 [submodule ".nbstripout"]
 	path = .nbstripout
 	url = https://github.com/kynan/nbstripout.git
