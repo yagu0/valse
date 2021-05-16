@@ -1,6 +1,6 @@
 Package: valse
 Title: Variable Selection with Mixture of Models
-Date: 2020-03-11
+Date: 2021-05-16
 Version: 0.1-0
 Description: Two methods are implemented to cluster data with finite mixture
     regression models. Those procedures deal with high-dimensional covariates and
@@ -20,15 +20,15 @@ Depends:
 Imports:
     MASS,
     parallel,
-    ggplot2,
     cowplot,
+    ggplot2,
     reshape2
 Suggests:
     capushe,
     roxygen2
-URL: http://git.auder.net/?p=valse.git
+URL: https://git.auder.net/?p=valse.git
 License: MIT + file LICENSE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Collate:
     'plot_valse.R'
     'main.R'

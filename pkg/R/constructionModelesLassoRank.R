@@ -83,7 +83,7 @@ constructionModelesLassoRank <- function(S, k, mini, maxi, X, Y, eps, rank.min, 
   # For each lambda in the grid we compute the estimators
   out <-
     if (ncores > 1) {
-      parLapply(cl, seq_len(length(S) * Size), computeAtLambda)
+      parallel::parLapply(cl, seq_len(length(S) * Size), computeAtLambda)
     } else {
       lapply(seq_len(length(S) * Size), computeAtLambda)
     }

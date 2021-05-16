@@ -102,7 +102,7 @@ constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
   # For each lambda, computation of the parameters
   out <-
     if (ncores > 1) {
-      parLapply(cl, 1:length(S), computeAtLambda)
+      parallel::parLapply(cl, 1:length(S), computeAtLambda)
     } else {
       lapply(1:length(S), computeAtLambda)
     }

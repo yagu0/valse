@@ -35,10 +35,10 @@
 #' data = generateXY(n, c(0.4,0.6), rep(0,p), beta, diag(0.5, p), diag(0.5, m))
 #' X = data$X
 #' Y = data$Y
-#' res = runValse(X, Y, kmax = 5)
+#' res = runValse(X, Y, kmax = 5, plot=FALSE)
 #' X <- matrix(runif(100), nrow=50)
 #' Y <- matrix(runif(100), nrow=50)
-#' res = runValse(X, Y)
+#' res = runValse(X, Y, plot=FALSE)
 #'
 #' @export
 runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1, mini = 10,
@@ -50,8 +50,7 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   p <- ncol(X)
   m <- ncol(Y)
 
-  if (verbose)
-    print("main loop: over all k and all lambda")
+  if (verbose) print("main loop: over all k and all lambda")
 
   if (ncores_outer > 1) {
     cl <- parallel::makeCluster(ncores_outer, outfile = "")
@@ -62,8 +61,7 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   }
 
   # Compute models with k components
-  computeModels <- function(k)
-  {
+  computeModels <- function(k) {
     if (ncores_outer > 1)
       require("valse") #nodes start with an empty environment
 
@@ -73,8 +71,7 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
     # component, doing this 20 times, and keeping the values maximizing the
     # likelihood after 10 iterations of the EM algorithm.
     P <- initSmallEM(k, X, Y, fast)
-    if (length(grid_lambda) == 0)
-    {
+    if (length(grid_lambda) == 0) {
       grid_lambda <- computeGridLambda(P$phiInit, P$rhoInit, P$piInit, P$gamInit,
                                        X, Y, gamma, mini, maxi, eps, fast)
     }
@@ -111,56 +108,45 @@ runValse <- function(X, Y, procedure = "LassoMLE", selecMod = "DDSE", gamma = 1,
   # List (index k) of lists (index lambda) of models
   models_list <-
     if (ncores_outer > 1) {
-      parLapply(cl, kmin:kmax, computeModels)
+      parallel::parLapply(cl, kmin:kmax, computeModels)
     } else {
       lapply(kmin:kmax, computeModels)
     }
-  if (ncores_outer > 1)
-    parallel::stopCluster(cl)
+  if (ncores_outer > 1) parallel::stopCluster(cl)
 
-  if (!requireNamespace("capushe", quietly = TRUE))
-  {
+  if (!requireNamespace("capushe", quietly = TRUE)) {
     warning("'capushe' not available: returning all models")
     return(models_list)
   }
 
   # Get summary 'tableauRecap' from models
-  tableauRecap <- do.call(rbind, lapply(seq_along(models_list), function(i)
-  {
+  tableauRecap <- do.call(rbind, lapply(seq_along(models_list), function(i) {
     models <- models_list[[i]]
     # For a collection of models (same k, several lambda):
     LLH <- sapply(models, function(model) model$llh[1])
     k <- length(models[[1]]$pi)
-    sumPen <- sapply(models, function(model) k * (dim(model$rho)[1] + sum(model$phi[,
-      , 1] != 0) + 1) - 1)
-    data.frame(model = paste(i, ".", seq_along(models), sep = ""), pen = sumPen/n,
-      complexity = sumPen, contrast = -LLH)
+    sumPen <- sapply(models, function(model) k * (dim(model$rho)[1] + sum(model$phi[,,1] != 0) + 1) - 1)
+    data.frame(model = paste(i, ".", seq_along(models), sep = ""), pen = sumPen/n, complexity = sumPen, contrast = -LLH)
   }))
   tableauRecap <- tableauRecap[which(tableauRecap[, 4] != Inf), ]
-  if (verbose)
-    print(tableauRecap)
+  if (verbose) print(tableauRecap)
 
   if (nrow(tableauRecap) > 10) {
     modSel <- capushe::capushe(tableauRecap, n)
-    indModSel <- if (selecMod == "DDSE")
-    {
+    indModSel <- if (selecMod == "DDSE") {
       as.numeric(modSel@DDSE@model)
-    } else if (selecMod == "Djump")
-    {
+    } else if (selecMod == "Djump") {
       as.numeric(modSel@Djump@model)
-    } else if (selecMod == "BIC")
-    {
+    } else if (selecMod == "BIC") {
       modSel@BIC_capushe$model
-    } else if (selecMod == "AIC")
-    {
+    } else if (selecMod == "AIC") {
       modSel@AIC_capushe$model
     }
     listMod <- as.integer(unlist(strsplit(as.character(indModSel), "[.]")))
     modelSel <- models_list[[listMod[1]]][[listMod[2]]]
     modelSel$models <- tableauRecap
 
-    if (plot)
-      print(plot_valse(X, Y, modelSel))
+    if (plot) plot_valse(X, Y, modelSel)
     return(modelSel)
   }
   tableauRecap

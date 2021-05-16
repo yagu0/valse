@@ -20,3 +20,4 @@ Rprof.out
 *.so
 *.exe
 .Rproj.user
+symbols.rds
