@@ -1,3 +1,5 @@
+#' initSmallEM
+#'
 #' initialization of the EM algorithm
 #'
 #' @param k number of components
@@ -8,6 +10,7 @@
 #' @return a list with phiInit, rhoInit, piInit, gamInit
 #'
 #' @importFrom stats cutree dist hclust runif
+#'
 #' @export
 initSmallEM <- function(k, X, Y, fast)
 {

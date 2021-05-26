@@ -1,7 +1,8 @@
 utils::globalVariables(c("Var1","Var2","X1","X2","value")) #, package="valse")
+
 #' Plot
 #'
-#' It is a function which plots relevant parameters
+#' A function which plots relevant parameters.
 #'
 #' @param X matrix of covariates (of size n*p)
 #' @param Y matrix of responses (of size n*m)
@@ -13,6 +14,8 @@ utils::globalVariables(c("Var1","Var2","X1","X2","value")) #, package="valse")
 #' @importFrom ggplot2 ggplot aes ggtitle geom_tile geom_line scale_fill_gradient2 geom_boxplot theme
 #' @importFrom cowplot background_grid
 #' @importFrom reshape2 melt
+#'
+#' @return No return value (only plotting).
 #'
 #' @export
 plot_valse <- function(X, Y, model, comp = FALSE, k1 = NA, k2 = NA)
