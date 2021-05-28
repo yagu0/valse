@@ -17,7 +17,8 @@
 #' @param ncores Number or cores for parallel execution (1 to disable)
 #' @param fast boolean to enable or not the C function call
 #'
-#' @return a list of outputs, for each lambda in grid: selected,Rho,Pi
+#' @return a list, varying lambda in a grid, with selected (the indices of variables that are selected),
+#' Rho (the covariance parameter, reparametrized), Pi (the proportion parameter)
 #'
 #' @export
 selectVariables <- function(phiInit, rhoInit, piInit, gamInit, mini, maxi, gamma,

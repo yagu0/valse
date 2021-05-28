@@ -7,7 +7,9 @@
 #' @param Y matrix of responses (of size n*m)
 #' @param fast boolean to enable or not the C function call
 #'
-#' @return a list with phiInit, rhoInit, piInit, gamInit
+#' @return a list with phiInit (the regression parameter reparametrized),
+#' rhoInit (the covariance parameter reparametrized), piInit (the proportion parameter is the
+#' mixture model), gamInit (the conditional expectation)
 #'
 #' @importFrom stats cutree dist hclust runif
 #'

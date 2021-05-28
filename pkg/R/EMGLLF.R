@@ -18,12 +18,12 @@
 #' @param eps real, threshold to say the EM algorithm converges, by default = 1e-4
 #' @param fast boolean to enable or not the C function call
 #'
-#' @return A list (corresponding to the model collection) defined by (phi,rho,pi,LLF,S,affec):
-#'   phi : regression mean for each cluster
-#'   rho : variance (homothetic) for each cluster
-#'   pi : proportion for each cluster
-#'   LLF : log likelihood with respect to the training set
-#'   S : selected variables indexes
+#' @return A list (corresponding to the model collection) defined by (phi,rho,pi,llh,S,affec):
+#'   phi : regression mean for each cluster, an array of size p*m*k
+#'   rho : variance (homothetic) for each cluster, an array of size m*m*k
+#'   pi : proportion for each cluster, a vector of size k
+#'   llh : log likelihood with respect to the training set
+#'   S : selected variables indexes, an array of size p*m*k
 #'   affec : cluster affectation for each observation (of the training set)
 #'
 #' @export

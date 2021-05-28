@@ -14,7 +14,8 @@
 #' @param eps threshold to stop EM algorithm
 #' @param fast boolean to enable or not the C function call
 #'
-#' @return the grid of regularization parameters
+#' @return the grid of regularization parameters for the Lasso estimator. The output is a vector with nonnegative values that are relevant
+#' to be considered as regularization parameter as they are equivalent to a 0 in the regression parameter.
 #'
 #' @export
 computeGridLambda <- function(phiInit, rhoInit, piInit, gamInit, X, Y, gamma, mini,

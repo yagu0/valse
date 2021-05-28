@@ -9,7 +9,7 @@
 #' @param beta regression matrix, of size p*m*k
 #' @param covY covariance for the response vector (of size m*m)
 #'
-#' @return list with X and Y
+#' @return list with X (of size n*p) and Y (of size n*m)
 #'
 #' @export
 generateXY <- function(n, prop, meanX, beta, covX, covY)

@@ -16,7 +16,7 @@
 #' @param fast boolean to enable or not the C function call
 #'
 #' @return A list (corresponding to the model collection) defined by (phi,LLF):
-#'   phi : regression mean for each cluster
+#'   phi : regression mean for each cluster, an array of size p*m*k
 #'   LLF : log likelihood with respect to the training set
 #'
 #' @export

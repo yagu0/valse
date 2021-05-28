@@ -17,7 +17,10 @@
 #' @param fast TRUE to use compiled C code, FALSE for R code only
 #' @param verbose TRUE to show some execution traces
 #'
-#' @return a list with several models, defined by phi, rho, pi, llh
+#' @return a list with several models, defined by phi (the regression parameter reparametrized),
+#' rho (the covariance parameter reparametrized), pi (the proportion parameter is the mixture model), llh
+#' (the value of the loglikelihood function for this estimator on the training dataset). The list is given
+#' for several levels of sparsity, given by several regularization parameters computed automatically.
 #'
 #' @export
 constructionModelesLassoMLE <- function(phiInit, rhoInit, piInit, gamInit, mini,
